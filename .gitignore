@@ -1,0 +1,11 @@
+.vscode/
+.DS_Store
+*cache
+*.log
+*.pid
+*.lck
+bin/
+build/
+archive/
+*.zip
+*.tar.gz
