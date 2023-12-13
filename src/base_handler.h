@@ -10,7 +10,7 @@
 class BaseHandler
 {
 public:
-  BaseHandler(String name, int8_t serviceType, SerialCom *com)
+  BaseHandler(const String name, const int8_t serviceType, SerialCom *com)
   {
     this->name = name;
     this->serviceType = serviceType;
@@ -18,9 +18,9 @@ public:
     this->_com = com;
   }
 
-  sendData(String key, String value)
+  sendData(const String key, const String value)
   {
-    this->_com->writeAll(key + "|" + value);
+    this->_com->writeAll(key + String(F("|")) + value);
   }
 
   virtual void initialize(){};

@@ -9,9 +9,9 @@
 #define SWITCH_ANALOGUE_VALUE_THRESHOLD 800
 #define SIGNAL_FLASHER_CANCEL_TIMEOUT_MS 30000
 
-#define ACTION_TOGGLE_BOTH "TOGGLE_BOTH"
-#define ACTION_TOGGLE_LEFT "TOGGLE_LEFT"
-#define ACTION_TOGGLE_RIGHT "TOGGLE_RIGHT"
+#define ACTION_TOGGLE_BOTH F("TOGGLE_BOTH")
+#define ACTION_TOGGLE_LEFT F("TOGGLE_LEFT")
+#define ACTION_TOGGLE_RIGHT F("TOGGLE_RIGHT")
 
 #define MODE_RELAY_LEFT 0
 #define MODE_RELAY_RIGHT 1
@@ -23,7 +23,7 @@ int RELAY_CHANNEL_STATUS[3] = {false, false, false};
 class TurnSignalHandler : public BaseHandler
 {
 public:
-  TurnSignalHandler(SerialCom *com) : BaseHandler("TurnSignalHandler", SERVICE_TYPE_SYSTEM, com)
+  TurnSignalHandler(SerialCom *com) : BaseHandler(F("TurnSignalHandler"), SERVICE_TYPE_SYSTEM, com)
   {
     _lastBlinkTime = 0;
     _now = millis();
@@ -34,14 +34,14 @@ public:
 
   void initialize()
   {
-    this->_com->writeConsole("TurnSignalHandler::init");
+    this->_com->writeConsole(F("TurnSignalHandler::init"));
     pinMode(PIN_SIGNAL_IN_LEFT, INPUT);
     pinMode(PIN_SIGNAL_IN_RIGHT, INPUT);
     pinMode(PIN_SIGNAL_OUT_LEFT, OUTPUT);
     pinMode(PIN_SIGNAL_OUT_RIGHT, OUTPUT);
     pinMode(LED_BUILTIN, OUTPUT);
     disableRelayChannels();
-    this->_com->writeConsole("TurnSignalHandler::init done.");
+    this->_com->writeConsole(F("TurnSignalHandler::init done."));
   }
 
   void update()
@@ -53,7 +53,7 @@ public:
 
   void diagnosis(int checkCount, int delayMs)
   {
-    this->_com->writeConsole("TurnSignalHandler::diagnosis: " + String(checkCount) + " times with " + String(delayMs) + "ms delay");
+    // this->_com->writeConsole(F("TurnSignalHandler::diagnosis: " + F(String(checkCount)) + " times with " + String(delayMs) + "ms delay"));
 
     int count = 0;
     int loopCount = checkCount * 2;
@@ -78,10 +78,10 @@ public:
       digitalWrite(LED_BUILTIN, isOn ? HIGH : LOW);
       count++;
 
-      this->_com->writeConsole("TurnSignalHandler::diagnosis: isOn:" + String(isOn) + ",  #:" + String(count) + "/" + String(loopCount));
+      // this->_com->writeConsole(F("TurnSignalHandler::diagnosis: isOn:" + String(isOn) + ",  #:" + String(count) + "/") + String(loopCount));
     }
 
-    turnOff("init diagnosis");
+    turnOff(F("init diagnosis"));
   }
 
 private:
@@ -125,7 +125,7 @@ private:
       _blinkStartedTime = _willBlinkBoth ? _now : -1;
       _selectedChannel = _willBlinkBoth ? MODE_RELAY_BOTH : MODE_RELAY_NONE;
       _action = ACTION_TOGGLE_BOTH;
-      this->_com->writeConsole("TurnSignalHandler::readSwitchInputs: _action: " + _action + ",  _willBlinkBoth: " + String(_willBlinkBoth));
+      // this->_com->writeConsole(F("TurnSignalHandler::readSwitchInputs: _action: " + _action + ",  _willBlinkBoth: ") + String(_willBlinkBoth));
     }
 
     else if (_leftSwitchAnalogueValue > SWITCH_ANALOGUE_VALUE_THRESHOLD)
@@ -136,7 +136,7 @@ private:
       _blinkStartedTime = _willBlinkLeft ? _now : -1;
       _selectedChannel = _willBlinkLeft ? MODE_RELAY_LEFT : MODE_RELAY_NONE;
       _action = ACTION_TOGGLE_LEFT;
-      this->_com->writeConsole("TurnSignalHandler::readSwitchInputs: action: " + _action + ", will blink: " + String(_willBlinkLeft));
+      // this->_com->writeConsole(F("TurnSignalHandler::readSwitchInputs: action: " + _action + ", will blink: ") + String(_willBlinkLeft));
     }
 
     else if (_rightSwitchAnalogueValue > SWITCH_ANALOGUE_VALUE_THRESHOLD)
@@ -147,7 +147,7 @@ private:
       _blinkStartedTime = _willBlinkRight ? _now : -1;
       _selectedChannel = _willBlinkRight ? MODE_RELAY_RIGHT : MODE_RELAY_NONE;
       _action = ACTION_TOGGLE_RIGHT;
-      this->_com->writeConsole("TurnSignalHandler::readSwitchInputs: action: " + _action + ", will blink: " + String(_willBlinkRight));
+      // this->_com->writeConsole(F("TurnSignalHandler::readSwitchInputs: action: " + _action + ", will blink: ") + String(_willBlinkRight));
     }
 
     else
@@ -163,7 +163,7 @@ private:
     // if blinking, check for cancellation
     if (_isBlinkerOn && !_willBlinkAny)
     {
-      turnOff("cancelled");
+      turnOff(F("cancelled"));
       return;
     }
 
@@ -176,7 +176,7 @@ private:
     // if blinking, check for timeout
     if (_isBlinkerOn && _now - _blinkStartedTime > SIGNAL_FLASHER_CANCEL_TIMEOUT_MS)
     {
-      turnOff("timeout");
+      turnOff(F("timeout"));
       return;
     }
 
@@ -195,7 +195,7 @@ private:
   {
     bool channelState = toggleRelayChannel(_selectedChannel);
     digitalWrite(LED_BUILTIN, channelState ? HIGH : LOW);
-    this->_com->writeConsole("TurnSignalHandler::toggle: channelState:" + String(channelState) + ",  _selectedChannel:" + String(_selectedChannel) + ",  _isBlinkerOn:" + String(_isBlinkerOn));
+    // this->_com->writeConsole(F("TurnSignalHandler::toggle: channelState:" + String(channelState) + ",  _selectedChannel:" + String(_selectedChannel) + ",  _isBlinkerOn:") + String(_isBlinkerOn));
   }
 
   void turnOff(String reason)
@@ -209,7 +209,7 @@ private:
 
     disableRelayChannels();
     digitalWrite(LED_BUILTIN, LOW);
-    this->_com->writeConsole("TurnSignalHandler::blink turnOff: " + reason);
+    // this->_com->writeConsole(F("TurnSignalHandler::blink turnOff: ") + reason);
   }
 
   void setRelayModeState(int mode, bool isOn)

@@ -17,10 +17,10 @@ public:
   void initialize()
   {
     Serial.begin(SERIAL_BAUD_COM);
-    writeConsole("SerialCom::init start");
+    writeConsole(F("SerialCom::init start"));
     _btSerial = &SoftwareSerial(PIN_BLUETOOTH_RX, PIN_BLUETOOTH_TX);
     _btSerial->begin(SERIAL_BAUD_BT);
-    writeConsole("SerialCom::init done");
+    writeConsole(F("SerialCom::init done"));
   }
 
   void writeAll(String data)
