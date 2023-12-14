@@ -40,7 +40,6 @@ public:
     pinMode(PIN_MUX_OUT_A, OUTPUT);
     pinMode(PIN_MUX_OUT_B, OUTPUT);
     pinMode(PIN_MUX_OUT_C, OUTPUT);
-    pinMode(PIN_MUX_INHIBIT, OUTPUT);
   }
 
   void update()

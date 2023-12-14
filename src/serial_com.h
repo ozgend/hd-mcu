@@ -18,8 +18,13 @@ public:
   {
     Serial.begin(SERIAL_BAUD_COM);
     writeConsole(F("SerialCom::init start"));
-    _btSerial = &SoftwareSerial(PIN_BLUETOOTH_RX, PIN_BLUETOOTH_TX);
-    _btSerial->begin(SERIAL_BAUD_BT);
+
+    // opt if phsical serial connected
+    if (!hasConsole())
+    {
+      _btSerial = &SoftwareSerial(PIN_BLUETOOTH_RX, PIN_BLUETOOTH_TX);
+      _btSerial->begin(SERIAL_BAUD_BT);
+    }
     writeConsole(F("SerialCom::init done"));
   }
 

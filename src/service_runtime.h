@@ -7,12 +7,6 @@
 #define COMMAND_START_SENSORS F("sensors=1")
 #define COMMAND_STOP_SENSORS F("sensors=0")
 
-// #define COMMAND_START_DIRECT F("dct=1")
-// #define COMMAND_STOP_DIRECT F("dct=0")
-
-// #define COMMAND_START_MUXED F("mux=1")
-// #define COMMAND_STOP_MUXED F("mux=0")
-
 #define COMMAND_START_TSM_ALL F("tsm=1")
 #define COMMAND_STOP_TSM F("tsm=0")
 #define COMMAND_START_TSM_LEFT F("tsm=L")
