@@ -25,20 +25,20 @@
 class DirectSensorHandler : public BaseHandler
 {
 public:
-  DirectSensorHandler(SerialCom *com) : BaseHandler("DirectSensorHandler", SERVICE_TYPE_DYNAMIC, com)
+  DirectSensorHandler(SerialCom *com) : BaseHandler(F("DirectSensorHandler"), SERVICE_TYPE_DYNAMIC, com)
   {
   }
 
   void initialize()
   {
-    this->_com->writeConsole("init.DirectSensorHandler +");
+    this->_com->writeConsole(F("init.DirectSensorHandler +"));
     pinMode(PIN_SENSOR_VOLTAGE, INPUT);
     pinMode(PIN_SENSOR_TEMPERATURE, INPUT);
     pinMode(PIN_SENSOR_RPM, INPUT);
     pinMode(PIN_SENSOR_SPEED, INPUT);
     pinMode(PIN_SENSOR_FUEL, INPUT);
     pinMode(PIN_SENSOR_OIL_PRESSURE, INPUT);
-    this->_com->writeConsole("init.DirectSensorHandler - done");
+    this->_com->writeConsole(F("init.DirectSensorHandler - done"));
   }
 
   void update()
@@ -65,11 +65,11 @@ public:
     {
       return;
     }
-    this->_com->writeConsole("start.DirectSensorHandler +");
+    this->_com->writeConsole(F("start.DirectSensorHandler +"));
     _oneWire = &OneWire(PIN_SENSOR_TEMPERATURE);
     _airTempSensor = &DallasTemperature(_oneWire);
     _airTempSensor->begin();
-    this->_com->writeConsole("start.DDirectSensorHandler - started");
+    this->_com->writeConsole(F("start.DDirectSensorHandler - started"));
     isRunning = true;
   }
 
@@ -79,10 +79,10 @@ public:
     {
       return;
     }
-    this->_com->writeConsole("stop.DirectSensorHandler - stopping");
+    this->_com->writeConsole(F("stop.DirectSensorHandler - stopping"));
     delete _airTempSensor;
     delete _oneWire;
-    this->_com->writeConsole("stop.DirectSensorHandler - stopped");
+    this->_com->writeConsole(F("stop.DirectSensorHandler - stopped"));
     isRunning = false;
   }
 
@@ -143,7 +143,7 @@ private:
   {
     for (int i = 0; i < DIRECT_CHANNEL_SIZE; i++)
     {
-      sendData("dts_" + String(i), String(_sensorValues[i]));
+      sendData(String(F("dts_")) + String(i), String(_sensorValues[i]));
     }
   }
 };

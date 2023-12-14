@@ -31,7 +31,7 @@ const int MUX_CHANNEL_SELECT[MUX_CHANNEL_SIZE][MUX_CONTROL_BIT_SIZE] =
 class MuxedSensorHandler : public BaseHandler
 {
 public:
-  MuxedSensorHandler(SerialCom *com) : BaseHandler("MuxedSensorHandler", SERVICE_TYPE_DYNAMIC, com)
+  MuxedSensorHandler(SerialCom *com) : BaseHandler(F("MuxedSensorHandler"), SERVICE_TYPE_DYNAMIC, com)
   {
   }
 
@@ -40,7 +40,6 @@ public:
     pinMode(PIN_MUX_OUT_A, OUTPUT);
     pinMode(PIN_MUX_OUT_B, OUTPUT);
     pinMode(PIN_MUX_OUT_C, OUTPUT);
-    pinMode(PIN_MUX_INHIBIT, OUTPUT);
   }
 
   void update()
@@ -58,7 +57,7 @@ public:
     for (int i = 0; i < MUX_CHANNEL_SIZE_ACTIVE; i++)
     {
       readChannelValue(i);
-      sendData("mux_" + String(i), String(_sensorValues[i]));
+      sendData(String(F("mux_")) + String(i), String(_sensorValues[i]));
     }
 
     _lastUpdateTime = millis();
@@ -68,12 +67,12 @@ public:
   {
     if (isRunning)
     {
-      this->_com->writeConsole("start.MuxedSensorHandler - already running");
+      this->_com->writeConsole(F("start.MuxedSensorHandler - already running"));
       return;
     }
-    this->_com->writeConsole("start.MuxedSensorHandler +");
+    this->_com->writeConsole(F("start.MuxedSensorHandler +"));
     _thermoSensor = &MAX6675(PIN_THERMO_SENSOR_CLK, PIN_THERMO_SENSOR_CS, PIN_THERMO_SENSOR_DATA);
-    this->_com->writeConsole("start.MuxedSensorHandler - started");
+    this->_com->writeConsole(F("start.MuxedSensorHandler - started"));
     isRunning = true;
   }
 
@@ -81,12 +80,12 @@ public:
   {
     if (!isRunning)
     {
-      this->_com->writeConsole("stop.MuxedSensorHandler - not running");
+      this->_com->writeConsole(F("stop.MuxedSensorHandler - not running"));
       return;
     }
-    this->_com->writeConsole("stop.MuxedSensorHandler - stopping");
+    this->_com->writeConsole(F("stop.MuxedSensorHandler - stopping"));
     delete _thermoSensor;
-    this->_com->writeConsole("stop.MuxedSensorHandler - stopped");
+    this->_com->writeConsole(F("stop.MuxedSensorHandler - stopped"));
     isRunning = false;
   }
 

@@ -13,7 +13,7 @@ MuxedSensorHandler _muxedSensorHandler(&_com);
 void setup()
 {
   _com.initialize();
-  _com.writeConsole("initializing...");
+  _com.writeConsole(F("initializing..."));
 
   _runtime.registerService(&_turnSignalHandler);
   _runtime.registerService(&_directSensorHandler);
@@ -21,7 +21,7 @@ void setup()
 
   _runtime.initialize();
 
-  _com.writeConsole("started.");
+  _com.writeConsole(F("started."));
   _turnSignalHandler.diagnosis(4, 100);
 }
 
