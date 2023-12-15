@@ -4,6 +4,16 @@
 #include "./serial_com.h"
 #include "./config_hw.h"
 
+#define SERVICE_COMMAND_START_ON_DEMAND F("od=1")
+#define SERVICE_COMMAND_STOP_ON_DEMAND F("od=0")
+#define SERVICE_COMMAND_START_ONE_TIME F("ot=1")
+#define SERVICE_COMMAND_STOP_ONE_TIME F("ot=0")
+#define SERVICE_COMMAND_BEGIN_TSM_ALL F("tsm=1")
+#define SERVICE_COMMAND_END_TSM F("tsm=0")
+#define SERVICE_COMMAND_BEGIN_TSM_DIAG F("tsm=D")
+#define SERVICE_COMMAND_BEGIN_TSM_LEFT F("tsm=L")
+#define SERVICE_COMMAND_BEGIN_TSM_RIGHT F("tsm=R")
+
 #define SERVICE_TYPE_ALWAYS_RUN 1
 #define SERVICE_TYPE_ON_DEMAND 2
 #define SERVICE_TYPE_ONE_TIME 3
@@ -45,10 +55,16 @@ public:
     }
   }
 
+  boolean isCommandMatch(const String &command, const String &commandToMatch)
+  {
+    return command.startsWith(commandToMatch);
+  }
+
   virtual void setup(){};
   virtual void update(){};
   virtual void start() {}
   virtual void stop() {}
+  virtual void processCommand(const String &command) {}
 
   String serviceCode;
   int8_t serviceType;

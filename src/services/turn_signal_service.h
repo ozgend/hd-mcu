@@ -84,6 +84,30 @@ public:
     turnOff(F("init diagnosis"));
   }
 
+  void processCommand(const String &command)
+  {
+    if (isCommandMatch(command, SERVICE_COMMAND_BEGIN_TSM_DIAG))
+    {
+      diagnosis(5, 100);
+    }
+    else if (isCommandMatch(command, SERVICE_COMMAND_BEGIN_TSM_LEFT))
+    {
+      toggleRelayChannel(MODE_RELAY_LEFT);
+    }
+    else if (isCommandMatch(command, SERVICE_COMMAND_BEGIN_TSM_RIGHT))
+    {
+      toggleRelayChannel(MODE_RELAY_RIGHT);
+    }
+    else if (isCommandMatch(command, SERVICE_COMMAND_BEGIN_TSM_ALL))
+    {
+      toggleRelayChannel(MODE_RELAY_BOTH);
+    }
+    else if (isCommandMatch(command, SERVICE_COMMAND_END_TSM))
+    {
+      toggleRelayChannel(MODE_RELAY_NONE);
+    }
+  }
+
 private:
   String _action;
 

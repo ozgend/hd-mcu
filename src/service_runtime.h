@@ -4,14 +4,6 @@
 #include "./serial_com.h"
 #include "./base_service.h"
 
-#define COMMAND_START_SENSORS F("sensors=1")
-#define COMMAND_STOP_SENSORS F("sensors=0")
-
-#define COMMAND_START_TSM_ALL F("tsm=1")
-#define COMMAND_STOP_TSM F("tsm=0")
-#define COMMAND_START_TSM_LEFT F("tsm=L")
-#define COMMAND_START_TSM_RIGHT F("tsm=R")
-
 class ServiceRuntime
 {
 public:
@@ -31,25 +23,16 @@ public:
 
   void update()
   {
-    if (this->_com->hasCommand(COMMAND_START_SENSORS))
-    {
-      this->_com->writeConsole(F("ServiceRuntime: start sensors"));
-      toggleDynamicServices(true);
-    }
-
-    if (this->_com->hasCommand(COMMAND_STOP_SENSORS))
-    {
-      this->_com->writeConsole(F("ServiceRuntime: stop sensors"));
-      toggleDynamicServices(false);
-    }
-
-    if (!this->_com->hasConnection())
-    {
-      this->_com->writeConsole(F("ServiceRuntime: stop sensors, no connection"));
-      toggleDynamicServices(false);
-    }
-
     updateServices();
+
+    String payload = this->_com->getPayload();
+
+    if (payload.length() == 0)
+    {
+      return;
+    }
+
+    dispatchCommandToServices(payload);
   }
 
   void add(BaseService *service)
@@ -63,21 +46,11 @@ private:
   BaseService *_services[10];
   int8_t _serviceCount;
 
-  void toggleDynamicServices(boolean willStart)
+  void dispatchCommandToServices(String &command)
   {
     for (int i = 0; i < this->_serviceCount; i++)
     {
-      if (this->_services[i]->serviceType == SERVICE_TYPE_ON_DEMAND)
-      {
-        if (willStart)
-        {
-          this->_services[i]->start();
-        }
-        else
-        {
-          this->_services[i]->stop();
-        }
-      }
+      this->_services[i]->processCommand(command);
     }
   }
 
@@ -88,6 +61,29 @@ private:
       this->_services[i]->update();
     }
   }
+
+  // void toggleDynamicServices(boolean willStart)
+  // {
+  //   for (int i = 0; i < this->_serviceCount; i++)
+  //   {
+  //     if (this->_services[i]->serviceType == SERVICE_TYPE_ON_DEMAND)
+  //     {
+  //       if (willStart)
+  //       {
+  //         this->_services[i]->start();
+  //       }
+  //       else
+  //       {
+  //         this->_services[i]->stop();
+  //       }
+  //     }
+  //   }
+  // }
+
+  // boolean isMatchingCommand(String &payload, String &expectedCommand)
+  // {
+  //   return payload.indexOf(expectedCommand) > -1;
+  // }
 };
 
 #endif

@@ -63,6 +63,18 @@ public:
     isRunning = false;
   }
 
+  void processCommand(const String &command)
+  {
+    if (isCommandMatch(command, SERVICE_COMMAND_START_ONE_TIME))
+    {
+      start();
+    }
+    else if (isCommandMatch(command, SERVICE_COMMAND_STOP_ONE_TIME))
+    {
+      stop();
+    }
+  }
+
 private:
   float _sensorValues[SYSTEM_CHANNEL_SIZE] = {-1, -1, -1, -1};
 

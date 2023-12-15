@@ -84,6 +84,18 @@ public:
     isRunning = false;
   }
 
+  void processCommand(const String &command)
+  {
+    if (isCommandMatch(command, SERVICE_COMMAND_START_ON_DEMAND))
+    {
+      start();
+    }
+    else if (isCommandMatch(command, SERVICE_COMMAND_STOP_ON_DEMAND))
+    {
+      stop();
+    }
+  }
+
 private:
   OneWire *_oneWire;
   DallasTemperature *_airTempSensor;

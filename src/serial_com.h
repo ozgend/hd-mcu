@@ -28,25 +28,25 @@ public:
     writeConsole(F("SerialCom::init done"));
   }
 
-  void writeAll(String data)
+  void writeAll(String payload)
   {
-    writeConsole(data);
-    writeBT(data);
+    writeConsole(payload);
+    writeBT(payload);
   }
 
-  void writeBT(String data)
+  void writeBT(String payload)
   {
     if (_btSerial->available() > 0)
     {
-      _btSerial->println(data);
+      _btSerial->println(payload);
     }
   }
 
-  void writeConsole(String data)
+  void writeConsole(String payload)
   {
     if (Serial.available() > 0)
     {
-      Serial.println(data);
+      Serial.println(payload);
     }
   }
 
@@ -54,8 +54,8 @@ public:
   {
     if (hasBT())
     {
-      String data = _btSerial->readString();
-      return data;
+      String payload = _btSerial->readString();
+      return payload;
     }
     return "";
   }
@@ -64,27 +64,33 @@ public:
   {
     if (hasConsole())
     {
-      String data = Serial.readString();
-      return data;
+      String payload = Serial.readString();
+      return payload;
     }
     return "";
   }
 
-  boolean hasCommand(String command)
+  // struct CommandPayload
+  // {
+  //   String command;
+  //   String data;
+  // };
+
+  String getPayload()
   {
-    String data = readBT();
-    if (data == command)
+    String payload = readBT();
+    if (payload.length() > 0)
     {
-      return true;
+      return payload;
     }
 
-    data = readConsole();
-    if (data == command)
+    payload = readConsole();
+    if (payload.length() > 0)
     {
-      return true;
+      return payload;
     }
 
-    return false;
+    return "";
   }
 
   boolean hasBT()
