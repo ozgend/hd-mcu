@@ -46,6 +46,12 @@ public:
 
   void update()
   {
+    if (!P_HAS_TURN_SIGNAL)
+    {
+      this->log(F("update"), F("no TSM peripheral"));
+      return;
+    }
+
     _now = millis();
     readSwitchInputs();
     processState();
@@ -222,7 +228,7 @@ private:
     // this->_com->writeConsole(F("TurnSignalService::toggle: channelState:" + String(channelState) + ",  _selectedChannel:" + String(_selectedChannel) + ",  _isBlinkerOn:") + String(_isBlinkerOn));
   }
 
-  void turnOff(String reason)
+  void turnOff(const String &reason)
   {
     _isBlinkerOn = false;
     _blinkStartedTime = -1;
