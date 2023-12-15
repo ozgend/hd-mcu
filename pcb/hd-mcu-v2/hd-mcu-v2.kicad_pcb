@@ -1234,7 +1234,7 @@
         (effects (font (size 1 1) (thickness 0.1)))
       (tstamp 658fddd3-7e2a-4a43-a4bf-d94906ee92b7)
     )
-    (fp_text value "L298N" (at 0 1 unlocked) (layer "F.Fab")
+    (fp_text value "L298N" (at 0 1 unlocked) (layer "F.SilkS")
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 67a91d9f-a529-414c-9d49-a08db4ecbb42)
     )
