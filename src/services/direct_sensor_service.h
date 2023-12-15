@@ -6,7 +6,7 @@
 #include <DallasTemperature.h>
 
 #define DIRECT_CHANNEL_SIZE 4
-#define DIRECT_UPDATE_INTERVAL 2000
+#define DIRECT_UPDATE_INTERVAL 1000
 
 #define DIRECT_CHANNEL_VOLTAGE 0
 #define DIRECT_CHANNEL_TEMPERATURE 1
@@ -18,12 +18,6 @@
 #define SENSOR_ADC_LOSS 0.06         // percent
 #define SENSOR_ADC_REFERENCE 3.3     // volts
 #define SENSOR_ADC_RESOLUTION 1024.0 // resolution map
-
-const char *const DIRECT_CHANNEL_NAMES[DIRECT_CHANNEL_SIZE] PROGMEM = {
-    "VOLTAGE",
-    "TEMP",
-    "RPM",
-    "SPEED"};
 
 class DirectSensorService : public BaseService
 {
@@ -150,13 +144,13 @@ private:
   {
     if (SERIAL_WRITE_AT_ONCE)
     {
-      sendAllData(DIRECT_CHANNEL_NAMES, _sensorValues, DIRECT_CHANNEL_SIZE);
+      sendAllData(_sensorValues, DIRECT_CHANNEL_SIZE);
     }
     else
     {
       for (int i = 0; i < DIRECT_CHANNEL_SIZE; i++)
       {
-        sendOneData(DIRECT_CHANNEL_NAMES[i], _sensorValues[i]);
+        sendOneData(i, _sensorValues[i]);
       }
     }
   }

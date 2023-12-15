@@ -13,13 +13,6 @@
 #define DEVICE_STATS_CHANNEL_FLASH_FREE 3
 #define DEVICE_STATS_CHANNEL_FLASH_TOTAL 4
 
-const char *const DEVICE_STATS_CHANNEL_NAMES[DEVICE_STATS_CHANNEL_SIZE] PROGMEM = {
-    "CPU",
-    "RAM_FREE",
-    "RAM_TOTAL",
-    "FLASH_FREE",
-    "FLASH_TOTAL"};
-
 class DeviceStatsService : public BaseService
 {
 public:
@@ -105,13 +98,13 @@ private:
   {
     if (SERIAL_WRITE_AT_ONCE)
     {
-      sendAllData(DEVICE_STATS_CHANNEL_NAMES, _sensorValues, DEVICE_STATS_CHANNEL_SIZE);
+      sendAllData(_sensorValues, DEVICE_STATS_CHANNEL_SIZE);
     }
     else
     {
       for (int i = 0; i < DEVICE_STATS_CHANNEL_SIZE; i++)
       {
-        sendOneData(DEVICE_STATS_CHANNEL_NAMES[i], _sensorValues[i]);
+        sendOneData(i, _sensorValues[i]);
       }
     }
   }

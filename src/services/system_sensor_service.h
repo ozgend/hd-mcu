@@ -6,12 +6,9 @@
 #include <DallasTemperature.h>
 
 #define SYSTEM_CHANNEL_SIZE 1
-#define SYSTEM_UPDATE_INTERVAL 1000
+#define SYSTEM_UPDATE_INTERVAL 2000
 
 #define SYSTEM_CHANNEL_UPTIME 0
-
-const char *const SYSTEM_CHANNEL_NAMES[SYSTEM_CHANNEL_SIZE] PROGMEM = {
-    "UPTIME"};
 
 class SystemSensorService : public BaseService
 {
@@ -93,13 +90,13 @@ private:
   {
     if (SERIAL_WRITE_AT_ONCE)
     {
-      sendAllData(SYSTEM_CHANNEL_NAMES, _sensorValues, SYSTEM_CHANNEL_SIZE);
+      sendAllData(_sensorValues, SYSTEM_CHANNEL_SIZE);
     }
     else
     {
       for (int i = 0; i < SYSTEM_CHANNEL_SIZE; i++)
       {
-        sendOneData(SYSTEM_CHANNEL_NAMES[i], _sensorValues[i]);
+        sendOneData(i, _sensorValues[i]);
       }
     }
   }

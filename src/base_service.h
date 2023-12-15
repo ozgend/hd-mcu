@@ -31,8 +31,12 @@
 #define LOG_SEPARATOR_SVC F("_")
 #define LOG_SEPARATOR_KV F("|")
 #define LOG_SEPARATOR_EVENT F(":")
+#define LOG_SEPARATOR_KV_PAIR F(":")
 #define LOG_SEPARATOR_JSON_FIELD F(",")
-#define LOG_SEPARATOR_JSON_PAIR F(":")
+#define LOG_SEPARATOR_JSON_KV_PAIR F("\":\"")
+#define LOG_SEPARATOR_JSON_QUOTE F("\"")
+#define LOG_SEPARATOR_JSON_OBJECT_START F("{")
+#define LOG_SEPARATOR_JSON_OBJECT_END F("}")
 
 class BaseService
 {
@@ -45,32 +49,32 @@ public:
     this->_com = com;
   }
 
-  void sendOneData(const String &key, const float value)
+  void sendOneData(const uint8_t key, const float value)
   {
     sendOneData(key, String(value));
   }
 
-  void sendOneData(const String &key, const String &value)
+  void sendOneData(const uint8_t key, const String &value)
   {
-    this->_com->writeAll(serviceCode + String(LOG_SEPARATOR_SVC) + key + String(LOG_SEPARATOR_KV) + value);
+    this->_com->writeAll(serviceCode + String(LOG_SEPARATOR_SVC) + String(key) + String(LOG_SEPARATOR_KV_PAIR) + value);
   }
 
-  void sendAllData(const char *const keys[], const float values[], const uint8_t length)
+  void sendAllData(const float values[], const uint8_t length)
   {
-    String data = "{";
+    String data = String(LOG_SEPARATOR_JSON_OBJECT_START);
     for (uint8_t i = 0; i < length; i++)
     {
-      data += String(F("\"")) + serviceCode + String(LOG_SEPARATOR_SVC) + String(i) + String(F("\":\"")) + String(values[i]) + String(F("\""));
+      data += String(LOG_SEPARATOR_JSON_QUOTE) + serviceCode + String(LOG_SEPARATOR_SVC) + String(i) + String(LOG_SEPARATOR_JSON_KV_PAIR) + String(values[i]) + String(LOG_SEPARATOR_JSON_QUOTE);
       if (i < length - 1)
       {
         data += String(LOG_SEPARATOR_JSON_FIELD);
       }
     }
-    data += "}";
+    data += String(LOG_SEPARATOR_JSON_OBJECT_END);
     this->_com->writeAll(data);
   }
 
-  void log(const String event, const String message = "")
+  void log(const String &event, const String &message = "")
   {
     if (message.length() == 0)
     {
