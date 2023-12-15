@@ -1,23 +1,19 @@
 #ifndef __system_sensor_service__
 #define __system_sensor_service__
 
-#include <Arduino.h>
-#include <avr/pgmspace.h>
 #include "../base_service.h"
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
-#define SYSTEM_CHANNEL_SIZE 5
-#define SYSTEM_UPDATE_INTERVAL 10000
+#define SYSTEM_CHANNEL_SIZE 1
+#define SYSTEM_UPDATE_INTERVAL 2000
 
-#define SYSTEM_CHANNEL_CPU 0
-#define SYSTEM_CHANNEL_RAM_FREE 1
-#define SYSTEM_CHANNEL_RAM_TOTAL 2
-#define SYSTEM_CHANNEL_FLASH_FREE 3
-#define SYSTEM_CHANNEL_FLASH_TOTAL 4
+#define SYSTEM_CHANNEL_UPTIME 0
 
 class SystemSensorService : public BaseService
 {
 public:
-  SystemSensorService(SerialCom *com) : BaseService(SERVICE_SYS, SERVICE_TYPE_ONE_TIME, com)
+  SystemSensorService(SerialCom *com) : BaseService(SERVICE_CODE_SYS, SERVICE_TYPE_ON_DEMAND, com)
   {
   }
 
@@ -34,9 +30,15 @@ public:
       return;
     }
 
+    if (millis() - _lastUpdateTime < SYSTEM_UPDATE_INTERVAL)
+    {
+      return;
+    }
+
     readAll();
     sendAll();
-    stop();
+
+    _lastUpdateTime = millis();
   }
 
   void start()
@@ -65,40 +67,37 @@ public:
 
   void processCommand(const String &command)
   {
-    if (isCommandMatch(command, SERVICE_COMMAND_START_ONE_TIME))
+    if (isCommandMatch(command, SERVICE_COMMAND_START_SYS))
     {
       start();
     }
-    else if (isCommandMatch(command, SERVICE_COMMAND_STOP_ONE_TIME))
+    else if (isCommandMatch(command, SERVICE_COMMAND_STOP_SYS))
     {
       stop();
     }
   }
 
 private:
-  float _sensorValues[SYSTEM_CHANNEL_SIZE] = {-1, -1, -1, -1};
-
-  int getFreeMemory()
-  {
-    extern int __heap_start, *__brkval;
-    int v;
-    return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
-  }
+  long _lastUpdateTime;
+  float _sensorValues[SYSTEM_CHANNEL_SIZE] = {-1};
 
   void readAll()
   {
-    _sensorValues[SYSTEM_CHANNEL_CPU] = F_CPU / 1000000;
-    _sensorValues[SYSTEM_CHANNEL_RAM_FREE] = getFreeMemory();
-    _sensorValues[SYSTEM_CHANNEL_RAM_TOTAL] = 2048;
-    _sensorValues[SYSTEM_CHANNEL_FLASH_FREE] = -1;
-    _sensorValues[SYSTEM_CHANNEL_FLASH_TOTAL] = 30720;
+    _sensorValues[SYSTEM_CHANNEL_UPTIME] = millis();
   }
 
   void sendAll()
   {
-    for (int i = 0; i < SYSTEM_CHANNEL_SIZE; i++)
+    if (SERIAL_WRITE_AT_ONCE)
     {
-      sendData(i, _sensorValues[i]);
+      sendAllData(_sensorValues, SYSTEM_CHANNEL_SIZE);
+    }
+    else
+    {
+      for (int i = 0; i < SYSTEM_CHANNEL_SIZE; i++)
+      {
+        sendOneData(i, _sensorValues[i]);
+      }
     }
   }
 };

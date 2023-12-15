@@ -32,6 +32,8 @@ public:
       return;
     }
 
+    this->_com->writeConsole(String(F("ServiceRuntime::update: payload=[")) + payload + String(F("]")));
+
     dispatchCommandToServices(payload);
   }
 
@@ -46,7 +48,7 @@ private:
   BaseService *_services[10];
   int8_t _serviceCount;
 
-  void dispatchCommandToServices(String &command)
+  void dispatchCommandToServices(const String &command)
   {
     for (int i = 0; i < this->_serviceCount; i++)
     {

@@ -4,9 +4,6 @@
 #include "./config_hw.h"
 #include <SoftwareSerial.h>
 
-#define SERIAL_BAUD_COM 9600
-#define SERIAL_BAUD_BT 9600
-
 class SerialCom
 {
 public:
@@ -19,54 +16,70 @@ public:
     Serial.begin(SERIAL_BAUD_COM);
     writeConsole(F("SerialCom::init start"));
 
-    // opt if phsical serial connected
-    if (!hasConsole())
+    if (P_HAS_BLUETOOTH)
     {
       _btSerial = &SoftwareSerial(PIN_BLUETOOTH_RX, PIN_BLUETOOTH_TX);
       _btSerial->begin(SERIAL_BAUD_BT);
     }
+    else
+    {
+      writeConsole("SerialCom::readBT: no BT peripheral");
+    }
+
     writeConsole(F("SerialCom::init done"));
   }
 
-  void writeAll(String payload)
+  void writeAll(const String payload)
   {
     writeConsole(payload);
     writeBT(payload);
   }
 
-  void writeBT(String payload)
+  void writeBT(const String payload)
   {
-    if (_btSerial->available() > 0)
+    if (!P_HAS_BLUETOOTH)
     {
-      _btSerial->println(payload);
+      // writeConsole("SerialCom::readBT: no BT peripheral");
+      return;
     }
+    _btSerial->println(payload);
   }
 
-  void writeConsole(String payload)
+  void writeConsole(const String payload)
   {
-    if (Serial.available() > 0)
-    {
-      Serial.println(payload);
-    }
+    Serial.println(payload);
   }
 
   String readBT()
   {
-    if (hasBT())
+    if (!P_HAS_BLUETOOTH)
     {
+      return "";
+    }
+
+    // writeConsole("SerialCom::readBT");
+    if (hasBTSerialData())
+    {
+      // writeConsole("SerialCom::readBT: has data");
       String payload = _btSerial->readString();
+      // writeConsole("SerialCom::readBT: payload=[" + payload + "]");
       return payload;
     }
+    // writeConsole("SerialCom::readBT: no data");
     return "";
   }
 
   String readConsole()
   {
-    if (hasConsole())
+    // writeConsole("SerialCom::readConsole");
+    if (hasConsoleSerialData())
     {
+      // writeConsole("SerialCom::readConsole: has data");
       String payload = Serial.readString();
+      // writeConsole("SerialCom::readConsole: payload=[" + payload + "]");
       return payload;
     }
+    // writeConsole("SerialCom::readConsole: no data");
     return "";
   }
 
@@ -93,19 +106,14 @@ public:
     return "";
   }
 
-  boolean hasBT()
+  boolean hasBTSerialData()
   {
     return _btSerial->available() > 0;
   }
 
-  boolean hasConsole()
+  boolean hasConsoleSerialData()
   {
     return Serial.available() > 0;
-  }
-
-  boolean hasConnection()
-  {
-    return hasBT() || hasConsole();
   }
 
 private:

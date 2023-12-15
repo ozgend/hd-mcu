@@ -46,6 +46,12 @@ public:
 
   void update()
   {
+    if (!P_HAS_TURN_SIGNAL)
+    {
+      this->log(F("update"), F("no TSM peripheral"));
+      return;
+    }
+
     _now = millis();
     readSwitchInputs();
     processState();
@@ -53,7 +59,7 @@ public:
 
   void diagnosis(int checkCount, int delayMs)
   {
-    // this->_com->writeConsole(F("TurnSignalService::diagnosis: " + F(String(checkCount)) + " times with " + String(delayMs) + "ms delay"));
+    // this->log(F("diagnosis"), String(checkCount) + " times with " + String(delayMs) + "ms delay");
 
     int count = 0;
     int loopCount = checkCount * 2;
@@ -77,8 +83,6 @@ public:
       isOn = toggleRelayChannel(MODE_RELAY_BOTH);
       digitalWrite(LED_BUILTIN, isOn ? HIGH : LOW);
       count++;
-
-      // this->_com->writeConsole(F("TurnSignalService::diagnosis: isOn:" + String(isOn) + ",  #:" + String(count) + "/") + String(loopCount));
     }
 
     turnOff(F("init diagnosis"));
@@ -88,23 +92,28 @@ public:
   {
     if (isCommandMatch(command, SERVICE_COMMAND_BEGIN_TSM_DIAG))
     {
+      _hasRemoteControl = true;
       diagnosis(5, 100);
     }
     else if (isCommandMatch(command, SERVICE_COMMAND_BEGIN_TSM_LEFT))
     {
-      toggleRelayChannel(MODE_RELAY_LEFT);
+      _hasRemoteControl = true;
+      decideState(true, false);
     }
     else if (isCommandMatch(command, SERVICE_COMMAND_BEGIN_TSM_RIGHT))
     {
-      toggleRelayChannel(MODE_RELAY_RIGHT);
+      _hasRemoteControl = true;
+      decideState(false, true);
     }
     else if (isCommandMatch(command, SERVICE_COMMAND_BEGIN_TSM_ALL))
     {
-      toggleRelayChannel(MODE_RELAY_BOTH);
+      _hasRemoteControl = true;
+      decideState(true, true);
     }
     else if (isCommandMatch(command, SERVICE_COMMAND_END_TSM))
     {
-      toggleRelayChannel(MODE_RELAY_NONE);
+      _hasRemoteControl = true;
+      turnOff(F("remote cancel"));
     }
   }
 
@@ -130,6 +139,44 @@ private:
   int _encoderStateA;
   int _encoderLastStateA;
 
+  bool _hasRemoteControl;
+
+  void decideState(bool left, bool right)
+  {
+    if (left && right)
+    {
+      _willBlinkBoth = !_willBlinkBoth;
+      _willBlinkLeft = false;
+      _willBlinkRight = false;
+      _blinkStartedTime = _willBlinkBoth ? _now : -1;
+      _selectedChannel = _willBlinkBoth ? MODE_RELAY_BOTH : MODE_RELAY_NONE;
+      _action = ACTION_TOGGLE_BOTH;
+      // this->log(F("readSwitchInputs"), String(F("action: ")) + _action + String(F(",  _willBlinkBoth: ")) + String(_willBlinkBoth));
+    }
+
+    else if (left)
+    {
+      _willBlinkBoth = false;
+      _willBlinkLeft = !_willBlinkLeft;
+      _willBlinkRight = false;
+      _blinkStartedTime = _willBlinkLeft ? _now : -1;
+      _selectedChannel = _willBlinkLeft ? MODE_RELAY_LEFT : MODE_RELAY_NONE;
+      _action = ACTION_TOGGLE_LEFT;
+      // this->log(F("readSwitchInputs"), String(F("action: ")) + _action + String(F(",  _willBlinkLeft: ")) + String(_willBlinkLeft));
+    }
+
+    else if (right)
+    {
+      _willBlinkBoth = false;
+      _willBlinkLeft = false;
+      _willBlinkRight = !_willBlinkRight;
+      _blinkStartedTime = _willBlinkRight ? _now : -1;
+      _selectedChannel = _willBlinkRight ? MODE_RELAY_RIGHT : MODE_RELAY_NONE;
+      _action = ACTION_TOGGLE_RIGHT;
+      // this->log(F("readSwitchInputs"), String(F("action: ")) + _action + String(F(",  _willBlinkRight: ")) + String(_willBlinkRight));
+    }
+  }
+
   void readSwitchInputs()
   {
     if (_now - _lastSwitchReadTime < SWITCH_READ_DELAY_INITIAL_MS)
@@ -141,43 +188,7 @@ private:
     _leftSwitchAnalogueValue = analogRead(PIN_SIGNAL_IN_LEFT);
     _rightSwitchAnalogueValue = analogRead(PIN_SIGNAL_IN_RIGHT);
 
-    if (_leftSwitchAnalogueValue > SWITCH_ANALOGUE_VALUE_THRESHOLD && _rightSwitchAnalogueValue > SWITCH_ANALOGUE_VALUE_THRESHOLD)
-    {
-      _willBlinkBoth = !_willBlinkBoth;
-      _willBlinkLeft = false;
-      _willBlinkRight = false;
-      _blinkStartedTime = _willBlinkBoth ? _now : -1;
-      _selectedChannel = _willBlinkBoth ? MODE_RELAY_BOTH : MODE_RELAY_NONE;
-      _action = ACTION_TOGGLE_BOTH;
-      // this->_com->writeConsole(F("TurnSignalService::readSwitchInputs: _action: " + _action + ",  _willBlinkBoth: ") + String(_willBlinkBoth));
-    }
-
-    else if (_leftSwitchAnalogueValue > SWITCH_ANALOGUE_VALUE_THRESHOLD)
-    {
-      _willBlinkBoth = false;
-      _willBlinkLeft = !_willBlinkLeft;
-      _willBlinkRight = false;
-      _blinkStartedTime = _willBlinkLeft ? _now : -1;
-      _selectedChannel = _willBlinkLeft ? MODE_RELAY_LEFT : MODE_RELAY_NONE;
-      _action = ACTION_TOGGLE_LEFT;
-      // this->_com->writeConsole(F("TurnSignalService::readSwitchInputs: action: " + _action + ", will blink: ") + String(_willBlinkLeft));
-    }
-
-    else if (_rightSwitchAnalogueValue > SWITCH_ANALOGUE_VALUE_THRESHOLD)
-    {
-      _willBlinkBoth = false;
-      _willBlinkLeft = false;
-      _willBlinkRight = !_willBlinkRight;
-      _blinkStartedTime = _willBlinkRight ? _now : -1;
-      _selectedChannel = _willBlinkRight ? MODE_RELAY_RIGHT : MODE_RELAY_NONE;
-      _action = ACTION_TOGGLE_RIGHT;
-      // this->_com->writeConsole(F("TurnSignalService::readSwitchInputs: action: " + _action + ", will blink: ") + String(_willBlinkRight));
-    }
-
-    else
-    {
-      // nothing
-    }
+    decideState(_leftSwitchAnalogueValue > SWITCH_ANALOGUE_VALUE_THRESHOLD, _rightSwitchAnalogueValue > SWITCH_ANALOGUE_VALUE_THRESHOLD);
   }
 
   void processState()
@@ -219,10 +230,10 @@ private:
   {
     bool channelState = toggleRelayChannel(_selectedChannel);
     digitalWrite(LED_BUILTIN, channelState ? HIGH : LOW);
-    // this->_com->writeConsole(F("TurnSignalService::toggle: channelState:" + String(channelState) + ",  _selectedChannel:" + String(_selectedChannel) + ",  _isBlinkerOn:") + String(_isBlinkerOn));
+    // this->log(F("toggle"), String(F("channelState: ")) + String(channelState) + String(F(",  _selectedChannel: ")) + String(_selectedChannel) + String(F(",  _isBlinkerOn: ")) + String(_isBlinkerOn));
   }
 
-  void turnOff(String reason)
+  void turnOff(const String &reason)
   {
     _isBlinkerOn = false;
     _blinkStartedTime = -1;
@@ -230,14 +241,17 @@ private:
     _willBlinkBoth = false;
     _willBlinkLeft = false;
     _willBlinkRight = false;
+    _hasRemoteControl = false;
 
     disableRelayChannels();
     digitalWrite(LED_BUILTIN, LOW);
-    // this->_com->writeConsole(F("TurnSignalService::blink turnOff: ") + reason);
+    this->log(F("turnOff"), reason);
   }
 
   void setRelayModeState(int mode, bool isOn)
   {
+    // this->log(F("setRelayModeState"), String(F("mode: ")) + String(mode) + String(F(",  isOn: ")) + String(isOn));
+
     switch (mode)
     {
     case MODE_RELAY_LEFT:

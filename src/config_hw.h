@@ -1,6 +1,17 @@
 #ifndef __config_hw__
 #define __config_hw__
 
+// serial
+#define SERIAL_BAUD_COM 115200
+#define SERIAL_BAUD_BT 9600
+#define SERIAL_WRITE_AT_ONCE true
+
+// peripherals
+#define P_HAS_BLUETOOTH false
+#define P_HAS_TURN_SIGNAL true
+#define P_HAS_DIRECT_SENSOR true
+#define P_HAS_MUX_SENSOR false
+
 // turn signal module +TSM
 #define PIN_SIGNAL_OUT_LEFT A1  //  D15   +L_REL    +digital
 #define PIN_SIGNAL_OUT_RIGHT A2 //  D16   +R_REL    +digital

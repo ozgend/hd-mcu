@@ -5,14 +5,13 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-#define DIRECT_CHANNEL_SIZE 5
+#define DIRECT_CHANNEL_SIZE 4
 #define DIRECT_UPDATE_INTERVAL 1000
 
-#define DIRECT_CHANNEL_UPTIME 0
-#define DIRECT_CHANNEL_VOLTAGE 1
-#define DIRECT_CHANNEL_TEMPERATURE 2
-#define DIRECT_CHANNEL_RPM 3
-#define DIRECT_CHANNEL_SPEED 4
+#define DIRECT_CHANNEL_VOLTAGE 0
+#define DIRECT_CHANNEL_TEMPERATURE 1
+#define DIRECT_CHANNEL_RPM 2
+#define DIRECT_CHANNEL_SPEED 3
 
 #define VOLTAGE_R1 32500.0           // ohm
 #define VOLTAGE_R2 7500.0            // ohm
@@ -62,9 +61,16 @@ public:
       this->log(F("start"), F("already running"));
       return;
     }
+
+    if (!P_HAS_DIRECT_SENSOR)
+    {
+      this->log(F("start"), F("cannot start: no DCT peripheral"));
+      return;
+    }
+
     this->log(F("starting"));
-    _oneWire = &OneWire(PIN_SENSOR_TEMP);
-    _airTempSensor = &DallasTemperature(_oneWire);
+    _oneWire = new OneWire(PIN_SENSOR_TEMP);
+    _airTempSensor = new DallasTemperature(_oneWire);
     _airTempSensor->begin();
     this->log(F("started"));
     isRunning = true;
@@ -86,11 +92,11 @@ public:
 
   void processCommand(const String &command)
   {
-    if (isCommandMatch(command, SERVICE_COMMAND_START_ON_DEMAND))
+    if (isCommandMatch(command, SERVICE_COMMAND_START_DCT))
     {
       start();
     }
-    else if (isCommandMatch(command, SERVICE_COMMAND_STOP_ON_DEMAND))
+    else if (isCommandMatch(command, SERVICE_COMMAND_STOP_DCT))
     {
       stop();
     }
@@ -99,11 +105,8 @@ public:
 private:
   OneWire *_oneWire;
   DallasTemperature *_airTempSensor;
-  // int _adcValue;
-  // float _adcVolts;
-
   long _lastUpdateTime;
-  float _sensorValues[DIRECT_CHANNEL_SIZE] = {-1, -1, -1, -1, -1};
+  float _sensorValues[DIRECT_CHANNEL_SIZE] = {-1, -1, -1, -1};
 
   void readVoltage()
   {
@@ -131,7 +134,6 @@ private:
 
   void readAll()
   {
-    _sensorValues[DIRECT_CHANNEL_UPTIME] = millis();
     readVoltage();
     readTemperature();
     readRpm();
@@ -140,9 +142,16 @@ private:
 
   void sendAll()
   {
-    for (int i = 0; i < DIRECT_CHANNEL_SIZE; i++)
+    if (SERIAL_WRITE_AT_ONCE)
     {
-      sendData(i, _sensorValues[i]);
+      sendAllData(_sensorValues, DIRECT_CHANNEL_SIZE);
+    }
+    else
+    {
+      for (int i = 0; i < DIRECT_CHANNEL_SIZE; i++)
+      {
+        sendOneData(i, _sensorValues[i]);
+      }
     }
   }
 };

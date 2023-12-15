@@ -37,9 +37,11 @@ public:
 
   void setup()
   {
+    this->log(F("setup"));
     pinMode(PIN_MUX_OUT_A, OUTPUT);
     pinMode(PIN_MUX_OUT_B, OUTPUT);
     pinMode(PIN_MUX_OUT_C, OUTPUT);
+    this->log(F("setup"), F("done"));
   }
 
   void update()
@@ -54,11 +56,8 @@ public:
       return;
     }
 
-    for (int i = 0; i < MUX_CHANNEL_SIZE_ACTIVE; i++)
-    {
-      readChannelValue(i);
-      sendData(i, _sensorValues[i]);
-    }
+    readAll();
+    sendAll();
 
     _lastUpdateTime = millis();
   }
@@ -70,8 +69,15 @@ public:
       this->log(F("start"), F("already running"));
       return;
     }
+
+    if (!P_HAS_MUX_SENSOR)
+    {
+      this->log(F("start"), F("cannot start: no MUX peripheral"));
+      return;
+    }
+
     this->log(F("starting"));
-    _thermoSensor = &MAX6675(PIN_THERMO_SENSOR_CLK, PIN_THERMO_SENSOR_CS, PIN_THERMO_SENSOR_DATA);
+    _thermoSensor = new MAX6675(PIN_THERMO_SENSOR_CLK, PIN_THERMO_SENSOR_CS, PIN_THERMO_SENSOR_DATA);
     this->log(F("started"));
     isRunning = true;
   }
@@ -91,11 +97,11 @@ public:
 
   void processCommand(const String &command)
   {
-    if (isCommandMatch(command, SERVICE_COMMAND_START_ON_DEMAND))
+    if (isCommandMatch(command, SERVICE_COMMAND_START_MUX))
     {
       start();
     }
-    else if (isCommandMatch(command, SERVICE_COMMAND_STOP_ON_DEMAND))
+    else if (isCommandMatch(command, SERVICE_COMMAND_STOP_MUX))
     {
       stop();
     }
@@ -113,6 +119,29 @@ private:
     digitalWrite(PIN_MUX_OUT_A, MUX_CHANNEL_SELECT[channel][2]);
 
     _sensorValues[channel] = _thermoSensor->readCelsius();
+  }
+
+  void readAll()
+  {
+    for (int i = 0; i < MUX_CHANNEL_SIZE_ACTIVE; i++)
+    {
+      readChannelValue(i);
+    }
+  }
+
+  void sendAll()
+  {
+    if (SERIAL_WRITE_AT_ONCE)
+    {
+      sendAllData(_sensorValues, MUX_CHANNEL_SIZE_ACTIVE);
+    }
+    else
+    {
+      for (int i = 0; i < MUX_CHANNEL_SIZE_ACTIVE; i++)
+      {
+        sendOneData(i, _sensorValues[i]);
+      }
+    }
   }
 };
 
