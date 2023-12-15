@@ -22,7 +22,7 @@ public:
     // opt if phsical serial connected
     if (!hasConsole())
     {
-      _btSerial = &SoftwareSerial(PIN_BLUETOOTH_SERIAL_RX, PIN_BLUETOOTH_SERIAL_TX);
+      _btSerial = &SoftwareSerial(PIN_BLUETOOTH_RX, PIN_BLUETOOTH_TX);
       _btSerial->begin(SERIAL_BAUD_BT);
     }
     writeConsole(F("SerialCom::init done"));
