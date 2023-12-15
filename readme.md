@@ -5,7 +5,7 @@
 ### features
 
 - [x] hardware serial
-- [ ] bluetooth serial 
+- [ ] bluetooth serial
   - [ ] bluetooth ota updates
   - [ ] mobile app
 - [x] turn signal flasher module
@@ -15,13 +15,11 @@
   - [x] adjustable flash rate
 - [x] supported sensor inputs
   - [x] up to 8 thermocouples
-  - [x] uptime counter 
+  - [x] uptime counter
   - [x] voltage sensor
   - [x] temperature sensor
   - [ ] rpm sensor
   - [ ] speed sensor
-  - [ ] fuel level sensor
-  - [ ] oil pressure sensor
 
 ### hardware
 
@@ -41,4 +39,11 @@
 
 ### pcb
 
-tba
+**front**
+![front](./pcb/pcb-front.png)
+
+**back**
+![back](./pcb/pcb-back.png)
+
+**blueprint**
+![raw](./pcb/pcb-blueprint.png)

@@ -5,7 +5,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-#define DIRECT_CHANNEL_SIZE 6
+#define DIRECT_CHANNEL_SIZE 5
 #define DIRECT_UPDATE_INTERVAL 1000
 
 #define DIRECT_CHANNEL_UPTIME 0
@@ -13,7 +13,6 @@
 #define DIRECT_CHANNEL_TEMPERATURE 2
 #define DIRECT_CHANNEL_RPM 3
 #define DIRECT_CHANNEL_SPEED 4
-#define DIRECT_CHANNEL_OIL_PRESSURE 5
 
 #define VOLTAGE_R1 32500.0       // ohm
 #define VOLTAGE_R2 7500.0        // ohm
@@ -35,7 +34,6 @@ public:
     pinMode(PIN_SENSOR_TEMP, INPUT);
     pinMode(PIN_SENSOR_RPM, INPUT);
     pinMode(PIN_SENSOR_SPEED, INPUT);
-    pinMode(PIN_SENSOR_OIL_PRESSURE, INPUT);
     this->_com->writeConsole(F("init.DirectSensorHandler - done"));
   }
 
@@ -91,7 +89,7 @@ private:
   float _adcVolts;
 
   long _lastUpdateTime;
-  float _sensorValues[DIRECT_CHANNEL_SIZE] = {-1, -1, -1, -1, -1, -1};
+  float _sensorValues[DIRECT_CHANNEL_SIZE] = {-1, -1, -1, -1, -1};
 
   void readVoltage()
   {
@@ -115,11 +113,6 @@ private:
   void readSpeed()
   {
     _sensorValues[DIRECT_CHANNEL_SPEED] = -1;
-  }
-
-  void readOilPressure()
-  {
-    _sensorValues[DIRECT_CHANNEL_OIL_PRESSURE] = -1;
   }
 
   void readAll()
