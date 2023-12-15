@@ -1,7 +1,7 @@
 #ifndef __direct_sensor_handler__
 #define __direct_sensor_handler__
 
-#include "../base_handler.h"
+#include "../base_service.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
@@ -14,27 +14,27 @@
 #define DIRECT_CHANNEL_RPM 3
 #define DIRECT_CHANNEL_SPEED 4
 
-#define VOLTAGE_R1 32500.0       // ohm
-#define VOLTAGE_R2 7500.0        // ohm
-#define SENSOR_ADC_LOSS 0.06     // percent
-#define SENSOR_ADC_REFERENCE 3.3 // volts
-#define SENSOR_ADC_RESOLUTION 1024.0
+#define VOLTAGE_R1 32500.0           // ohm
+#define VOLTAGE_R2 7500.0            // ohm
+#define SENSOR_ADC_LOSS 0.06         // percent
+#define SENSOR_ADC_REFERENCE 3.3     // volts
+#define SENSOR_ADC_RESOLUTION 1024.0 // resolution map
 
-class DirectSensorHandler : public BaseHandler
+class DirectSensorService : public BaseService
 {
 public:
-  DirectSensorHandler(SerialCom *com) : BaseHandler(F("DirectSensorHandler"), SERVICE_TYPE_DYNAMIC, com)
+  DirectSensorService(SerialCom *com) : BaseService(SERVICE_DCT, SERVICE_TYPE_DYNAMIC, com)
   {
   }
 
-  void initialize()
+  void setup()
   {
-    this->_com->writeConsole(F("init.DirectSensorHandler +"));
+    this->_com->writeConsole(F("init.DirectSensorService +"));
     pinMode(PIN_SENSOR_VOLTAGE, INPUT);
     pinMode(PIN_SENSOR_TEMP, INPUT);
     pinMode(PIN_SENSOR_RPM, INPUT);
     pinMode(PIN_SENSOR_SPEED, INPUT);
-    this->_com->writeConsole(F("init.DirectSensorHandler - done"));
+    this->_com->writeConsole(F("init.DirectSensorService - done"));
   }
 
   void update()
@@ -61,7 +61,7 @@ public:
     {
       return;
     }
-    this->_com->writeConsole(F("start.DirectSensorHandler +"));
+    this->_com->writeConsole(F("start.DirectSensorService +"));
     _oneWire = &OneWire(PIN_SENSOR_TEMP);
     _airTempSensor = &DallasTemperature(_oneWire);
     _airTempSensor->begin();
@@ -75,26 +75,26 @@ public:
     {
       return;
     }
-    this->_com->writeConsole(F("stop.DirectSensorHandler - stopping"));
+    this->_com->writeConsole(F("stop.DirectSensorService - stopping"));
     delete _airTempSensor;
     delete _oneWire;
-    this->_com->writeConsole(F("stop.DirectSensorHandler - stopped"));
+    this->_com->writeConsole(F("stop.DirectSensorService - stopped"));
     isRunning = false;
   }
 
 private:
   OneWire *_oneWire;
   DallasTemperature *_airTempSensor;
-  int _adcValue;
-  float _adcVolts;
+  // int _adcValue;
+  // float _adcVolts;
 
   long _lastUpdateTime;
   float _sensorValues[DIRECT_CHANNEL_SIZE] = {-1, -1, -1, -1, -1};
 
   void readVoltage()
   {
-    _adcValue = analogRead(PIN_SENSOR_VOLTAGE); // 800-806
-    _adcVolts = (_adcValue * SENSOR_ADC_REFERENCE) / SENSOR_ADC_RESOLUTION;
+    int _adcValue = analogRead(PIN_SENSOR_VOLTAGE); // 800-806
+    int _adcVolts = (_adcValue * SENSOR_ADC_REFERENCE) / SENSOR_ADC_RESOLUTION;
     _adcVolts = _adcVolts - (_adcVolts * SENSOR_ADC_LOSS);
     _sensorValues[DIRECT_CHANNEL_VOLTAGE] = _adcVolts / (VOLTAGE_R2 / (VOLTAGE_R1 + VOLTAGE_R2));
   }

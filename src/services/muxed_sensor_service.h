@@ -1,7 +1,7 @@
 #ifndef __muxed_sensor_handler__
 #define __muxed_sensor_handler__
 
-#include "../base_handler.h"
+#include "../base_service.h"
 #include <max6675.h>
 
 #define MUX_UPDATE_INTERVAL 2000
@@ -28,14 +28,14 @@ const int MUX_CHANNEL_SELECT[MUX_CHANNEL_SIZE][MUX_CONTROL_BIT_SIZE] =
      {HIGH, HIGH, LOW},
      {HIGH, HIGH, HIGH}};
 
-class MuxedSensorHandler : public BaseHandler
+class MuxedSensorService : public BaseService
 {
 public:
-  MuxedSensorHandler(SerialCom *com) : BaseHandler(F("MuxedSensorHandler"), SERVICE_TYPE_DYNAMIC, com)
+  MuxedSensorService(SerialCom *com) : BaseService(SERVICE_MUX, SERVICE_TYPE_DYNAMIC, com)
   {
   }
 
-  void initialize()
+  void setup()
   {
     pinMode(PIN_MUX_OUT_A, OUTPUT);
     pinMode(PIN_MUX_OUT_B, OUTPUT);
@@ -67,12 +67,12 @@ public:
   {
     if (isRunning)
     {
-      this->_com->writeConsole(F("start.MuxedSensorHandler - already running"));
+      this->_com->writeConsole(F("start.MuxedSensorService - already running"));
       return;
     }
-    this->_com->writeConsole(F("start.MuxedSensorHandler +"));
+    this->_com->writeConsole(F("start.MuxedSensorService +"));
     _thermoSensor = &MAX6675(PIN_THERMO_SENSOR_CLK, PIN_THERMO_SENSOR_CS, PIN_THERMO_SENSOR_DATA);
-    this->_com->writeConsole(F("start.MuxedSensorHandler - started"));
+    this->_com->writeConsole(F("start.MuxedSensorService - started"));
     isRunning = true;
   }
 
@@ -80,12 +80,12 @@ public:
   {
     if (!isRunning)
     {
-      this->_com->writeConsole(F("stop.MuxedSensorHandler - not running"));
+      this->_com->writeConsole(F("stop.MuxedSensorService - not running"));
       return;
     }
-    this->_com->writeConsole(F("stop.MuxedSensorHandler - stopping"));
+    this->_com->writeConsole(F("stop.MuxedSensorService - stopping"));
     delete _thermoSensor;
-    this->_com->writeConsole(F("stop.MuxedSensorHandler - stopped"));
+    this->_com->writeConsole(F("stop.MuxedSensorService - stopped"));
     isRunning = false;
   }
 

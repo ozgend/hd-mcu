@@ -2,7 +2,7 @@
 #define __service_runtime__
 
 #include "./serial_com.h"
-#include "./base_handler.h"
+#include "./base_service.h"
 
 #define COMMAND_START_SENSORS F("sensors=1")
 #define COMMAND_STOP_SENSORS F("sensors=0")
@@ -21,11 +21,11 @@ public:
     this->_serviceCount = 0;
   }
 
-  void initialize()
+  void setup()
   {
     for (int i = 0; i < this->_serviceCount; i++)
     {
-      this->_services[i]->initialize();
+      this->_services[i]->setup();
     }
   }
 
@@ -34,36 +34,36 @@ public:
     if (this->_com->hasCommand(COMMAND_START_SENSORS))
     {
       this->_com->writeConsole(F("ServiceRuntime: start sensors"));
-      toggleDynamicHandlers(true);
+      toggleDynamicServices(true);
     }
 
     if (this->_com->hasCommand(COMMAND_STOP_SENSORS))
     {
       this->_com->writeConsole(F("ServiceRuntime: stop sensors"));
-      toggleDynamicHandlers(false);
+      toggleDynamicServices(false);
     }
 
     if (!this->_com->hasConnection())
     {
       this->_com->writeConsole(F("ServiceRuntime: stop sensors, no connection"));
-      toggleDynamicHandlers(false);
+      toggleDynamicServices(false);
     }
 
-    updateHandlers();
+    updateServices();
   }
 
-  void registerService(BaseHandler *handler)
+  void add(BaseService *service)
   {
-    this->_services[this->_serviceCount] = handler;
+    this->_services[this->_serviceCount] = service;
     this->_serviceCount++;
   }
 
 private:
   SerialCom *_com;
-  BaseHandler *_services[10];
+  BaseService *_services[10];
   int8_t _serviceCount;
 
-  void toggleDynamicHandlers(boolean willStart)
+  void toggleDynamicServices(boolean willStart)
   {
     for (int i = 0; i < this->_serviceCount; i++)
     {
@@ -81,7 +81,7 @@ private:
     }
   }
 
-  void updateHandlers()
+  void updateServices()
   {
     for (int i = 0; i < this->_serviceCount; i++)
     {

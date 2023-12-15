@@ -1,31 +1,31 @@
 #include "./src/serial_com.h"
 #include "./src/service_runtime.h"
-#include "./src/handlers/turn_signal_handler.h"
-#include "./src/handlers/direct_sensor_handler.h"
-#include "./src/handlers/muxed_sensor_handler.h"
+#include "./src/services/turn_signal_service.h"
+#include "./src/services/direct_sensor_service.h"
+#include "./src/services/muxed_sensor_service.h"
 
 SerialCom _com;
-ServiceRuntime _runtime(&_com);
-TurnSignalHandler _turnSignalHandler(&_com);
-DirectSensorHandler _directSensorHandler(&_com);
-MuxedSensorHandler _muxedSensorHandler(&_com);
+ServiceRuntime _serviceRuntime(&_com);
+TurnSignalService _turnSignalService(&_com);
+DirectSensorService _directSensorService(&_com);
+MuxedSensorService _muxedSensorService(&_com);
 
 void setup()
 {
-  _com.initialize();
+  _com.setup();
   _com.writeConsole(F("initializing..."));
 
-  _runtime.registerService(&_turnSignalHandler);
-  _runtime.registerService(&_directSensorHandler);
-  _runtime.registerService(&_muxedSensorHandler);
+  _serviceRuntime.add(&_turnSignalService);
+  _serviceRuntime.add(&_directSensorService);
+  _serviceRuntime.add(&_muxedSensorService);
 
-  _runtime.initialize();
+  _serviceRuntime.setup();
 
   _com.writeConsole(F("started."));
-  _turnSignalHandler.diagnosis(4, 100);
+  _turnSignalService.diagnosis(4, 100);
 }
 
 void loop()
 {
-  _runtime.update();
+  _serviceRuntime.update();
 }

@@ -14,7 +14,7 @@ public:
   {
   }
 
-  void initialize()
+  void setup()
   {
     Serial.begin(SERIAL_BAUD_COM);
     writeConsole(F("SerialCom::init start"));

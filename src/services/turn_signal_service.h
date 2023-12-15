@@ -1,7 +1,7 @@
 #ifndef __turn_signal_handler__
 #define __turn_signal_handler__
 
-#include "../base_handler.h"
+#include "../base_service.h"
 #include "../config_hw.h"
 
 #define SIGNAL_FLASHER_DELAY_MS 400
@@ -20,10 +20,10 @@
 
 int RELAY_CHANNEL_STATUS[3] = {false, false, false};
 
-class TurnSignalHandler : public BaseHandler
+class TurnSignalService : public BaseService
 {
 public:
-  TurnSignalHandler(SerialCom *com) : BaseHandler(F("TurnSignalHandler"), SERVICE_TYPE_SYSTEM, com)
+  TurnSignalService(SerialCom *com) : BaseService(SERVICE_TSM, SERVICE_TYPE_SYSTEM, com)
   {
     _lastBlinkTime = 0;
     _now = millis();
@@ -32,16 +32,16 @@ public:
     _leftSwitchAnalogueValue = 0;
   }
 
-  void initialize()
+  void setup()
   {
-    this->_com->writeConsole(F("TurnSignalHandler::init"));
+    this->_com->writeConsole(F("TurnSignalService::init"));
     pinMode(PIN_SIGNAL_IN_LEFT, INPUT);
     pinMode(PIN_SIGNAL_IN_RIGHT, INPUT);
     pinMode(PIN_SIGNAL_OUT_LEFT, OUTPUT);
     pinMode(PIN_SIGNAL_OUT_RIGHT, OUTPUT);
     pinMode(LED_BUILTIN, OUTPUT);
     disableRelayChannels();
-    this->_com->writeConsole(F("TurnSignalHandler::init done."));
+    this->_com->writeConsole(F("TurnSignalService::init done."));
   }
 
   void update()
@@ -53,7 +53,7 @@ public:
 
   void diagnosis(int checkCount, int delayMs)
   {
-    // this->_com->writeConsole(F("TurnSignalHandler::diagnosis: " + F(String(checkCount)) + " times with " + String(delayMs) + "ms delay"));
+    // this->_com->writeConsole(F("TurnSignalService::diagnosis: " + F(String(checkCount)) + " times with " + String(delayMs) + "ms delay"));
 
     int count = 0;
     int loopCount = checkCount * 2;
@@ -78,7 +78,7 @@ public:
       digitalWrite(LED_BUILTIN, isOn ? HIGH : LOW);
       count++;
 
-      // this->_com->writeConsole(F("TurnSignalHandler::diagnosis: isOn:" + String(isOn) + ",  #:" + String(count) + "/") + String(loopCount));
+      // this->_com->writeConsole(F("TurnSignalService::diagnosis: isOn:" + String(isOn) + ",  #:" + String(count) + "/") + String(loopCount));
     }
 
     turnOff(F("init diagnosis"));
@@ -125,7 +125,7 @@ private:
       _blinkStartedTime = _willBlinkBoth ? _now : -1;
       _selectedChannel = _willBlinkBoth ? MODE_RELAY_BOTH : MODE_RELAY_NONE;
       _action = ACTION_TOGGLE_BOTH;
-      // this->_com->writeConsole(F("TurnSignalHandler::readSwitchInputs: _action: " + _action + ",  _willBlinkBoth: ") + String(_willBlinkBoth));
+      // this->_com->writeConsole(F("TurnSignalService::readSwitchInputs: _action: " + _action + ",  _willBlinkBoth: ") + String(_willBlinkBoth));
     }
 
     else if (_leftSwitchAnalogueValue > SWITCH_ANALOGUE_VALUE_THRESHOLD)
@@ -136,7 +136,7 @@ private:
       _blinkStartedTime = _willBlinkLeft ? _now : -1;
       _selectedChannel = _willBlinkLeft ? MODE_RELAY_LEFT : MODE_RELAY_NONE;
       _action = ACTION_TOGGLE_LEFT;
-      // this->_com->writeConsole(F("TurnSignalHandler::readSwitchInputs: action: " + _action + ", will blink: ") + String(_willBlinkLeft));
+      // this->_com->writeConsole(F("TurnSignalService::readSwitchInputs: action: " + _action + ", will blink: ") + String(_willBlinkLeft));
     }
 
     else if (_rightSwitchAnalogueValue > SWITCH_ANALOGUE_VALUE_THRESHOLD)
@@ -147,7 +147,7 @@ private:
       _blinkStartedTime = _willBlinkRight ? _now : -1;
       _selectedChannel = _willBlinkRight ? MODE_RELAY_RIGHT : MODE_RELAY_NONE;
       _action = ACTION_TOGGLE_RIGHT;
-      // this->_com->writeConsole(F("TurnSignalHandler::readSwitchInputs: action: " + _action + ", will blink: ") + String(_willBlinkRight));
+      // this->_com->writeConsole(F("TurnSignalService::readSwitchInputs: action: " + _action + ", will blink: ") + String(_willBlinkRight));
     }
 
     else
@@ -195,7 +195,7 @@ private:
   {
     bool channelState = toggleRelayChannel(_selectedChannel);
     digitalWrite(LED_BUILTIN, channelState ? HIGH : LOW);
-    // this->_com->writeConsole(F("TurnSignalHandler::toggle: channelState:" + String(channelState) + ",  _selectedChannel:" + String(_selectedChannel) + ",  _isBlinkerOn:") + String(_isBlinkerOn));
+    // this->_com->writeConsole(F("TurnSignalService::toggle: channelState:" + String(channelState) + ",  _selectedChannel:" + String(_selectedChannel) + ",  _isBlinkerOn:") + String(_isBlinkerOn));
   }
 
   void turnOff(String reason)
@@ -209,7 +209,7 @@ private:
 
     disableRelayChannels();
     digitalWrite(LED_BUILTIN, LOW);
-    // this->_com->writeConsole(F("TurnSignalHandler::blink turnOff: ") + reason);
+    // this->_com->writeConsole(F("TurnSignalService::blink turnOff: ") + reason);
   }
 
   void setRelayModeState(int mode, bool isOn)
