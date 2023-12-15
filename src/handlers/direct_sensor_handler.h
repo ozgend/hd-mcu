@@ -5,7 +5,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-#define DIRECT_CHANNEL_SIZE 7
+#define DIRECT_CHANNEL_SIZE 6
 #define DIRECT_UPDATE_INTERVAL 1000
 
 #define DIRECT_CHANNEL_UPTIME 0
@@ -13,8 +13,7 @@
 #define DIRECT_CHANNEL_TEMPERATURE 2
 #define DIRECT_CHANNEL_RPM 3
 #define DIRECT_CHANNEL_SPEED 4
-#define DIRECT_CHANNEL_FUEL 5
-#define DIRECT_CHANNEL_OIL_PRESSURE 6
+#define DIRECT_CHANNEL_OIL_PRESSURE 5
 
 #define VOLTAGE_R1 32500.0       // ohm
 #define VOLTAGE_R2 7500.0        // ohm
@@ -33,10 +32,9 @@ public:
   {
     this->_com->writeConsole(F("init.DirectSensorHandler +"));
     pinMode(PIN_SENSOR_VOLTAGE, INPUT);
-    pinMode(PIN_SENSOR_TEMPERATURE, INPUT);
+    pinMode(PIN_SENSOR_TEMP, INPUT);
     pinMode(PIN_SENSOR_RPM, INPUT);
     pinMode(PIN_SENSOR_SPEED, INPUT);
-    pinMode(PIN_SENSOR_FUEL, INPUT);
     pinMode(PIN_SENSOR_OIL_PRESSURE, INPUT);
     this->_com->writeConsole(F("init.DirectSensorHandler - done"));
   }
@@ -66,7 +64,7 @@ public:
       return;
     }
     this->_com->writeConsole(F("start.DirectSensorHandler +"));
-    _oneWire = &OneWire(PIN_SENSOR_TEMPERATURE);
+    _oneWire = &OneWire(PIN_SENSOR_TEMP);
     _airTempSensor = &DallasTemperature(_oneWire);
     _airTempSensor->begin();
     this->_com->writeConsole(F("start.DDirectSensorHandler - started"));
@@ -93,7 +91,7 @@ private:
   float _adcVolts;
 
   long _lastUpdateTime;
-  float _sensorValues[DIRECT_CHANNEL_SIZE] = {-999, -999, -999, -999, -999, -999};
+  float _sensorValues[DIRECT_CHANNEL_SIZE] = {-1, -1, -1, -1, -1, -1};
 
   void readVoltage()
   {
@@ -119,11 +117,6 @@ private:
     _sensorValues[DIRECT_CHANNEL_SPEED] = -1;
   }
 
-  void readFuel()
-  {
-    _sensorValues[DIRECT_CHANNEL_FUEL] = -1;
-  }
-
   void readOilPressure()
   {
     _sensorValues[DIRECT_CHANNEL_OIL_PRESSURE] = -1;
@@ -136,7 +129,6 @@ private:
     readAirTemperature();
     readRpm();
     readSpeed();
-    readFuel();
   }
 
   void sendAll()
