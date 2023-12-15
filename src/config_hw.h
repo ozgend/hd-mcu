@@ -1,19 +1,19 @@
 #ifndef __config_hw__
 #define __config_hw__
 
-// direct sensor handler
-#define PIN_SENSOR_VOLTAGE A0 //    D14   +D_VOLT   +analog
-#define PIN_SENSOR_RPM A3     //    D17   +D_RPM    +???
-#define PIN_SENSOR_SPEED A4   //    D18   +D_SPD    +???
-#define PIN_SENSOR_TEMP A5    //    D19   +D_TEMP   +digital
-
-// turn signal handler
+// turn signal module +TSM
 #define PIN_SIGNAL_OUT_LEFT A1  //  D15   +L_REL    +digital
 #define PIN_SIGNAL_OUT_RIGHT A2 //  D16   +R_REL    +digital
 #define PIN_SIGNAL_IN_RIGHT A6  //  D20   +R_SIG    +analog
 #define PIN_SIGNAL_IN_LEFT A7   //  D21   +L_SIG    +analog
 
-// muxed thermocouple handler
+// direct sensor +DCT
+#define PIN_SENSOR_VOLTAGE A0 //    D14   +D_VOLT   +analog
+#define PIN_SENSOR_RPM A3     //    D17   +D_RPM    +???
+#define PIN_SENSOR_SPEED A4   //    D18   +D_SPD    +???
+#define PIN_SENSOR_TEMP A5    //    D19   +D_TEMP   +digital
+
+// muxed thermocouple +MUX
 #define PIN_MUX_OUT_A 9          // D9    +D_XA     +digital
 #define PIN_MUX_OUT_B 8          // D8    +D_XB     +digital
 #define PIN_MUX_OUT_C 7          // D7    +D_XC     +digital
@@ -21,7 +21,7 @@
 #define PIN_THERMO_SENSOR_CS 5   // D5    +D_CS     +digital
 #define PIN_THERMO_SENSOR_DATA 4 // D4    +D_SO     +digital
 
-// bluetooth serial
+// bluetooth serial 
 #define PIN_BLUETOOTH_TX 3 //       D3    +BT_TX    +serial
 #define PIN_BLUETOOTH_RX 2 //       D2    +BT_RX    +serial
 

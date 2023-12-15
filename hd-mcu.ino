@@ -3,12 +3,14 @@
 #include "./src/services/turn_signal_service.h"
 #include "./src/services/direct_sensor_service.h"
 #include "./src/services/muxed_sensor_service.h"
+#include "./src/services/system_sensor_service.h"
 
 SerialCom _com;
 ServiceRuntime _serviceRuntime(&_com);
 TurnSignalService _turnSignalService(&_com);
 DirectSensorService _directSensorService(&_com);
 MuxedSensorService _muxedSensorService(&_com);
+SystemSensorService _systemSensorService(&_com);
 
 void setup()
 {
@@ -18,10 +20,11 @@ void setup()
   _serviceRuntime.add(&_turnSignalService);
   _serviceRuntime.add(&_directSensorService);
   _serviceRuntime.add(&_muxedSensorService);
+  _serviceRuntime.add(&_systemSensorService);
 
   _serviceRuntime.setup();
 
-  _com.writeConsole(F("started."));
+  _com.writeConsole(F("ready."));
   _turnSignalService.diagnosis(4, 100);
 }
 
