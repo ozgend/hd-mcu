@@ -67,7 +67,7 @@ private:
   {
     for (int i = 0; i < this->_serviceCount; i++)
     {
-      if (this->_services[i]->serviceType == SERVICE_TYPE_DYNAMIC)
+      if (this->_services[i]->serviceType == SERVICE_TYPE_ON_DEMAND)
       {
         if (willStart)
         {

@@ -14,11 +14,10 @@
 #define SYSTEM_CHANNEL_FLASH_FREE 3
 #define SYSTEM_CHANNEL_FLASH_TOTAL 4
 
-
 class SystemSensorService : public BaseService
 {
 public:
-  SystemSensorService(SerialCom *com) : BaseService(SERVICE_SYS, SERVICE_TYPE_DYNAMIC, com)
+  SystemSensorService(SerialCom *com) : BaseService(SERVICE_SYS, SERVICE_TYPE_ONE_TIME, com)
   {
   }
 
@@ -35,15 +34,9 @@ public:
       return;
     }
 
-    if (millis() - _lastUpdateTime < SYSTEM_UPDATE_INTERVAL)
-    {
-      return;
-    }
-
     readAll();
     sendAll();
-
-    _lastUpdateTime = millis();
+    stop();
   }
 
   void start()
@@ -71,7 +64,6 @@ public:
   }
 
 private:
-  long _lastUpdateTime;
   float _sensorValues[SYSTEM_CHANNEL_SIZE] = {-1, -1, -1, -1};
 
   int getFreeMemory()

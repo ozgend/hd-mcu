@@ -23,7 +23,7 @@ int RELAY_CHANNEL_STATUS[3] = {false, false, false};
 class TurnSignalService : public BaseService
 {
 public:
-  TurnSignalService(SerialCom *com) : BaseService(SERVICE_TSM, SERVICE_TYPE_SYSTEM, com)
+  TurnSignalService(SerialCom *com) : BaseService(SERVICE_CODE_TSM, SERVICE_TYPE_ALWAYS_RUN, com)
   {
     _lastBlinkTime = 0;
     _now = millis();

@@ -23,7 +23,7 @@
 class DirectSensorService : public BaseService
 {
 public:
-  DirectSensorService(SerialCom *com) : BaseService(SERVICE_DCT, SERVICE_TYPE_DYNAMIC, com)
+  DirectSensorService(SerialCom *com) : BaseService(SERVICE_CODE_DCT, SERVICE_TYPE_ON_DEMAND, com)
   {
   }
 

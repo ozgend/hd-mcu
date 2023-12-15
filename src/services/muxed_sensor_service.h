@@ -31,7 +31,7 @@ const int MUX_CHANNEL_SELECT[MUX_CHANNEL_SIZE][MUX_CONTROL_BIT_SIZE] =
 class MuxedSensorService : public BaseService
 {
 public:
-  MuxedSensorService(SerialCom *com) : BaseService(SERVICE_MUX, SERVICE_TYPE_DYNAMIC, com)
+  MuxedSensorService(SerialCom *com) : BaseService(SERVICE_CODE_MUX, SERVICE_TYPE_ON_DEMAND, com)
   {
   }
 
