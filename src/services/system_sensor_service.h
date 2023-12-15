@@ -5,14 +5,15 @@
 #include <avr/pgmspace.h>
 #include "../base_service.h"
 
-#define SYSTEM_CHANNEL_SIZE 4
-#define SYSTEM_UPDATE_INTERVAL 5000
+#define SYSTEM_CHANNEL_SIZE 5
+#define SYSTEM_UPDATE_INTERVAL 10000
 
-#define SYSTEM_CHANNEL_UPTIME 0
-#define SYSTEM_CHANNEL_FLASH 1
-#define SYSTEM_CHANNEL_CPU 2
-#define SYSTEM_CHANNEL_RAM_FREE 3
-#define SYSTEM_CHANNEL_RAM_TOTAL 4
+#define SYSTEM_CHANNEL_CPU 0
+#define SYSTEM_CHANNEL_RAM_FREE 1
+#define SYSTEM_CHANNEL_RAM_TOTAL 2
+#define SYSTEM_CHANNEL_FLASH_FREE 3
+#define SYSTEM_CHANNEL_FLASH_TOTAL 4
+
 
 class SystemSensorService : public BaseService
 {
@@ -82,11 +83,11 @@ private:
 
   void readAll()
   {
-    _sensorValues[SYSTEM_CHANNEL_UPTIME] = _lastUpdateTime;
     _sensorValues[SYSTEM_CHANNEL_CPU] = F_CPU / 1000000;
     _sensorValues[SYSTEM_CHANNEL_RAM_FREE] = getFreeMemory();
-    _sensorValues[SYSTEM_CHANNEL_RAM_TOTAL] = RAMEND - RAMSTART + 1;
-    _sensorValues[SYSTEM_CHANNEL_FLASH] = -1;
+    _sensorValues[SYSTEM_CHANNEL_RAM_TOTAL] = 2048;
+    _sensorValues[SYSTEM_CHANNEL_FLASH_FREE] = -1;
+    _sensorValues[SYSTEM_CHANNEL_FLASH_TOTAL] = 30720;
   }
 
   void sendAll()

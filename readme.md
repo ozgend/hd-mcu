@@ -23,6 +23,11 @@
     - [ ] rpm sensor
     - [ ] speed sensor
 
+### software
+
+- FLASH: 30720/16956 bytes (55%)
+- SRAM: 2048/624 bytes (29%)
+
 ### hardware
 
 - arduino nano

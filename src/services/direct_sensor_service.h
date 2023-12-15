@@ -5,13 +5,14 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-#define DIRECT_CHANNEL_SIZE 4
+#define DIRECT_CHANNEL_SIZE 5
 #define DIRECT_UPDATE_INTERVAL 1000
 
-#define DIRECT_CHANNEL_VOLTAGE 0
-#define DIRECT_CHANNEL_TEMPERATURE 1
-#define DIRECT_CHANNEL_RPM 2
-#define DIRECT_CHANNEL_SPEED 3
+#define DIRECT_CHANNEL_UPTIME 0
+#define DIRECT_CHANNEL_VOLTAGE 1
+#define DIRECT_CHANNEL_TEMPERATURE 2
+#define DIRECT_CHANNEL_RPM 3
+#define DIRECT_CHANNEL_SPEED 4
 
 #define VOLTAGE_R1 32500.0           // ohm
 #define VOLTAGE_R2 7500.0            // ohm
@@ -90,7 +91,7 @@ private:
   // float _adcVolts;
 
   long _lastUpdateTime;
-  float _sensorValues[DIRECT_CHANNEL_SIZE] = {-1, -1, -1, -1};
+  float _sensorValues[DIRECT_CHANNEL_SIZE] = {-1, -1, -1, -1, -1};
 
   void readVoltage()
   {
@@ -118,6 +119,7 @@ private:
 
   void readAll()
   {
+    _sensorValues[DIRECT_CHANNEL_UPTIME] = millis();
     readVoltage();
     readTemperature();
     readRpm();
