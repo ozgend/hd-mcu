@@ -1,5 +1,5 @@
-#ifndef __turn_signal_handler__
-#define __turn_signal_handler__
+#ifndef __turn_signal_service__
+#define __turn_signal_service__
 
 #include "../base_service.h"
 #include "../config_hw.h"
@@ -34,14 +34,14 @@ public:
 
   void setup()
   {
-    this->_com->writeConsole(F("TurnSignalService::init"));
+    this->log(F("setup"));
     pinMode(PIN_SIGNAL_IN_LEFT, INPUT);
     pinMode(PIN_SIGNAL_IN_RIGHT, INPUT);
     pinMode(PIN_SIGNAL_OUT_LEFT, OUTPUT);
     pinMode(PIN_SIGNAL_OUT_RIGHT, OUTPUT);
     pinMode(LED_BUILTIN, OUTPUT);
     disableRelayChannels();
-    this->_com->writeConsole(F("TurnSignalService::init done."));
+    this->log(F("setup"), F("done"));
   }
 
   void update()
