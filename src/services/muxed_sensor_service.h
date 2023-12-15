@@ -28,6 +28,12 @@ const int MUX_CHANNEL_SELECT[MUX_CHANNEL_SIZE][MUX_CONTROL_BIT_SIZE] =
      {HIGH, HIGH, LOW},
      {HIGH, HIGH, HIGH}};
 
+const char *const MUX_CHANNEL_NAMES[MUX_CHANNEL_SIZE_ACTIVE] PROGMEM = {
+    "TEMP_0",
+    "TEMP_1",
+    "TEMP_2",
+    "TEMP_3"};
+
 class MuxedSensorService : public BaseService
 {
 public:
@@ -56,11 +62,8 @@ public:
       return;
     }
 
-    for (int i = 0; i < MUX_CHANNEL_SIZE_ACTIVE; i++)
-    {
-      readChannelValue(i);
-      sendData(i, _sensorValues[i]);
-    }
+    readAll();
+    sendAll();
 
     _lastUpdateTime = millis();
   }
@@ -122,6 +125,29 @@ private:
     digitalWrite(PIN_MUX_OUT_A, MUX_CHANNEL_SELECT[channel][2]);
 
     _sensorValues[channel] = _thermoSensor->readCelsius();
+  }
+
+  void readAll()
+  {
+    for (int i = 0; i < MUX_CHANNEL_SIZE_ACTIVE; i++)
+    {
+      readChannelValue(i);
+    }
+  }
+
+  void sendAll()
+  {
+    if (SERIAL_WRITE_AT_ONCE)
+    {
+      sendAllData(MUX_CHANNEL_NAMES, _sensorValues, MUX_CHANNEL_SIZE_ACTIVE);
+    }
+    else
+    {
+      for (int i = 0; i < MUX_CHANNEL_SIZE_ACTIVE; i++)
+      {
+        sendOneData(MUX_CHANNEL_NAMES[i], _sensorValues[i]);
+      }
+    }
   }
 };
 

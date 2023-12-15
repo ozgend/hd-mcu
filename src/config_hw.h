@@ -4,6 +4,7 @@
 // serial
 #define SERIAL_BAUD_COM 9600
 #define SERIAL_BAUD_BT 9600
+#define SERIAL_WRITE_AT_ONCE true
 
 // peripherals
 #define P_HAS_BLUETOOTH false

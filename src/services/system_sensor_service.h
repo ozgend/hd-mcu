@@ -10,6 +10,9 @@
 
 #define SYSTEM_CHANNEL_UPTIME 0
 
+const char *const SYSTEM_CHANNEL_NAMES[SYSTEM_CHANNEL_SIZE] PROGMEM = {
+    "UPTIME"};
+
 class SystemSensorService : public BaseService
 {
 public:
@@ -79,7 +82,7 @@ public:
 
 private:
   long _lastUpdateTime;
-  uint64_t _sensorValues[SYSTEM_CHANNEL_SIZE] = {-1};
+  float _sensorValues[SYSTEM_CHANNEL_SIZE] = {-1};
 
   void readAll()
   {
@@ -88,9 +91,16 @@ private:
 
   void sendAll()
   {
-    for (int i = 0; i < SYSTEM_CHANNEL_SIZE; i++)
+    if (SERIAL_WRITE_AT_ONCE)
     {
-      sendData(i, _sensorValues[i]);
+      sendAllData(SYSTEM_CHANNEL_NAMES, _sensorValues, SYSTEM_CHANNEL_SIZE);
+    }
+    else
+    {
+      for (int i = 0; i < SYSTEM_CHANNEL_SIZE; i++)
+      {
+        sendOneData(SYSTEM_CHANNEL_NAMES[i], _sensorValues[i]);
+      }
     }
   }
 };

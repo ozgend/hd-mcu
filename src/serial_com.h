@@ -4,8 +4,6 @@
 #include "./config_hw.h"
 #include <SoftwareSerial.h>
 
-
-
 class SerialCom
 {
 public:

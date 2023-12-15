@@ -31,6 +31,8 @@
 #define LOG_SEPARATOR_SVC F("_")
 #define LOG_SEPARATOR_KV F("|")
 #define LOG_SEPARATOR_EVENT F(":")
+#define LOG_SEPARATOR_JSON_FIELD F(",")
+#define LOG_SEPARATOR_JSON_PAIR F(":")
 
 class BaseService
 {
@@ -43,14 +45,29 @@ public:
     this->_com = com;
   }
 
-  void sendData(const uint8_t sensorIndex, const float value)
+  void sendOneData(const String &key, const float value)
   {
-    sendData(sensorIndex, String(value));
+    sendOneData(key, String(value));
   }
 
-  void sendData(const uint8_t sensorIndex, const String &value)
+  void sendOneData(const String &key, const String &value)
   {
-    this->_com->writeAll(serviceCode + String(LOG_SEPARATOR_SVC) + String(sensorIndex) + String(LOG_SEPARATOR_KV) + value);
+    this->_com->writeAll(serviceCode + String(LOG_SEPARATOR_SVC) + key + String(LOG_SEPARATOR_KV) + value);
+  }
+
+  void sendAllData(const char *const keys[], const float values[], const uint8_t length)
+  {
+    String data = "{";
+    for (uint8_t i = 0; i < length; i++)
+    {
+      data += String(F("\"")) + serviceCode + String(LOG_SEPARATOR_SVC) + String(i) + String(F("\":\"")) + String(values[i]) + String(F("\""));
+      if (i < length - 1)
+      {
+        data += String(LOG_SEPARATOR_JSON_FIELD);
+      }
+    }
+    data += "}";
+    this->_com->writeAll(data);
   }
 
   void log(const String event, const String message = "")

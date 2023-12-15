@@ -19,6 +19,12 @@
 #define SENSOR_ADC_REFERENCE 3.3     // volts
 #define SENSOR_ADC_RESOLUTION 1024.0 // resolution map
 
+const char *const DIRECT_CHANNEL_NAMES[DIRECT_CHANNEL_SIZE] PROGMEM = {
+    "VOLTAGE",
+    "TEMP",
+    "RPM",
+    "SPEED"};
+
 class DirectSensorService : public BaseService
 {
 public:
@@ -105,7 +111,6 @@ public:
 private:
   OneWire *_oneWire;
   DallasTemperature *_airTempSensor;
-
   long _lastUpdateTime;
   float _sensorValues[DIRECT_CHANNEL_SIZE] = {-1, -1, -1, -1};
 
@@ -143,9 +148,16 @@ private:
 
   void sendAll()
   {
-    for (int i = 0; i < DIRECT_CHANNEL_SIZE; i++)
+    if (SERIAL_WRITE_AT_ONCE)
     {
-      sendData(i, _sensorValues[i]);
+      sendAllData(DIRECT_CHANNEL_NAMES, _sensorValues, DIRECT_CHANNEL_SIZE);
+    }
+    else
+    {
+      for (int i = 0; i < DIRECT_CHANNEL_SIZE; i++)
+      {
+        sendOneData(DIRECT_CHANNEL_NAMES[i], _sensorValues[i]);
+      }
     }
   }
 };

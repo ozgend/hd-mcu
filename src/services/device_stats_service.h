@@ -6,13 +6,19 @@
 #include "../base_service.h"
 
 #define DEVICE_STATS_CHANNEL_SIZE 5
-#define SYSTEM_UPDATE_INTERVAL 10000
 
 #define DEVICE_STATS_CHANNEL_CPU 0
 #define DEVICE_STATS_CHANNEL_RAM_FREE 1
 #define DEVICE_STATS_CHANNEL_RAM_TOTAL 2
 #define DEVICE_STATS_CHANNEL_FLASH_FREE 3
 #define DEVICE_STATS_CHANNEL_FLASH_TOTAL 4
+
+const char *const DEVICE_STATS_CHANNEL_NAMES[DEVICE_STATS_CHANNEL_SIZE] PROGMEM = {
+    "CPU",
+    "RAM_FREE",
+    "RAM_TOTAL",
+    "FLASH_FREE",
+    "FLASH_TOTAL"};
 
 class DeviceStatsService : public BaseService
 {
@@ -76,7 +82,7 @@ public:
   }
 
 private:
-  uint16_t _sensorValues[DEVICE_STATS_CHANNEL_SIZE] = {-1, -1, -1, -1};
+  float _sensorValues[DEVICE_STATS_CHANNEL_SIZE] = {-1, -1, -1, -1};
 
   int getFreeMemory()
   {
@@ -97,9 +103,16 @@ private:
 
   void sendAll()
   {
-    for (int i = 0; i < DEVICE_STATS_CHANNEL_SIZE; i++)
+    if (SERIAL_WRITE_AT_ONCE)
     {
-      sendData(i, _sensorValues[i]);
+      sendAllData(DEVICE_STATS_CHANNEL_NAMES, _sensorValues, DEVICE_STATS_CHANNEL_SIZE);
+    }
+    else
+    {
+      for (int i = 0; i < DEVICE_STATS_CHANNEL_SIZE; i++)
+      {
+        sendOneData(DEVICE_STATS_CHANNEL_NAMES[i], _sensorValues[i]);
+      }
     }
   }
 };
