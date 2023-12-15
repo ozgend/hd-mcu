@@ -2,7 +2,7 @@
 #define __config_hw__
 
 // serial
-#define SERIAL_BAUD_COM 19200
+#define SERIAL_BAUD_COM 9600
 #define SERIAL_BAUD_BT 9600
 
 // peripherals

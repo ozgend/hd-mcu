@@ -80,7 +80,7 @@ public:
     }
 
     this->log(F("starting"));
-    _thermoSensor = &MAX6675(PIN_THERMO_SENSOR_CLK, PIN_THERMO_SENSOR_CS, PIN_THERMO_SENSOR_DATA);
+    _thermoSensor = new MAX6675(PIN_THERMO_SENSOR_CLK, PIN_THERMO_SENSOR_CS, PIN_THERMO_SENSOR_DATA);
     this->log(F("started"));
     isRunning = true;
   }

@@ -69,8 +69,8 @@ public:
     }
 
     this->log(F("starting"));
-    _oneWire = &OneWire(PIN_SENSOR_TEMP);
-    _airTempSensor = &DallasTemperature(_oneWire);
+    _oneWire = new OneWire(PIN_SENSOR_TEMP);
+    _airTempSensor = new DallasTemperature(_oneWire);
     _airTempSensor->begin();
     this->log(F("started"));
     isRunning = true;
