@@ -1,5 +1,5 @@
-#ifndef __muxed_sensor_handler__
-#define __muxed_sensor_handler__
+#ifndef __muxed_sensor_service__
+#define __muxed_sensor_service__
 
 #include "../base_service.h"
 #include <max6675.h>
@@ -57,7 +57,7 @@ public:
     for (int i = 0; i < MUX_CHANNEL_SIZE_ACTIVE; i++)
     {
       readChannelValue(i);
-      sendData(String(F("mux_")) + String(i), String(_sensorValues[i]));
+      sendData(i, _sensorValues[i]);
     }
 
     _lastUpdateTime = millis();
@@ -67,12 +67,12 @@ public:
   {
     if (isRunning)
     {
-      this->_com->writeConsole(F("start.MuxedSensorService - already running"));
+      this->log(F("start"), F("already running"));
       return;
     }
-    this->_com->writeConsole(F("start.MuxedSensorService +"));
+    this->log(F("starting"));
     _thermoSensor = &MAX6675(PIN_THERMO_SENSOR_CLK, PIN_THERMO_SENSOR_CS, PIN_THERMO_SENSOR_DATA);
-    this->_com->writeConsole(F("start.MuxedSensorService - started"));
+    this->log(F("started"));
     isRunning = true;
   }
 
@@ -80,12 +80,12 @@ public:
   {
     if (!isRunning)
     {
-      this->_com->writeConsole(F("stop.MuxedSensorService - not running"));
+      this->log(F("stop"), F("already stopped"));
       return;
     }
-    this->_com->writeConsole(F("stop.MuxedSensorService - stopping"));
+    this->log(F("stopping"));
     delete _thermoSensor;
-    this->_com->writeConsole(F("stop.MuxedSensorService - stopped"));
+    this->log(F("stopped"));
     isRunning = false;
   }
 

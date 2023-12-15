@@ -1,18 +1,17 @@
-#ifndef __direct_sensor_handler__
-#define __direct_sensor_handler__
+#ifndef __direct_sensor_service__
+#define __direct_sensor_service__
 
 #include "../base_service.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-#define DIRECT_CHANNEL_SIZE 5
+#define DIRECT_CHANNEL_SIZE 4
 #define DIRECT_UPDATE_INTERVAL 1000
 
-#define DIRECT_CHANNEL_UPTIME 0
-#define DIRECT_CHANNEL_VOLTAGE 1
-#define DIRECT_CHANNEL_TEMPERATURE 2
-#define DIRECT_CHANNEL_RPM 3
-#define DIRECT_CHANNEL_SPEED 4
+#define DIRECT_CHANNEL_VOLTAGE 0
+#define DIRECT_CHANNEL_TEMPERATURE 1
+#define DIRECT_CHANNEL_RPM 2
+#define DIRECT_CHANNEL_SPEED 3
 
 #define VOLTAGE_R1 32500.0           // ohm
 #define VOLTAGE_R2 7500.0            // ohm
@@ -29,12 +28,12 @@ public:
 
   void setup()
   {
-    this->_com->writeConsole(F("init.DirectSensorService +"));
+    this->log(F("setup"));
     pinMode(PIN_SENSOR_VOLTAGE, INPUT);
     pinMode(PIN_SENSOR_TEMP, INPUT);
     pinMode(PIN_SENSOR_RPM, INPUT);
     pinMode(PIN_SENSOR_SPEED, INPUT);
-    this->_com->writeConsole(F("init.DirectSensorService - done"));
+    this->log(F("setup"), F("done"));
   }
 
   void update()
@@ -59,13 +58,14 @@ public:
   {
     if (isRunning)
     {
+      this->log(F("start"), F("already running"));
       return;
     }
-    this->_com->writeConsole(F("start.DirectSensorService +"));
+    this->log(F("starting"));
     _oneWire = &OneWire(PIN_SENSOR_TEMP);
     _airTempSensor = &DallasTemperature(_oneWire);
     _airTempSensor->begin();
-    this->_com->writeConsole(F("start.DDirectSensorHandler - started"));
+    this->log(F("started"));
     isRunning = true;
   }
 
@@ -73,12 +73,13 @@ public:
   {
     if (!isRunning)
     {
+      this->log(F("stop"), F("already stopped"));
       return;
     }
-    this->_com->writeConsole(F("stop.DirectSensorService - stopping"));
+    this->log(F("stopping"));
     delete _airTempSensor;
     delete _oneWire;
-    this->_com->writeConsole(F("stop.DirectSensorService - stopped"));
+    this->log(F("stopped"));
     isRunning = false;
   }
 
@@ -89,7 +90,7 @@ private:
   // float _adcVolts;
 
   long _lastUpdateTime;
-  float _sensorValues[DIRECT_CHANNEL_SIZE] = {-1, -1, -1, -1, -1};
+  float _sensorValues[DIRECT_CHANNEL_SIZE] = {-1, -1, -1, -1};
 
   void readVoltage()
   {
@@ -99,7 +100,7 @@ private:
     _sensorValues[DIRECT_CHANNEL_VOLTAGE] = _adcVolts / (VOLTAGE_R2 / (VOLTAGE_R1 + VOLTAGE_R2));
   }
 
-  void readAirTemperature()
+  void readTemperature()
   {
     _airTempSensor->requestTemperatures();
     _sensorValues[DIRECT_CHANNEL_TEMPERATURE] = _airTempSensor->getTempCByIndex(0);
@@ -117,9 +118,8 @@ private:
 
   void readAll()
   {
-    _sensorValues[DIRECT_CHANNEL_UPTIME] = millis();
     readVoltage();
-    readAirTemperature();
+    readTemperature();
     readRpm();
     readSpeed();
   }
@@ -128,7 +128,7 @@ private:
   {
     for (int i = 0; i < DIRECT_CHANNEL_SIZE; i++)
     {
-      sendData(String(F("dts_")) + String(i), String(_sensorValues[i]));
+      sendData(i, _sensorValues[i]);
     }
   }
 };
