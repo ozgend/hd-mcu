@@ -2,12 +2,16 @@
 #define __config_hw__
 
 // serial
-#define SERIAL_BAUD_COM 115200
+#define SERIAL_BAUD_COM 9600
 #define SERIAL_BAUD_BT 9600
 #define SERIAL_WRITE_AT_ONCE true
 
+// bluetooth serial
+#define PIN_SOFT_SERIAL_RX 2 //       D2    +RX to bt's TX  +serial
+#define PIN_SOFT_SERIAL_TX 3 //       D3    +TX to bt's RX  +serial
+
 // peripherals
-#define P_HAS_BLUETOOTH false
+#define P_HAS_BLUETOOTH true
 #define P_HAS_TURN_SIGNAL true
 #define P_HAS_DIRECT_SENSOR true
 #define P_HAS_MUX_SENSOR false
@@ -31,9 +35,5 @@
 #define PIN_THERMO_SENSOR_CLK 6  // D6    +D_CLK    +digital
 #define PIN_THERMO_SENSOR_CS 5   // D5    +D_CS     +digital
 #define PIN_THERMO_SENSOR_DATA 4 // D4    +D_SO     +digital
-
-// bluetooth serial 
-#define PIN_BLUETOOTH_TX 3 //       D3    +BT_TX    +serial
-#define PIN_BLUETOOTH_RX 2 //       D2    +BT_RX    +serial
 
 #endif

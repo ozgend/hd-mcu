@@ -18,8 +18,11 @@ public:
 
     if (P_HAS_BLUETOOTH)
     {
-      _btSerial = &SoftwareSerial(PIN_BLUETOOTH_RX, PIN_BLUETOOTH_TX);
+      writeConsole(F("SerialCom::bt start"));
+      _btSerial = new SoftwareSerial(PIN_SOFT_SERIAL_RX, PIN_SOFT_SERIAL_TX);
       _btSerial->begin(SERIAL_BAUD_BT);
+      _btSerial->isListening();
+      writeConsole(F("SerialCom::bt isListening:" + String(_btSerial->isListening())));
     }
     else
     {
