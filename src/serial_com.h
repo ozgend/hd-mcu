@@ -22,11 +22,11 @@ public:
       _btSerial = new SoftwareSerial(PIN_SOFT_SERIAL_RX, PIN_SOFT_SERIAL_TX);
       _btSerial->begin(SERIAL_BAUD_BT);
       _btSerial->isListening();
-      writeConsole(F("SerialCom::bt isListening:" + String(_btSerial->isListening())));
+      writeConsole(String(F("SerialCom::bt isListening:")) + String(_btSerial->isListening()));
     }
     else
     {
-      writeConsole("SerialCom::readBT: no BT peripheral");
+      writeConsole(F("SerialCom::readBT: no BT peripheral"));
     }
 
     writeConsole(F("SerialCom::init done"));
