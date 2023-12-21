@@ -77,18 +77,18 @@ public:
 private:
   float _sensorValues[DEVICE_STATS_CHANNEL_SIZE] = {-1, -1, -1, -1};
 
-  int getFreeMemory()
-  {
-    extern int __heap_start, *__brkval;
-    int v;
-    return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
-  }
+  // int getFreeMemory()
+  // {
+  //   extern int __heap_start, *__brkval;
+  //   int v;
+  //   return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
+  // }
 
   void readAll()
   {
     this->log(F("readAll"));
-    _sensorValues[DEVICE_STATS_CHANNEL_CPU] = F_CPU / 1000000;
-    _sensorValues[DEVICE_STATS_CHANNEL_RAM_FREE] = getFreeMemory();
+    // _sensorValues[DEVICE_STATS_CHANNEL_CPU] = F_CPU / 1000000;
+    // _sensorValues[DEVICE_STATS_CHANNEL_RAM_FREE] = getFreeMemory();
     _sensorValues[DEVICE_STATS_CHANNEL_RAM_TOTAL] = 2048;
     _sensorValues[DEVICE_STATS_CHANNEL_FLASH_FREE] = -1;
     _sensorValues[DEVICE_STATS_CHANNEL_FLASH_TOTAL] = 30720;
