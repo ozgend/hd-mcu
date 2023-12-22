@@ -1,8 +1,9 @@
 const { eventBus, publishToSerial } = require('./event-bus');
-const TurnSignalService = require('./services/turn-signal-module-service');
+const TurnSignalService = require('./services/turn-signal-service');
 const DeviceSensorService = require('./services/device-sensor-service');
 const SystemStatsService = require('./services/system-stats-service');
 const DummyService = require('./services/dummy-service');
+const { ServiceType } = require('./constants');
 
 const _services = [
   new DummyService(eventBus),
@@ -11,10 +12,21 @@ const _services = [
   new SystemStatsService(eventBus)
 ];
 
-_services.forEach(s => s.setup());
+_services.forEach(service => {
+  service.setup();
+  if (service.type === ServiceType.ALWAYS_RUN) {
+    service.start();
+  }
+});
 
 const dispatchModuleCommand = (command) => {
   switch (command) {
+    case 'START':
+      _services.filter(s => s.type === ServiceType.ON_DEMAND).forEach(service => service.start());
+      break;
+    case 'STOP':
+      _services.filter(s => s.type === ServiceType.ON_DEMAND).forEach(service => service.stop());
+      break;
     case 'LS':
       console.log(`all services: ${_services.map(s => s.code).join(', ')}`);
       publishToSerial('LS', _services.map(s => s.code).join(','));

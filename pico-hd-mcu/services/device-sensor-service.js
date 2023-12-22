@@ -1,9 +1,9 @@
-const { ServiceCode, Gpio } = require('../constants');
+const { ServiceCode, Gpio, ServiceType } = require('../constants');
 const BaseService = require('../base-service');
 
 class DeviceSensorService extends BaseService {
   constructor(eventBus) {
-    super(ServiceCode.DeviceSensor, 1000, eventBus);
+    super(ServiceCode.DeviceSensor, ServiceType.ON_DEMAND, 1000, eventBus);
   }
 
   update() {

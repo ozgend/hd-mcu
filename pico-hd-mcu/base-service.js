@@ -1,8 +1,9 @@
 const { ServiceCommand } = require('./constants');
 
 class BaseService {
-  constructor(code, updateInterval, eventBus) {
+  constructor(code, type, updateInterval, eventBus) {
     this.code = code;
+    this.type = type;
     this.updateInterval = updateInterval;
     this.eventBus = eventBus ?? { emit: () => { } };
     this.lastUpdate = 0;

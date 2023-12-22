@@ -1,16 +1,15 @@
-const { ServiceCode } = require('../constants');
+const { ServiceCode, ServiceType } = require('../constants');
 const BaseService = require('../base-service');
 
 class SystemStatsService extends BaseService {
   constructor(eventBus) {
-    super(ServiceCode.SystemStats, 2000, eventBus);
+    super(ServiceCode.SystemStats, ServiceType.ON_DEMAND, 2000, eventBus);
   }
 
   update() {
     console.log(`[${this.code}] updating`);
 
     try {
-
       this.data.board_name = board.name;
       this.data.board_uid = board.uid;
       this.data.board_LED = board.LED;
