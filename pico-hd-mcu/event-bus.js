@@ -23,11 +23,12 @@ Serial.on('data', (data) => {
 
   data.forEach((byte) => {
     if (byte === 10) {
-      eventBus.emit('serial_data', _serialPayload);
+      console.log(`serial_data EOL: raw:[${_serialPayload}] trim:[${_serialPayload.trim()}]`);
+      eventBus.emit('serial_data', _serialPayload.trim());
       _serialPayload = '';
     }
-    else {
-      _serialPayload += String.fromCharCode(byte);
+    else if (byte !== 0) {
+      _serialPayload += String.fromCharCode(byte).trim();
     }
   });
 
@@ -43,9 +44,11 @@ eventBus.on('serial_data', (payload) => {
   const parts = payload.split('=');
 
   if (payload.startsWith('MODULE')) {
+    console.log(`module_command: [${JSON.stringify(parts)}]`);
     eventBus.emit('module_command', parts[1]);
   }
   else {
+    console.log(`service_command: [${JSON.stringify(parts)}]`);
     eventBus.emit('service_command', ...parts);
   }
 });

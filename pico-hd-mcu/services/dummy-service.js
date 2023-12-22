@@ -6,6 +6,11 @@ class DummyService extends BaseService {
     super(ServiceCode.Dummy, 1000, eventBus);
   }
 
+  start() {
+    super.start();
+    console.log('DummyService.start');
+  }
+
   update() {
     this.data.uptime = Date.now();
     super.update();
