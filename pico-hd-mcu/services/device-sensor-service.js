@@ -7,8 +7,8 @@ class DeviceSensorService extends BaseService {
   }
 
   update() {
-    this.data.temp = analogRead(Gpio.ADC4);
-    this.data.vref = analogRead(Gpio.ADC0);
+    this.data.temp = analogRead(Gpio.DEVICE_SENSOR_TEMP);
+    this.data.vref = analogRead(Gpio.DEVICE_SENSOR_VREF);
     super.update();
   }
 };

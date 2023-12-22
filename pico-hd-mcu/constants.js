@@ -15,26 +15,23 @@ const Hardware = {
 
 // https://electrocredible.com/raspberry-pi-pico-w-pinout-guide-diagrams/
 const Gpio = {
-  BT_SERIAL_TX: 0,
-  BT_SERIAL_RX: 1,
-  SIGNAL_OUT_LEFT: 14,
-  SIGNAL_OUT_RIGHT: 15,
-  SIGNAL_IN_RIGHT: 20,
-  SIGNAL_IN_LEFT: 21,
-  DIRECT_SENSOR_VOLTAGE: 16,
-  DIRECT_SENSOR_RPM: 17,
-  DIRECT_SENSOR_SPEED: 18,
-  MUX_OUT_A: 9,
-  MUX_OUT_B: 8,
-  MUX_OUT_C: 7,
-  MUX_SENSOR_CLK: 6,
-  MUX_SENSOR_CS: 5,
-  MUX_SENSOR_DATA: 4,
-  ADC0: 26,
-  ADC1: 27,
-  ADC2: 28,
-  ADC3: 29,
-  ADC4: 30,
+  // functionality: pin,      // ## - name - notes
+  DEVICE_SENSOR_TEMP: 30,     // 35 - GP30 - ADC4 - virtual
+  ADC2: 28,                   // 34 - GP28 - ADC2
+  ADC1: 27,                   // 32 - GP27 - ADC1
+  DEVICE_SENSOR_VREF: 26,     // 31 - GP26 - ADC0
+  SIGNAL_IN_LEFT: 21,         // 27 - GP21
+  SIGNAL_IN_RIGHT: 20,        // 26 - GP20
+  SIGNAL_OUT_LEFT: 19,        // 25 - GP19  
+  SIGNAL_OUT_RIGHT: 18,       // 24 - GP18
+  MUX_SENSOR_CS: 13,          // 17 - GP13
+  MUX_SENSOR_DATA: 12,        // 16 - GP12
+  MUX_SENSOR_CLK: 11,         // 15 - GP11
+  MUX_OUT_A: 9,               // 12 - GP9
+  MUX_OUT_B: 8,               // 11 - GP8
+  MUX_OUT_C: 7,               // 10 - GP7
+  BT_SERIAL_RX: 1,            // 2 - GP1
+  BT_SERIAL_TX: 0,            // 1 - GP0
 };
 
 const ServiceType = {
