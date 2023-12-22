@@ -9,8 +9,8 @@ const Hardware = {
   HAS_DIRECT_SENSOR_SERVICE: false,
   HAS_MUX_SENSOR_SERVICE: false,
   TURN_SIGNAL_BLINK_RATE: 500,
-  TURN_SIGNAL_BLINK_TIMEOUT: 30000,
-  TURN_SUGNAL_ANALOGUE_VALUE_THRESHOLD: 800,
+  TURN_SIGNAL_BLINK_TIMEOUT: 10000,
+  TURN_SIGNAL_INTERRUPT_WAIT: 100,
 };
 
 // https://electrocredible.com/raspberry-pi-pico-w-pinout-guide-diagrams/
@@ -55,7 +55,8 @@ const ServiceCommand = {
   DIAG: 'DIAG',
   LEFT: 'LEFT',
   RIGHT: 'RIGHT',
-  ALL: 'ALL'
+  ALL: 'ALL',
+  NONE: 'NONE',
 };
 
 module.exports = { Hardware, Gpio, ServiceType, ServiceCode, ServiceCommand };
