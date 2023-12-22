@@ -10,7 +10,7 @@ const Hardware = {
   HAS_MUX_SENSOR_SERVICE: false,
   TURN_SIGNAL_BLINK_RATE: 500,
   TURN_SIGNAL_BLINK_TIMEOUT: 30000,
-  TURN_SUGNAL_ANALOGUE_VALUE_THRESHOLD : 800,
+  TURN_SUGNAL_ANALOGUE_VALUE_THRESHOLD: 800,
 };
 
 // https://electrocredible.com/raspberry-pi-pico-w-pinout-guide-diagrams/
@@ -33,8 +33,8 @@ const Gpio = {
   ADC0: 26,
   ADC1: 27,
   ADC2: 28,
-  ADC_VREF: 35,
-  ADC_TEMP: 4, 
+  ADC3: 29,
+  ADC4: 30,
 };
 
 const ServiceType = {
