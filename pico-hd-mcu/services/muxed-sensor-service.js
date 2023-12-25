@@ -15,14 +15,14 @@ class MuxedSensorService extends BaseService {
 
   setup() {
     super.setup();
+    this.thermoSensor = new MAX6675({ bus: 1, cs: Gpio.THERMO_SENSOR_CS, sck: Gpio.THERMO_SENSOR_CLK, miso: Gpio.THERMO_SENSOR_DATA });
+    this.thermoSensor.init();
+    this.mux = new HC4051({ pinA: Gpio.MUX_OUT_A, pinB: Gpio.MUX_OUT_B, pinC: Gpio.MUX_OUT_C, connectedChannels: [0, 1, 2, 3] });
+    this.mux.init();    
   }
 
   start() {
     super.start();
-    this.thermoSensor = new MAX6675({ bus: 1, cs: Gpio.THERMO_SENSOR_CS, sck: Gpio.THERMO_SENSOR_CLK, miso: Gpio.THERMO_SENSOR_DATA });
-    this.thermoSensor.init();
-    // this.mux = new HC4051({ pinA: Gpio.MUX_OUT_A, pinB: Gpio.MUX_OUT_B, pinC: Gpio.MUX_OUT_C, connectedChannels: [0, 1, 2, 3] });
-    // this.mux.init();    
     _readerPid = setInterval(() => {
       //this.mux.enableChannel(_muxCh);
       _values[_muxCh] = this.thermoSensor.readCelcius();
@@ -38,8 +38,8 @@ class MuxedSensorService extends BaseService {
     super.stop();
     clearInterval(_readerPid);
     this.thermoSensor.close();
-    delete this.thermoSensor;
-    delete this.mux;
+    // delete this.thermoSensor;
+    // delete this.mux;
   }
 
   update() {

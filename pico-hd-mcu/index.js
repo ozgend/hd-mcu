@@ -2,11 +2,21 @@ const rtc = require('rtc');
 rtc.setTime(-2209078556000);
 const logger = require('./logger');
 const { eventBus, publishToSerial } = require('./event-bus');
-const { ServiceType, ServiceCode, EventName } = require('./constants');
+const { ServiceType, ServiceCode, EventName, Gpio } = require('./constants');
 const TurnSignalService = require('./services/turn-signal-service');
 const SystemStatsService = require('./services/system-stats-service');
 const DeviceSensorService = require('./services/device-sensor-service');
 const MuxedSensorService = require('./services/muxed-sensor-service');
+
+// pinMode(Gpio.THERMO_SENSOR_CLK, OUTPUT);
+// pinMode(Gpio.THERMO_SENSOR_CS, OUTPUT);
+// pinMode(Gpio.THERMO_SENSOR_DATA, OUTPUT);
+
+// setInterval(() => {
+//   digitalToggle(Gpio.THERMO_SENSOR_CLK);
+//   digitalToggle(Gpio.THERMO_SENSOR_DATA);
+//   digitalToggle(Gpio.THERMO_SENSOR_CS);
+// }, 2000);
 
 const _services = [
   new TurnSignalService(eventBus),

@@ -46,7 +46,7 @@ class HC4051 {
       console.error(`HC4051: channel out of range: ${channel} (max: ${MUX_CHANNEL_SIZE - 1})`);
       return false;
     }
-    if(this.connectedChannels.indexOf(channel) < 0) {
+    if (this.connectedChannels.indexOf(channel) < 0) {
       console.error(`HC4051: channel not connected: ${channel} (connected: ${this.connectedChannels})`);
       return false;
     }

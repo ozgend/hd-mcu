@@ -5,10 +5,10 @@
 const { GPIO } = require('gpio');
 const { SPI } = require('spi');
 
-const MAX6675_BPS = 1 * 1000 * 1000;
+const MAX6675_BPS = 2 * 1000 * 1000;
 const MAX6675_OPEN_BIT = 0x4;
 const MAX6675_CONVERSION_RATIO = 0.25;
-let MAX6675_READER_CMD = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+let MAX6675_READER_CMD = [0, 0, 0, 0];
 
 class MAX6675 {
   constructor(options) {
@@ -27,9 +27,9 @@ class MAX6675 {
 
   init() {
     try {
+      this.spiBus = new SPI(this.bus, this.spiOptions);
       this.spiCs = new GPIO(this.cs, OUTPUT);
       this.spiCs.high();
-      this.spiBus = new SPI(this.bus, this.spiOptions);
       console.log('MAX6675: init');
       console.log(this.spiCs);
       console.log(this.spiBus);
@@ -67,14 +67,13 @@ class MAX6675 {
 
   readRaw() {
     this.spiCs.low();
-    let val = this.readRaw1();
+    let val = this.readRaw2();
     this.spiCs.high();
     return val;
   }
 
   readRaw1() {
     try {
-
       const sent = this.spiBus.send(new Uint8Array(MAX6675_READER_CMD));
       console.log(`MAX6675: readRaw.sent: ${sent}b`);
       let bytes = this.spiBus.recv(16);
@@ -91,9 +90,16 @@ class MAX6675 {
   }
 
   readRaw2() {
-    let bytes = this.spiBus.transfer(new Uint8Array(MAX6675_READER_CMD));
-    console.log(`MAX6675: readRaw.bytes: ${bytes} length: ${bytes.length}`);
-    return bytes;
+    try {
+      let raw = this.spiBus.transfer(new Uint8Array([0])) << 8;
+      raw |= this.spiBus.transfer(new Uint8Array([0]));
+      console.log(`MAX6675: readRaw.bytes: ${raw}`);
+      return raw;
+    }
+    catch (err) {
+      console.error(err);
+    }
+    return [];
   }
 }
 

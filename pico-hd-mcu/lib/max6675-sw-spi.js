@@ -59,9 +59,7 @@ class MAX6675 {
     let bytes = [];
     for (i = 15; i >= 0; i--) {
       digitalWrite(this.clk, HIGH);
-      delay(10);
-      bytes[i] = analogRead(this.miso);
-      delay(10);
+      bytes[i] = digitalRead(this.miso);
       digitalWrite(this.clk, LOW);
     }
     console.log(`MAX6675: readSpi: ${bytes}`);
