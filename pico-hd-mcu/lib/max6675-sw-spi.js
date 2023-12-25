@@ -20,7 +20,7 @@ class MAX6675 {
       pinMode(this.clk, OUTPUT);
       pinMode(this.cs, OUTPUT);
       pinMode(this.miso, INPUT);
-      digitalWrite(this.cs, LOW);
+      digitalWrite(this.cs, HIGH);
       return true;
     }
     catch (err) {

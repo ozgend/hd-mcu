@@ -27,9 +27,9 @@ const Gpio = {
   SIGNAL_IN_RIGHT: 20,        // 26 - GP20
   SIGNAL_OUT_LEFT: 19,        // 25 - GP19  
   SIGNAL_OUT_RIGHT: 18,       // 24 - GP18
-  THERMO_SENSOR_CLK: 2,
-  THERMO_SENSOR_DATA: 4,
-  THERMO_SENSOR_CS: 5,
+  THERMO_SENSOR_CLK: 10,
+  THERMO_SENSOR_DATA: 12,
+  THERMO_SENSOR_CS: 13,
   MUX_OUT_A: 9,               // 12 - GP9
   MUX_OUT_B: 8,               // 11 - GP8
   MUX_OUT_C: 7,               // 10 - GP7

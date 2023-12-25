@@ -13,9 +13,6 @@ const MUX_CHANNEL_SELECT = [
 ];
 
 class HC4051 {
-  /**
-   * @param {*} options 
-   */
   constructor(options) {
     this.pinData = options.pinData;
     this.pinA = options.pinA;

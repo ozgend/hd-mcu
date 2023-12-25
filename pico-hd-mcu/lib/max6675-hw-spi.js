@@ -5,33 +5,38 @@
 const { GPIO } = require('gpio');
 const { SPI } = require('spi');
 
-const MAX6675_BPS = 1000000;
-const MAX6675_OPEN_BIT = 0x04;
+const MAX6675_BPS = 1 * 1000 * 1000;
+const MAX6675_OPEN_BIT = 0x4;
 const MAX6675_CONVERSION_RATIO = 0.25;
-let MAX6675_READER_CMD = [0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0];
+let MAX6675_READER_CMD = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 class MAX6675 {
-  constructor(sck, cs, miso, mode, bus, baudrate) {
-    this.sck = sck;
-    this.cs = cs;
-    this.miso = miso;
-    this.mode = mode || SPI.MODE_0;
-    this.bus = bus || 0;
-    this.baudrate = baudrate || MAX6675_BPS;
+  constructor(options) {
+    this.cs = options.cs || 13;
+    this.bus = options.bus || 1;
+    this.spiOptions = {
+      mode: options.mode || SPI.MODE_1,
+      baudrate: options.baudrate || MAX6675_BPS,
+      bitorder: options.bitorder || SPI.MSB,
+      sck: options.sck || 10,
+      clk: options.sck || 10,
+      miso: options.miso || 12,
+      mosi: -1
+    };
   }
 
   init() {
     try {
       this.spiCs = new GPIO(this.cs, OUTPUT);
-      this.spiCs.write(LOW);
-      this.spiBus = new SPI(this.bus, { mode: this.mode, baudrate: this.baudrate, bitorder: SPI.MSB, sck: this.sck, clk: this.sck, miso: this.miso, mosi: -1 });
+      this.spiCs.high();
+      this.spiBus = new SPI(this.bus, this.spiOptions);
       console.log('MAX6675: init');
       console.log(this.spiCs);
       console.log(this.spiBus);
       return true;
     }
     catch (err) {
-      console.log(err);
+      console.error(err);
       return false;
     }
   }
@@ -61,38 +66,33 @@ class MAX6675 {
   }
 
   readRaw() {
-    return this.readRaw2();
+    this.spiCs.low();
+    let val = this.readRaw1();
+    this.spiCs.high();
+    return val;
   }
 
   readRaw1() {
-    this.spiCs.write(LOW);
-    delay(10);
-    const sent = this.spiBus.send(new Uint8Array(MAX6675_READER_CMD));
-    console.log(`MAX6675: readRaw.sent: ${sent}b`);
+    try {
 
-    this.spiCs.write(HIGH);
-    delay(10);
-
-    let bytes = this.spiBus.recv(16);
-
-    if (bytes === null) {
-      console.error('MAX6675: recv error');
+      const sent = this.spiBus.send(new Uint8Array(MAX6675_READER_CMD));
+      console.log(`MAX6675: readRaw.sent: ${sent}b`);
+      let bytes = this.spiBus.recv(16);
+      if (bytes === null) {
+        console.error('MAX6675: recv error');
+      }
+      console.log(`MAX6675: readRaw.bytes: ${bytes} length: ${bytes.length}`);
+      return bytes;
     }
-
-    console.log(`MAX6675: readRaw.bytes: ${bytes} length: ${bytes.length}`);
-
-    return bytes;
+    catch (err) {
+      console.error(err);
+    }
+    return [];
   }
 
   readRaw2() {
-    this.spiCs.write(LOW);
-    delay(10);
-
-    let bytes = this.spiBus.transfer(new Uint8Array([...MAX6675_READER_CMD, ...MAX6675_READER_CMD]));
+    let bytes = this.spiBus.transfer(new Uint8Array(MAX6675_READER_CMD));
     console.log(`MAX6675: readRaw.bytes: ${bytes} length: ${bytes.length}`);
-
-    delay(10);
-    this.spiCs.write(HIGH);
     return bytes;
   }
 }
