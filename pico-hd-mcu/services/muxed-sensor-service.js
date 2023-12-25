@@ -4,9 +4,9 @@ const { ServiceCode, Gpio, ServiceType, Hardware } = require('../constants');
 const BaseService = require('../base-service');
 const logger = require('../logger');
 
+const _muxChannels = [0, 1, 2, 3];
 let _readerPid = 0;
-let _muxCh = 0;
-let _values = Array.from({ length: Hardware.MUX_SENSOR_CONNECTED_COUNT }, () => -1);
+let _muxChIndex = 0;
 
 class MuxedSensorService extends BaseService {
   constructor(eventBus) {
@@ -15,35 +15,41 @@ class MuxedSensorService extends BaseService {
 
   setup() {
     super.setup();
-    this.thermoSensor = new MAX6675({ bus: 1, cs: Gpio.THERMO_SENSOR_CS, sck: Gpio.THERMO_SENSOR_CLK, miso: Gpio.THERMO_SENSOR_DATA });
-    this.thermoSensor.init();
-    this.mux = new HC4051({ pinA: Gpio.MUX_OUT_A, pinB: Gpio.MUX_OUT_B, pinC: Gpio.MUX_OUT_C, connectedChannels: [0, 1, 2, 3] });
-    this.mux.init();    
   }
 
   start() {
     super.start();
+
+    _muxChannels.forEach(ch => {
+      this.data[`ch_${ch}`] = 0;
+    });
+
+    this.thermoSensor = new MAX6675({ bus: 1, cs: Gpio.THERMO_SENSOR_CS, sck: Gpio.THERMO_SENSOR_CLK, miso: Gpio.THERMO_SENSOR_DATA });
+    this.thermoSensor.init();
+
+    this.mux = new HC4051({ pinA: Gpio.MUX_OUT_A, pinB: Gpio.MUX_OUT_B, pinC: Gpio.MUX_OUT_C, connectedChannels: _muxChannels });
+    this.mux.init();
+
     _readerPid = setInterval(() => {
-      //this.mux.enableChannel(_muxCh);
-      _values[_muxCh] = this.thermoSensor.readCelcius();
-      logger.debug(ServiceCode.MuxSensor, 'interval.read', { ch: _muxCh, value: _values[_muxCh], values: _values });
-      // _muxCh++;
-      // if (_muxCh >= Hardware.MUX_SENSOR_CONNECTED_COUNT) {
-      //   _muxCh = 0;
-      // }
-    }, 2000);
+      this.mux.enableChannelIndex(_muxChIndex);
+      this.data[`ch_${_muxChannels[_muxChIndex]}`] = this.thermoSensor.readCelcius();
+      logger.debug(ServiceCode.MuxSensor, 'interval.read', { ch: _muxChannels[_muxChIndex], cx: _muxChIndex, value: this.data[`ch_${_muxChannels[_muxChIndex]}`], values: this.data });
+      _muxChIndex++;
+      if (_muxChIndex >= _muxChannels.length) {
+        _muxChIndex = 0;
+      }
+    }, 1000);
   }
 
   stop() {
     super.stop();
     clearInterval(_readerPid);
     this.thermoSensor.close();
-    // delete this.thermoSensor;
-    // delete this.mux;
+    delete this.thermoSensor;
+    delete this.mux;
   }
 
   update() {
-    this.data.values = _values;
     super.update();
   }
 };

@@ -49,7 +49,7 @@ class MAX6675 {
   }
 
   readCelcius() {
-    console.log('MAX6675: readCelcius');
+    // console.log('MAX6675: readCelcius');
 
     let bytes = this.readRaw();
 
@@ -75,12 +75,12 @@ class MAX6675 {
   readRaw1() {
     try {
       const sent = this.spiBus.send(new Uint8Array(MAX6675_READER_CMD));
-      console.log(`MAX6675: readRaw.sent: ${sent}b`);
+      // console.log(`MAX6675: readRaw.sent: ${sent}b`);
       let bytes = this.spiBus.recv(16);
       if (bytes === null) {
         console.error('MAX6675: recv error');
       }
-      console.log(`MAX6675: readRaw.bytes: ${bytes} length: ${bytes.length}`);
+      // console.log(`MAX6675: readRaw.bytes: ${bytes} length: ${bytes.length}`);
       return bytes;
     }
     catch (err) {
@@ -93,7 +93,7 @@ class MAX6675 {
     try {
       let raw = this.spiBus.transfer(new Uint8Array([0])) << 8;
       raw |= this.spiBus.transfer(new Uint8Array([0]));
-      console.log(`MAX6675: readRaw.bytes: ${raw}`);
+      // console.log(`MAX6675: readRaw.bytes: ${raw}`);
       return raw;
     }
     catch (err) {

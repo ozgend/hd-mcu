@@ -38,24 +38,28 @@ class HC4051 {
     if (this.pinInhibit) {
       pinMode(this.pinInhibit, OUTPUT);
     }
-    this.enableChannel(0);
+    this.enableChannelIndex(0);
   }
 
   enableChannel(channel) {
-    if (channel >= MUX_CHANNEL_SIZE) {
-      console.error(`HC4051: channel out of range: ${channel} (max: ${MUX_CHANNEL_SIZE - 1})`);
-      return false;
-    }
     if (this.connectedChannels.indexOf(channel) < 0) {
       console.error(`HC4051: channel not connected: ${channel} (connected: ${this.connectedChannels})`);
+      return false;
+    }
+    return this.enableChannelIndex(this.connectedChannels.indexOf(channel));
+  }
+
+  enableChannelIndex(chIndex) {
+    if (chIndex >= MUX_CHANNEL_SIZE) {
+      console.error(`HC4051: channel out of range: ${chIndex} (max: ${MUX_CHANNEL_SIZE - 1})`);
       return false;
     }
     if (this.pinInhibit) {
       digitalWrite(this.pinInhibit, LOW);
     }
-    digitalWrite(this.pinC, MUX_CHANNEL_SELECT[channel][0]);
-    digitalWrite(this.pinB, MUX_CHANNEL_SELECT[channel][1]);
-    digitalWrite(this.pinA, MUX_CHANNEL_SELECT[channel][2]);
+    digitalWrite(this.pinC, MUX_CHANNEL_SELECT[chIndex][0]);
+    digitalWrite(this.pinB, MUX_CHANNEL_SELECT[chIndex][1]);
+    digitalWrite(this.pinA, MUX_CHANNEL_SELECT[chIndex][2]);
     return true;
   }
 
