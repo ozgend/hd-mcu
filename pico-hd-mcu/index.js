@@ -8,15 +8,8 @@ const SystemStatsService = require('./services/system-stats-service');
 const DeviceSensorService = require('./services/device-sensor-service');
 const MuxedSensorService = require('./services/muxed-sensor-service');
 
-// pinMode(Gpio.THERMO_SENSOR_CLK, OUTPUT);
-// pinMode(Gpio.THERMO_SENSOR_CS, OUTPUT);
-// pinMode(Gpio.THERMO_SENSOR_DATA, OUTPUT);
-
-// setInterval(() => {
-//   digitalToggle(Gpio.THERMO_SENSOR_CLK);
-//   digitalToggle(Gpio.THERMO_SENSOR_DATA);
-//   digitalToggle(Gpio.THERMO_SENSOR_CS);
-// }, 2000);
+pinMode(17, OUTPUT);
+digitalWrite(17, HIGH);
 
 const _services = [
   new TurnSignalService(eventBus),

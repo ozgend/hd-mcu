@@ -23,10 +23,10 @@ const Gpio = {
   ADC2: 28,                   // 34 - GP28 - ADC2
   ADC1: 27,                   // 32 - GP27 - ADC1
   DEVICE_SENSOR_VOLTS: 26,    // 31 - GP26 - ADC0
-  SIGNAL_IN_LEFT: 21,         // 27 - GP21
-  SIGNAL_IN_RIGHT: 20,        // 26 - GP20
-  SIGNAL_OUT_LEFT: 19,        // 25 - GP19  
-  SIGNAL_OUT_RIGHT: 18,       // 24 - GP18
+  SIGNAL_IN_LEFT: 24,
+  SIGNAL_IN_RIGHT: 23,
+  SIGNAL_OUT_LEFT: 22,
+  SIGNAL_OUT_RIGHT: 21,
   THERMO_SENSOR_CLK: 10,
   THERMO_SENSOR_DATA: 12,
   THERMO_SENSOR_CS: 13,
