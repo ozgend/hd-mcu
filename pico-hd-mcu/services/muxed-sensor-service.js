@@ -8,7 +8,7 @@ let _readerPid = 0;
 
 class MuxedSensorService extends BaseService {
   constructor(eventBus) {
-    super(ServiceCode.MuxSensor, ServiceType.ON_DEMAND, 1000, eventBus);
+    super(ServiceCode.MuxSensor, ServiceType.ON_DEMAND, 2000, eventBus);
   }
 
   setup() {
@@ -28,9 +28,9 @@ class MuxedSensorService extends BaseService {
       for (let i = 0; i < Hardware.MUX_SENSOR_CONNECTED_COUNT; i++) {
         this.mux.enableChannel(i);
         this.data.values[i] = this.thermoSensor.readCelcius();
-        logger.debug(ServiceCode.MuxSensor, 'interval.read', this.data.values);
+        logger.debug(ServiceCode.MuxSensor, 'interval.read', { ch: i, value: this.data.values[i], all: this.data.values });
       }
-    }, 150);
+    }, 250);
   }
 
   stop() {
