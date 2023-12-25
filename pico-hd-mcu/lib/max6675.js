@@ -30,6 +30,7 @@ class MAX6675 {
 
     if (value & 0x4) {
       // no thermocouple attached!
+      console.error('MAX6675: no thermocouple attached!');
       return null;
     }
 
