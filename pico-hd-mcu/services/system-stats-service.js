@@ -6,25 +6,18 @@ class SystemStatsService extends BaseService {
     super(ServiceCode.SystemStats, ServiceType.ON_DEMAND, 2000, eventBus);
   }
 
+  start() {
+    super.start();
+    this.data.arch = process.arch;
+    this.data.platform = process.platform;
+    this.data.version = process.version;
+    this.data.name = board.name;
+    this.data.uid = board.uid;
+    this.data.led = board.LED;
+  }
+
   update() {
-    console.log(`[${this.code}] updating`);
-
-    try {
-      this.data.board_name = board.name;
-      this.data.board_uid = board.uid;
-      this.data.board_LED = board.LED;
-      this.data.process_arch = process.arch;
-      this.data.process_platform = process.platform;
-      this.data.process_version = process.version;
-      this.data.mem_total = process.memoryUsage().heapTotal;
-      this.data.mem_used = process.memoryUsage().heapUsed;
-      this.data.mem_peak = process.memoryUsage().heapPeak;
-    }
-    catch (e) {
-      console.log(`[${this.code}] error: ${e}`);
-    }
-
-    console.log(`[${this.code}] update: ${JSON.stringify(this.data)}`);
+    this.data.memory = process.memoryUsage();
     super.update();
   }
 };

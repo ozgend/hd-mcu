@@ -1,7 +1,9 @@
-const textDecoder = new TextDecoder();
 const { EventEmitter } = require('events');
 const { UART } = require('uart');
-const options = {
+const logger = require('./logger');
+const { ServiceCode, EventName } = require('./constants');
+
+const uartOptions = {
   baudrate: 9600,
   bits: 8,
   partity: UART.PARTIY_NONE,
@@ -9,22 +11,23 @@ const options = {
   flow: UART.FLOW_NONE,
   bufferSize: 2048,
 };
-const Serial = new UART(0, options);
+
+const textDecoder = new TextDecoder();
+const Serial = new UART(0, uartOptions);
+logger.info(ServiceCode.EventBus, 'uart ready', uartOptions.baudrate);
 
 class EventBus extends EventEmitter { };
 const eventBus = new EventBus();
-
-console.log('event bus ready');
+logger.info(ServiceCode.EventBus, 'emitter ready');
 
 let _serialPayload = '';
 
 Serial.on('data', (data) => {
-  console.log(`incoming serial: [${textDecoder.decode(data)}], length: ${data.length}, raw: ${data.join(',')}`);
+  logger.debug(ServiceCode.EventBus, 'serial.on.data', { raw: data, length: data.length, text: textDecoder.decode(data) });
 
   data.forEach((byte) => {
     if (byte === 10) {
-      console.log(`serial_data EOL: raw:[${_serialPayload}] trim:[${_serialPayload.trim()}]`);
-      eventBus.emit('serial_data', _serialPayload.trim());
+      eventBus.emit(EventName.DataFromSerial, _serialPayload.trim());
       _serialPayload = '';
     }
     else if (byte !== 0) {
@@ -34,31 +37,34 @@ Serial.on('data', (data) => {
 
 });
 
-eventBus.on('service_data', (code, payload) => {
-  console.log(`service_data: [${code}] [${JSON.stringify(payload)}]`);
-  Serial.write(`${code}=${JSON.stringify(payload)}\n`);
+// events from services
+eventBus.on(EventName.DataFromService, (serviceCode, eventName, serviceData) => {
+  logger.debug(ServiceCode.EventBus, EventName.DataFromService, { serviceCode, eventName, serviceData });
+  Serial.write(`${serviceCode}.${eventName}=${JSON.stringify(serviceData)}\n`);
 });
 
-eventBus.on('serial_data', (payload) => {
-  console.log(`serial_data: [${payload}]`);
-  const parts = payload.split('=');
+// events from serial
+eventBus.on(EventName.DataFromSerial, (serialPayload) => {
+  logger.debug(ServiceCode.EventBus, EventName.DataFromSerial, { serialPayload });
+  const parts = serialPayload.split('=');
 
-  if (payload.startsWith('MODULE')) {
-    console.log(`module_command: [${JSON.stringify(parts)}]`);
-    eventBus.emit('module_command', parts[1]);
+  if (serialPayload.startsWith('MODULE')) {
+    eventBus.emit(EventName.CommandForModule, parts[1]);
   }
   else {
-    console.log(`service_command: [${JSON.stringify(parts)}]`);
-    eventBus.emit('service_command', ...parts);
+    eventBus.emit(EventName.CommandForService, ...parts);
   }
 });
 
-console.log('serial com ready');
+logger.info(ServiceCode.EventBus, 'eventBus ready');
 
-setInterval(() => { Serial.write('heartbeat\n') }, 2000);
+setInterval(() => {
+  Serial.write('0_heartbeat\n');
+  //logger.info(ServiceCode.EventBus, '0_heartbeat');
+}, 1000);
 
-const publishToSerial = (code, payload) => {
-  eventBus.emit('service_data', code, payload);
+const publishToSerial = (serviceCode, eventName, serviceData) => {
+  eventBus.emit(EventName.DataFromService, serviceCode, eventName, serviceData);
 };
 
 module.exports = { eventBus, publishToSerial };

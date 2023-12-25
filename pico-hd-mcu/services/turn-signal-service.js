@@ -1,6 +1,7 @@
 const { GPIO } = require('gpio');
 const { Hardware, Gpio, ServiceCode, ServiceCommand, ServiceType } = require('../constants');
 const BaseService = require('../base-service');
+const logger = require('../logger');
 
 const _state = {
   Left: false,
@@ -22,7 +23,7 @@ let _flasherPid = 0;
 let _cancelerPid = 0;
 
 const _handleInterrupt = (pin, mode) => {
-  console.log(`TSM.handleInterrupt: PIN:${pin} MODE:${mode}`);
+  logger.debug(ServiceCode.TurnSignalModule, 'handleInterrupt', { pin, mode });
 
   // wait 100ms for the signal to settle for two pins before we check the state
   if (pin === Gpio.SIGNAL_IN_LEFT && mode === RISING) {
@@ -36,9 +37,15 @@ const _handleInterrupt = (pin, mode) => {
   }, Hardware.TURN_SIGNAL_INTERRUPT_WAIT);
 }
 
-const _enableFlasher = (isLeft, isRight) => {
-  console.log(`TSM.enableFlasher: LEFT:${isLeft} RIGHT:${isRight}`);
-  _cancelerPid = setTimeout(() => { _disableFlasher("timeout"); }, Hardware.TURN_SIGNAL_BLINK_TIMEOUT);
+const _diagnostic = () => {
+  logger.debug(ServiceCode.TurnSignalModule, 'diagnostic', { _state, _blink, _interrupts });
+  _disableFlasher("cancel-any");
+  _enableFlasher(true, true, Hardware.TURN_SIGNAL_DIAG_RATE, Hardware.TURN_SIGNAL_DIAG_TIMEOUT);
+}
+
+const _enableFlasher = (isLeft, isRight, blinkRate, cancelTimeout) => {
+  logger.debug(ServiceCode.TurnSignalModule, 'enableFlasher', { isLeft, isRight });
+  _cancelerPid = setTimeout(() => { _disableFlasher("timeout"); }, cancelTimeout);
   _flasherPid = setInterval(() => {
     if (isLeft) {
       digitalToggle(Gpio.SIGNAL_OUT_LEFT);
@@ -48,30 +55,31 @@ const _enableFlasher = (isLeft, isRight) => {
       digitalToggle(Gpio.SIGNAL_OUT_RIGHT);
       _blink.Right = !_blink.Right;
     }
-    console.log(`TSM.toggle: LEFT:${isLeft} RIGHT:${isRight} -- OUT_LEFT:${_blink.Left} OUT_RIGHT:${_blink.Right}`);
-  }, Hardware.TURN_SIGNAL_BLINK_RATE);
+    logger.debug(ServiceCode.TurnSignalModule, 'blink', _blink);
+  }, blinkRate);
   _state.Both = isLeft && isRight;
   _state.Left = isLeft && !isRight;
   _state.Right = !isLeft && isRight;
 }
 
 const _disableFlasher = (reason) => {
-  console.log(`TSM.disableFlasher: ${reason}`);
+  logger.debug(ServiceCode.TurnSignalModule, 'disableFlasher', { reason });
+  digitalWrite(Gpio.SIGNAL_OUT_LEFT, LOW);
+  digitalWrite(Gpio.SIGNAL_OUT_RIGHT, LOW);
   clearInterval(_flasherPid);
   clearTimeout(_cancelerPid);
   _flasherPid = 0;
-  digitalWrite(Gpio.SIGNAL_OUT_LEFT, LOW);
-  digitalWrite(Gpio.SIGNAL_OUT_RIGHT, LOW);
+  _cancelerPid = 0;
   _state.Both = false;
   _state.Left = false;
   _state.Right = false;
 }
 
 const _setFlasher = (isLeft, isRight) => {
-  console.log(`TSM.setFlasher: LEFT:${isLeft} RIGHT:${isRight}`);
+  logger.debug(ServiceCode.TurnSignalModule, 'setFlasher', { isLeft, isRight });
   _disableFlasher("cancel-any");
   if (isLeft || isRight) {
-    _enableFlasher(isLeft, isRight);
+    _enableFlasher(isLeft, isRight, Hardware.TURN_SIGNAL_BLINK_RATE, Hardware.TURN_SIGNAL_BLINK_TIMEOUT);
   }
   _interrupts.Left = 0;
   _interrupts.Right = 0;
@@ -79,7 +87,7 @@ const _setFlasher = (isLeft, isRight) => {
 
 class TurnSignalService extends BaseService {
   constructor(messageBus) {
-    super(ServiceCode.TurnSignalModule, ServiceType.ALWAYS_RUN, 1000, messageBus);
+    super(ServiceCode.TurnSignalModule, ServiceType.ON_DEMAND, 1000, messageBus);
     pinMode(Gpio.SIGNAL_IN_LEFT, INPUT);
     pinMode(Gpio.SIGNAL_IN_RIGHT, INPUT);
     pinMode(Gpio.SIGNAL_OUT_LEFT, OUTPUT);
@@ -95,6 +103,9 @@ class TurnSignalService extends BaseService {
   handleCommand(command) {
     super.handleCommand(command);
     switch (command) {
+      case ServiceCommand.DIAG:
+        _diagnostic();
+        break;
       case ServiceCommand.NONE:
         _setFlasher(false, false);
         break;

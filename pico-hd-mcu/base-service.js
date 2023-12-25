@@ -1,4 +1,5 @@
-const { ServiceCommand } = require('./constants');
+const { ServiceCommand, EventName } = require('./constants');
+const logger = require('./logger');
 
 class BaseService {
   constructor(code, type, updateInterval, eventBus) {
@@ -11,7 +12,7 @@ class BaseService {
     this.isRunning = false;
     this.data = {};
 
-    this.eventBus.on('service_command', (code, command) => {
+    this.eventBus.on(EventName.CommandForService, (code, command) => {
       if (code === this.code) {
         this.handleCommand(command);
       }
@@ -19,7 +20,7 @@ class BaseService {
   }
 
   handleCommand(command) {
-    console.log(`[${this.code}] handleCommand: ${command}`);
+    logger.info(this.code, 'handleCommand', command);
     switch (command) {
       case ServiceCommand.START:
         this.start();
@@ -33,43 +34,36 @@ class BaseService {
   }
 
   setup() {
-    console.log(`[${this.code}] setup`);
+    logger.info(this.code, 'setup');
   }
 
   start() {
-    console.log(`[${this.code}] starting`);
+    logger.info(this.code, 'starting');
     if (this.isRunning) {
-      console.log(`[${this.code}] already running`);
+      logger.error(this.code, 'already running');
       return;
     }
     this.isRunning = true;
     this.pid = setInterval(() => { this.update(); }, this.updateInterval);
+    logger.info(this.code, 'started.');
   }
 
   stop() {
-    console.log(`[${this.code}] stopping`);
+    logger.info(this.code, 'stopping');
     if (!this.isRunning) {
-      console.log(`[${this.code}] already stopped`);
+      logger.error(this.code, 'already stopped');
       return;
     }
     clearInterval(this.pid);
     this.isRunning = false;
     this.pid = null;
-  }
-
-  toggle() {
-    console.log(`[${this.code}] toggle`);
-    if (this.isRunning) {
-      this.stop();
-    } else {
-      this.start();
-    }
+    logger.info(this.code, 'stopped.');
   }
 
   update() {
-    console.log(`[${this.code}] update`);
+    logger.debug(this.code, 'update');
     this.lastUpdate = Date.now();
-    this.eventBus.emit('service_data', this.code, this.data);
+    this.eventBus.emit(EventName.DataFromService, this.code, 'UPDATE', this.data);
   }
 };
 

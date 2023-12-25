@@ -10,6 +10,8 @@ const Hardware = {
   HAS_MUX_SENSOR_SERVICE: false,
   TURN_SIGNAL_BLINK_RATE: 500,
   TURN_SIGNAL_BLINK_TIMEOUT: 10000,
+  TURN_SIGNAL_DIAG_RATE: 100,
+  TURN_SIGNAL_DIAG_TIMEOUT: 500,
   TURN_SIGNAL_INTERRUPT_WAIT: 100,
 };
 
@@ -44,9 +46,11 @@ const ServiceCode = {
   TurnSignalModule: 'TSM',
   SystemStats: 'SYS',
   DeviceSensor: 'DEV',
-  Dummy: 'AAA',
   MuxSensor: 'MUX',
   DirectSensor: 'DCT',
+  EventBus: 'BUS',
+  Main: 'MAIN',
+  Heartbeat: 'BEAT',
 };
 
 const ServiceCommand = {
@@ -59,4 +63,11 @@ const ServiceCommand = {
   NONE: 'NONE',
 };
 
-module.exports = { Hardware, Gpio, ServiceType, ServiceCode, ServiceCommand };
+const EventName = {
+  CommandForModule: 'module_command',
+  CommandForService: 'service_command',
+  DataFromService: 'service_data',
+  DataFromSerial: 'serial_data',
+};
+
+module.exports = { Hardware, Gpio, ServiceType, ServiceCode, ServiceCommand, EventName };
