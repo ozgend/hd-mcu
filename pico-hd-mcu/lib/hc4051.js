@@ -1,5 +1,6 @@
 const MUX_CHANNEL_SIZE = 8;
 
+// C B A - channel
 const MUX_CHANNEL_SELECT = [
   [LOW, LOW, LOW],    // ch 0
   [LOW, LOW, HIGH],   // ch 1
