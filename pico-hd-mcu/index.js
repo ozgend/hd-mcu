@@ -2,13 +2,15 @@ const logger = require('./logger');
 const { eventBus, publishToSerial } = require('./event-bus');
 const { ServiceType, ServiceCode, EventName } = require('./constants');
 const TurnSignalService = require('./services/turn-signal-service');
-const DeviceSensorService = require('./services/device-sensor-service');
 const SystemStatsService = require('./services/system-stats-service');
+const DeviceSensorService = require('./services/device-sensor-service');
+const MuxedSensorService = require('./services/muxed-sensor-service');
 
 const _services = [
   new TurnSignalService(eventBus),
+  new SystemStatsService(eventBus),
   new DeviceSensorService(eventBus),
-  new SystemStatsService(eventBus)
+  new MuxedSensorService(eventBus)
 ];
 
 _services.forEach(service => {
