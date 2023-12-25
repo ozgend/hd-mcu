@@ -32,7 +32,7 @@ class MuxedSensorService extends BaseService {
 
     _readerPid = setInterval(() => {
       this.mux.enableChannelIndex(_muxChIndex);
-      this.data[`ch_${_muxChannels[_muxChIndex]}`] = this.thermoSensor.readCelcius();
+      this.data[`ch_${_muxChannels[_muxChIndex]}`] = this.thermoSensor.readCelcius() ?? '-';
       logger.debug(ServiceCode.MuxSensor, 'interval.read', { ch: _muxChannels[_muxChIndex], cx: _muxChIndex, value: this.data[`ch_${_muxChannels[_muxChIndex]}`], values: this.data });
       _muxChIndex++;
       if (_muxChIndex >= _muxChannels.length) {
@@ -44,9 +44,11 @@ class MuxedSensorService extends BaseService {
   stop() {
     super.stop();
     clearInterval(_readerPid);
-    this.thermoSensor.close();
-    delete this.thermoSensor;
-    delete this.mux;
+    if (this.thermoSensor) {
+      this.thermoSensor.close();
+      delete this.thermoSensor;
+      delete this.mux;
+    }
   }
 
   update() {
