@@ -13,11 +13,12 @@ class SystemStatsService extends BaseService {
     this.data.version = process.version;
     this.data.name = board.name;
     this.data.uid = board.uid;
-    this.data.led = board.LED;
   }
 
   update() {
-    this.data.memory = process.memoryUsage();
+    Object.assign(this.data, process.memoryUsage());
+    this.data.rtc = millis();
+    this.data.now = Date.now();
     super.update();
   }
 };

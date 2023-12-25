@@ -7,7 +7,6 @@ class BaseService {
     this.type = type;
     this.updateInterval = updateInterval;
     this.eventBus = eventBus ?? { emit: () => { } };
-    this.lastUpdate = 0;
     this.pid = null;
     this.isRunning = false;
     this.data = {};
@@ -62,7 +61,6 @@ class BaseService {
 
   update() {
     logger.debug(this.code, 'update');
-    this.lastUpdate = Date.now();
     this.eventBus.emit(EventName.DataFromService, this.code, 'UPDATE', this.data);
   }
 };
