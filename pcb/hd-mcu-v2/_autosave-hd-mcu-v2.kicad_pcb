@@ -121,7 +121,7 @@
 
   (footprint "denolk:RPi_Pico_SMD_TH" (layer "F.Cu")
     (tstamp 0bb6f1d0-4b05-49b0-a4e6-4094d0212211)
-    (at 110.55 89.34)
+    (at 110.7 61.21)
     (descr "Through hole straight pin header, 2x20, 2.54mm pitch, double rows")
     (tags "Through hole pin header THT 2x20 2.54mm double row")
     (attr through_hole)

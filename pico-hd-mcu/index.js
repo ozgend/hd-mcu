@@ -28,19 +28,19 @@ const dispatchModuleCommand = (command) => {
       break;
     case 'START':
       _services.filter(s => s.type === ServiceType.ON_DEMAND).forEach(service => service.start());
-      publishToSerial(ServiceCode.Main, 'START', _services.filter(s => s.isRunning).map(s => s.code));
+      publishToSerial(ServiceCode.Main, 'START', _services.filter(s => s.isRunning).map(s => { return { code: s.code, type: s.type };}));
       break;
     case 'STOP':
       _services.filter(s => s.type === ServiceType.ON_DEMAND).forEach(service => service.stop());
-      publishToSerial(ServiceCode.Main, 'STOP', _services.filter(s => !s.isRunning).map(s => s.code));
+      publishToSerial(ServiceCode.Main, 'STOP', _services.filter(s => !s.isRunning).map(s => { return { code: s.code, type: s.type };}));
       break;
     case 'LIST_ALL':
       logger.info(ServiceCode.Main, 'list all services', _services.map(s => s.code));
-      publishToSerial(ServiceCode.Main, 'LIST_ALL', _services.map(s => s.code));
+      publishToSerial(ServiceCode.Main, 'LIST_ALL', _services.map(s => { return { code: s.code, type: s.type };}));
       break;
     case 'LIST_RUN':
       logger.info(ServiceCode.Main, 'list running services', _services.filter(s => s.isRunning).map(s => s.code));
-      publishToSerial(ServiceCode.Main, 'LIST_RUN', _services.filter(s => s.isRunning).map(s => s.code));
+      publishToSerial(ServiceCode.Main, 'LIST_RUN', _services.filter(s => s.isRunning).map(s => { return { code: s.code, type: s.type };}));
       break;
     default:
       logger.error(ServiceCode.Main, 'unknown module command', command);

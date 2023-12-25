@@ -88,14 +88,14 @@ const _setFlasher = (isLeft, isRight) => {
 class TurnSignalService extends BaseService {
   constructor(messageBus) {
     super(ServiceCode.TurnSignalModule, ServiceType.ON_DEMAND, 1000, messageBus);
-    pinMode(Gpio.SIGNAL_IN_LEFT, INPUT);
-    pinMode(Gpio.SIGNAL_IN_RIGHT, INPUT);
-    pinMode(Gpio.SIGNAL_OUT_LEFT, OUTPUT);
-    pinMode(Gpio.SIGNAL_OUT_RIGHT, OUTPUT);
   }
 
   setup() {
     super.setup();
+    pinMode(Gpio.SIGNAL_IN_LEFT, INPUT);
+    pinMode(Gpio.SIGNAL_IN_RIGHT, INPUT);
+    pinMode(Gpio.SIGNAL_OUT_LEFT, OUTPUT);
+    pinMode(Gpio.SIGNAL_OUT_RIGHT, OUTPUT);
     attachInterrupt(Gpio.SIGNAL_IN_LEFT, _handleInterrupt, RISING);
     attachInterrupt(Gpio.SIGNAL_IN_RIGHT, _handleInterrupt, RISING);
   }
