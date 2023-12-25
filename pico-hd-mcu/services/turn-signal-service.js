@@ -1,12 +1,18 @@
-const { GPIO } = require('gpio');
+const { Button } = require('button');
 const { Hardware, Gpio, ServiceCode, ServiceCommand, ServiceType } = require('../constants');
 const BaseService = require('../base-service');
 const logger = require('../logger');
 
-const _state = {
+// test out 3.3v
+pinMode(25, OUTPUT);
+digitalWrite(25, LOW);
+pinMode(16, OUTPUT);
+digitalWrite(16, HIGH);
+//
+
+const _will = {
   Left: false,
-  Right: false,
-  Both: false
+  Right: false
 };
 
 const _blink = {
@@ -21,6 +27,7 @@ const _interrupts = {
 
 let _flasherPid = 0;
 let _cancelerPid = 0;
+let _diagCounter = 0;
 
 const _handleInterrupt = (pin, mode) => {
   logger.debug(ServiceCode.TurnSignalModule, 'handleInterrupt', { pin, mode });
@@ -38,9 +45,24 @@ const _handleInterrupt = (pin, mode) => {
 }
 
 const _diagnostic = () => {
-  logger.debug(ServiceCode.TurnSignalModule, 'diagnostic', { _state, _blink, _interrupts });
-  _disableFlasher("cancel-any");
-  _enableFlasher(true, true, Hardware.TURN_SIGNAL_DIAG_RATE, Hardware.TURN_SIGNAL_DIAG_TIMEOUT);
+  _diagCounter = 0;
+  logger.debug(ServiceCode.TurnSignalModule, 'diagnostic', { _blink, _interrupts });
+  _disableFlasher("diag-start");
+
+  _flasherPid = setInterval(() => {
+    // digitalToggle(Gpio.SIGNAL_OUT_LEFT);
+    // digitalToggle(Gpio.SIGNAL_OUT_RIGHT);
+    _blink.Left = !_blink.Left;
+    _blink.Right = !_blink.Right;
+    digitalWrite(Gpio.SIGNAL_OUT_LEFT, _blink.Left ? HIGH : LOW);
+    digitalWrite(Gpio.SIGNAL_OUT_RIGHT, _blink.Right ? HIGH : LOW);
+    if (++_diagCounter >= Hardware.TURN_SIGNAL_DIAG_COUNT) {
+      // setTimeout(() => { 
+      _disableFlasher("diag-complete");
+      // }, 250);
+    }
+    logger.debug(ServiceCode.TurnSignalModule, 'blink', { _blink, _diagCounter });
+  }, Hardware.TURN_SIGNAL_DIAG_RATE);
 }
 
 const _enableFlasher = (isLeft, isRight, blinkRate, cancelTimeout) => {
@@ -57,22 +79,19 @@ const _enableFlasher = (isLeft, isRight, blinkRate, cancelTimeout) => {
     }
     logger.debug(ServiceCode.TurnSignalModule, 'blink', _blink);
   }, blinkRate);
-  _state.Both = isLeft && isRight;
-  _state.Left = isLeft && !isRight;
-  _state.Right = !isLeft && isRight;
 }
 
 const _disableFlasher = (reason) => {
-  logger.debug(ServiceCode.TurnSignalModule, 'disableFlasher', { reason });
-  digitalWrite(Gpio.SIGNAL_OUT_LEFT, LOW);
-  digitalWrite(Gpio.SIGNAL_OUT_RIGHT, LOW);
   clearInterval(_flasherPid);
   clearTimeout(_cancelerPid);
+  digitalWrite(Gpio.SIGNAL_OUT_LEFT, LOW);
+  digitalWrite(Gpio.SIGNAL_OUT_RIGHT, LOW);
   _flasherPid = 0;
   _cancelerPid = 0;
-  _state.Both = false;
-  _state.Left = false;
-  _state.Right = false;
+  _blink.Left = false;
+  _blink.Right = false;
+  _diagCounter = 0;
+  logger.debug(ServiceCode.TurnSignalModule, 'disableFlasher', { reason });
 }
 
 const _setFlasher = (isLeft, isRight) => {
@@ -92,12 +111,42 @@ class TurnSignalService extends BaseService {
 
   setup() {
     super.setup();
-    pinMode(Gpio.SIGNAL_IN_LEFT, INPUT);
-    pinMode(Gpio.SIGNAL_IN_RIGHT, INPUT);
+    // pinMode(Gpio.SIGNAL_IN_LEFT, INPUT);
+    // pinMode(Gpio.SIGNAL_IN_RIGHT, INPUT);
     pinMode(Gpio.SIGNAL_OUT_LEFT, OUTPUT);
     pinMode(Gpio.SIGNAL_OUT_RIGHT, OUTPUT);
-    attachInterrupt(Gpio.SIGNAL_IN_LEFT, _handleInterrupt, RISING);
-    attachInterrupt(Gpio.SIGNAL_IN_RIGHT, _handleInterrupt, RISING);
+
+    _diagnostic();
+
+    // attachInterrupt(Gpio.SIGNAL_IN_LEFT, _handleInterrupt, FALLING);
+    // attachInterrupt(Gpio.SIGNAL_IN_RIGHT, _handleInterrupt, FALLING);
+
+    this.leftButton = new Button(Gpio.SIGNAL_IN_LEFT, { mode: INPUT, event: RISING, debounce: Hardware.TURN_SIGNAL_BTN_DEBOUNCE });
+    this.rightButton = new Button(Gpio.SIGNAL_IN_RIGHT, { mode: INPUT, event: RISING, debounce: Hardware.TURN_SIGNAL_BTN_DEBOUNCE });
+
+    this.leftButton.on('click', () => {
+      logger.debug(ServiceCode.TurnSignalModule, 'click.left', { _interrupts });
+      _interrupts.Left = _interrupts.Left > 0 ? 0 : 1;
+      if (this.rightButton.read() === HIGH) {
+        _interrupts.Right = _interrupts.Right > 0 ? 0 : 1;
+      }
+      // else {
+      //   _interrupts.Left = _interrupts.Left > 0 ? 0 : 1;
+      // }
+      _setFlasher(_interrupts.Left > 0, _interrupts.Right > 0);
+    });
+
+    this.rightButton.on('click', () => {
+      logger.debug(ServiceCode.TurnSignalModule, 'click.right', { _interrupts });
+      _interrupts.Right = _interrupts.Right > 0 ? 0 : 1;
+      if (this.leftButton.read() === HIGH) {
+        _interrupts.Left = _interrupts.Left > 0 ? 0 : 1;
+      }
+      // else {
+      //   _interrupts.Right = _interrupts.Right > 0 ? 0 : 1;
+      // }
+      _setFlasher(_interrupts.Left > 0, _interrupts.Right > 0);
+    });
   }
 
   handleCommand(command) {
@@ -110,6 +159,7 @@ class TurnSignalService extends BaseService {
         _setFlasher(false, false);
         break;
       case ServiceCommand.ALL:
+      case ServiceCommand.BOTH:
         _setFlasher(true, true);
         break;
       case ServiceCommand.LEFT:
@@ -125,7 +175,6 @@ class TurnSignalService extends BaseService {
 
   update() {
     this.data.blink = _blink;
-    this.data.state = _state;
     this.data.irq = _interrupts;
     super.update();
   }
