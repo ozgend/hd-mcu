@@ -61,7 +61,7 @@ logger.info(ServiceCode.EventBus, 'eventBus ready');
 setInterval(() => {
   Serial.write('0_heartbeat\n');
   //logger.info(ServiceCode.EventBus, '0_heartbeat');
-}, 1000);
+}, 5000);
 
 const publishToSerial = (serviceCode, eventName, serviceData) => {
   eventBus.emit(EventName.DataFromService, serviceCode, eventName, serviceData);
