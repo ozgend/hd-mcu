@@ -17,12 +17,13 @@ const Hardware = {
   TURN_SIGNAL_INTERRUPT_WAIT: 100,
 };
 
+// for purple rpi pico
 // https://electrocredible.com/raspberry-pi-pico-w-pinout-guide-diagrams/
 const Gpio = {
   // functionality: pin,      // ## - name - notes
   DEVICE_SENSOR_TEMP: 30,     // 35 - GP30 - ADC4 - virtual
-  ADC2: 28,                   // 34 - GP28 - ADC2
-  ADC1: 27,                   // 32 - GP27 - ADC1
+  DEVICE_SENSOR_SPEED: 28,    // 34 - GP28 - ADC2
+  DEVICE_SENSOR_RPM: 27,      // 32 - GP27 - ADC1
   DEVICE_SENSOR_VOLTS: 26,    // 31 - GP26 - ADC0
   SIGNAL_IN_LEFT: 24,
   SIGNAL_IN_RIGHT: 23,
@@ -37,6 +38,10 @@ const Gpio = {
   BT_SERIAL_RX: 1,            // 2 - GP1
   BT_SERIAL_TX: 0,            // 1 - GP0
 };
+
+// TODO: for original rpi pico
+// const Gpio = {
+// }
 
 const ServiceType = {
   ALWAYS_RUN: 10,

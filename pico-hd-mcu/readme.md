@@ -20,11 +20,12 @@
     - [x] uptime counter
     - [x] voltage sensor
     - [x] temperature sensor
-    - [ ] rpm sensor
-    - [ ] speed sensor
+    - [x] rpm sensor
+    - [x] speed sensor
 
 ### software
 
+- node/js via [kalumajs](https://kalumajs.org/docs/getting-started)
 - FLASH: 2044/24 kb
 - SRAM: 264 total, 184/57 kb
 
