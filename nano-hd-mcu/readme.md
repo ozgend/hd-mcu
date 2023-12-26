@@ -1,6 +1,6 @@
 # hd-mcu
 
-## bluetooth supported mcu for harley davidson with raspberry pi pico
+## bluetooth supported mcu for harley davidson with arduino nano
 
 ### features
 
@@ -20,24 +20,26 @@
     - [x] uptime counter
     - [x] voltage sensor
     - [x] temperature sensor
-    - [x] rpm sensor
-    - [x] speed sensor
+    - [ ] rpm sensor
+    - [ ] speed sensor
 
 ### software
 
-- node/js via [kalumajs](https://kalumajs.org/docs/getting-started)
-- FLASH: 2044/24 kb
-- SRAM: 264 total, 184/57 kb
+- arduino/c++
+- FLASH: 30720/17352 bytes
+- SRAM: 2048/630 bytes
 
 ### hardware
 
-- raspberry pi pico
-- hc-06 bluetooth module
+- arduino nano
+- hc-05 bluetooth module
 - cd4051 multiplexer
+- 74hc595 shift register
 - l298n h-bridge driver
-- max6675 thermocouple digitizer
+- max6675 thermocouple amplifier
 - k-type thermocouple
 - 5805 voltage regulator
+- ds18b20 temperature sensor
 - 33k resistor
 - 10k resistor
 - 7.5k resistor
@@ -48,10 +50,10 @@
 ### pcb
 
 **front**
-![front](./pcb/pico-hd-mcu-v2/pcb-front.png)
+![front](../pcb/nano-hd-mcu-v2/pcb-front.png)
 
 **back**
-![back](./pcb/pico-hd-mcu-v2/pcb-back.png)
+![back](../pcb/nano-hd-mcu-v2/pcb-back.png)
 
 **blueprint**
-![raw](./pcb/pico-hd-mcu-v2/pcb-blueprint.png)
+![raw](../pcb/nano-hd-mcu-v2/pcb-blueprint.png)

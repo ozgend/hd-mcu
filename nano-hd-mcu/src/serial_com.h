@@ -2,7 +2,6 @@
 #define __serial_com__
 
 #include "./config_hw.h"
-#include <SoftwareSerial.h>
 
 class SerialCom
 {
@@ -19,10 +18,10 @@ public:
     if (P_HAS_BLUETOOTH)
     {
       writeConsole(F("SerialCom::bt start"));
-      _btSerial = new SoftwareSerial(PIN_SOFT_SERIAL_RX, PIN_SOFT_SERIAL_TX);
-      _btSerial->begin(SERIAL_BAUD_BT);
-      _btSerial->isListening();
-      writeConsole(String(F("SerialCom::bt isListening:")) + String(_btSerial->isListening()));
+      // _btSerial = new SoftwareSerial(PIN_SOFT_SERIAL_RX, PIN_SOFT_SERIAL_TX);
+      Serial1.begin(SERIAL_BAUD_BT);
+      // _btSerial->isListening();
+      // writeConsole(String(F("SerialCom::bt isListening:")) + String(_btSerial->isListening()));
     }
     else
     {
@@ -45,7 +44,7 @@ public:
       // writeConsole("SerialCom::readBT: no BT peripheral");
       return;
     }
-    _btSerial->println(payload);
+    Serial1.println(payload);
   }
 
   void writeConsole(const String payload)
@@ -64,7 +63,7 @@ public:
     if (hasBTSerialData())
     {
       // writeConsole("SerialCom::readBT: has data");
-      String payload = _btSerial->readString();
+      String payload = Serial1.readString();
       // writeConsole("SerialCom::readBT: payload=[" + payload + "]");
       return payload;
     }
@@ -111,16 +110,13 @@ public:
 
   boolean hasBTSerialData()
   {
-    return _btSerial->available() > 0;
+    return Serial1.available() > 0;
   }
 
   boolean hasConsoleSerialData()
   {
     return Serial.available() > 0;
   }
-
-private:
-  SoftwareSerial *_btSerial;
 };
 
 #endif

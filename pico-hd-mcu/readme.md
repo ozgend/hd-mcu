@@ -48,10 +48,10 @@
 ### pcb
 
 **front**
-![front](./pcb/pico-hd-mcu-v2/pcb-front.png)
+![front](../pcb/pico-hd-mcu-v2/pcb-front.png)
 
 **back**
-![back](./pcb/pico-hd-mcu-v2/pcb-back.png)
+![back](../pcb/pico-hd-mcu-v2/pcb-back.png)
 
 **blueprint**
-![raw](./pcb/pico-hd-mcu-v2/pcb-blueprint.png)
+![raw](../pcb/pico-hd-mcu-v2/pcb-blueprint.png)
