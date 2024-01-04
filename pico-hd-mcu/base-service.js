@@ -16,6 +16,8 @@ class BaseService {
         this.handleCommand(command);
       }
     });
+
+    this.eventBus.emit(EventName.SchemaFromService, this.code, 'SCHEMA', this.data);
   }
 
   handleCommand(command) {

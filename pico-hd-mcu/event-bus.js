@@ -43,6 +43,11 @@ eventBus.on(EventName.DataFromService, (serviceCode, eventName, serviceData) => 
   Serial.write(`${serviceCode}.${eventName}=${JSON.stringify(serviceData)}\n`);
 });
 
+eventBus.on(EventName.SchemaFromService, (serviceCode, eventName, serviceData) => {
+  logger.debug(ServiceCode.EventBus, EventName.SchemaFromService, { serviceCode, eventName, serviceData });
+  Serial.write(`${serviceCode}.${eventName}=${JSON.stringify(serviceData)}\n`);
+});
+
 // events from serial
 eventBus.on(EventName.DataFromSerial, (serialPayload) => {
   logger.debug(ServiceCode.EventBus, EventName.DataFromSerial, { serialPayload });
