@@ -3,6 +3,7 @@ const HC4051 = require('../lib/hc4051');
 const { ServiceCode, Gpio, ServiceType, Hardware } = require('../constants');
 const BaseService = require('../base-service');
 const logger = require('../logger');
+const { IMuxedSensorData } = require('../schema');
 
 const _muxChannels = [0, 1, 2, 3];
 let _readerPid = 0;
@@ -11,6 +12,7 @@ let _muxChIndex = 0;
 class MuxedSensorService extends BaseService {
   constructor(eventBus) {
     super(ServiceCode.MuxSensor, ServiceType.ON_DEMAND, 2000, eventBus);
+    this.data = IMuxedSensorData;
   }
 
   setup() {
@@ -44,6 +46,7 @@ class MuxedSensorService extends BaseService {
   stop() {
     super.stop();
     clearInterval(_readerPid);
+    _readerPid = 0;
     if (this.thermoSensor) {
       this.thermoSensor.close();
       delete this.thermoSensor;
