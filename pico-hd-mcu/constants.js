@@ -10,11 +10,18 @@ const Hardware = {
   // HAS_MUX_SENSOR_SERVICE: false,
   MUX_SENSOR_CONNECTED_COUNT: 4,
   TURN_SIGNAL_BTN_DEBOUNCE: 50,
-  TURN_SIGNAL_BLINK_RATE: 500,
+  TURN_SIGNAL_BLINK_RATE: 400,
   TURN_SIGNAL_BLINK_TIMEOUT: 10000,
   TURN_SIGNAL_DIAG_RATE: 100,
   TURN_SIGNAL_DIAG_COUNT: 6,
   TURN_SIGNAL_INTERRUPT_WAIT: 100,
+  ADC_BIT_RESOLUTION: 12,
+  ADC_BIT_MAX_VALUE: 4096, // 1 << 12
+  ADC_REF_MAX_VOLTAGE: 3.3,
+  ADC_CONVERSION_FACTOR: 0.0008056640625, // 3.3 / 1 << 12
+  BATTERY_VOLTAGE_R1: 10000,
+  BATTERY_VOLTAGE_R2: 35000,
+  BATTERY_VOLTAGE_LOSS: 0.06,
 };
 
 // for purple rpi pico
@@ -76,6 +83,7 @@ const EventName = {
   CommandForService: 'service_command',
   DataFromService: 'service_data',
   DataFromSerial: 'serial_data',
+  SchemaFromService: 'service_schema',
 };
 
 module.exports = { Hardware, Gpio, ServiceType, ServiceCode, ServiceCommand, EventName };
