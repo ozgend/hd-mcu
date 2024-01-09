@@ -22,6 +22,8 @@ class DeviceSensorService extends BaseService {
     battVref = battVref - (battVref * Hardware.BATTERY_VOLTAGE_LOSS);
     this.data.batt = battVref / (Hardware.BATTERY_VOLTAGE_R2 / (Hardware.BATTERY_VOLTAGE_R1 + Hardware.BATTERY_VOLTAGE_R2));
 
+    
+
     super.update();
   }
 };

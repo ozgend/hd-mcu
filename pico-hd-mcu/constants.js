@@ -19,12 +19,19 @@ const Hardware = {
   ADC_BIT_MAX_VALUE: 4096, // 1 << 12
   ADC_REF_MAX_VOLTAGE: 3.3,
   ADC_CONVERSION_FACTOR: 0.0008056640625, // 3.3 / 1 << 12
-  BATTERY_VOLTAGE_R1: 43000,
-  BATTERY_VOLTAGE_R2: 12000,
-  BATTERY_VOLTAGE_LOSS: 0.03,
+  BATTERY_VOLTAGE_R1: 33000,
+  BATTERY_VOLTAGE_R2: 7500,
+  BATTERY_VOLTAGE_LOSS: 0.01,
+  BATTERY_VOLTAGE_MIN: 7,
+  BATTERY_VOLTAGE_MAX: 18.0,
 };
 
-// for purple rpi pico
+// hardware voltage simulation
+// https://www.tinkercad.com/things/irP9OkxQxpl-brilliant-leelo/
+
+
+// for standard rpi pico
+// https://pico.pinout.xyz/
 // https://electrocredible.com/raspberry-pi-pico-w-pinout-guide-diagrams/
 const Gpio = {
   // functionality: GP pin,   // name - notes/wiring
