@@ -12,7 +12,7 @@ class DeviceSensorService extends BaseService {
 
   update() {
     this.raw.temp = analogRead(Gpio.DEVICE_SENSOR_TEMP);
-    this.raw.batt = analogRead(Gpio.DEVICE_SENSOR_VOLTS);
+    this.raw.batt = analogRead(Gpio.DEVICE_SENSOR_BATT);
     this.raw.rpm = analogRead(Gpio.DEVICE_SENSOR_RPM);
     this.raw.speed = analogRead(Gpio.DEVICE_SENSOR_SPEED);
 
