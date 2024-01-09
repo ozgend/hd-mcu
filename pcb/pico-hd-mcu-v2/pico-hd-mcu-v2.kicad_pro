@@ -55,7 +55,15 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        "unconnected_items|27885000|57177500|d94b2560-a7b2-4747-a5b2-a828df33ede2|50d7c002-9d95-4a07-b035-6b928b700a2e",
+        "unconnected_items|40850000|57300000|c7f0dd00-8778-47be-aa97-a4fbcdf91c86|50fa7c51-bfab-484a-89e9-c3217610337e",
+        "unconnected_items|44040000|27000000|091a44e2-6cc5-4c2d-a8bd-5d00be665b0c|85bad9eb-deb7-4123-b4ed-67633bae9ba1",
+        "unconnected_items|44052500|45680000|50fa7c51-bfab-484a-89e9-c3217610337e|5b60d1ca-ff0d-42f0-8645-dba6682a30bd",
+        "unconnected_items|51125000|69757500|97c4b4c5-8461-4f95-91c9-2276d2bab67b|2e890e2b-50d9-4f45-a9f0-db5f777e1f8c",
+        "unconnected_items|66602500|24327500|52c60c22-45fa-4497-b866-f2ba5c49dd6c|2c617495-641a-4764-ad33-77af51534ae7",
+        "unconnected_items|69727500|37027500|379944ce-787b-4b03-8a8d-3191f6e6aef4|c0a4f816-526d-47b7-ba3e-c0d1ba8b040d"
+      ],
       "meta": {
         "version": 2
       },
