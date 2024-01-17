@@ -1,4 +1,4 @@
-import {PermissionsAndroid} from 'react-native';
+import {Alert, PermissionsAndroid, Platform} from 'react-native';
 import {IDataProvider, IDataSource} from './interfaces';
 import RNBluetoothClassic, {
   BluetoothDevice,
@@ -25,6 +25,7 @@ export class BluetoothSerialDataProvider implements IDataProvider {
     this.isAvailable = await this.requestBt();
 
     if (!this.isAvailable) {
+      Alert.alert('Bluetooth requested permissions not granted');
       return false;
     }
 
@@ -32,23 +33,28 @@ export class BluetoothSerialDataProvider implements IDataProvider {
       this.isAvailable = await RNBluetoothClassic.isBluetoothAvailable();
     } catch (err) {
       console.error(err);
+      Alert.alert(err.message);
     }
 
     if (!this.isAvailable) {
+      Alert.alert('Bluetooth is not available');
       return false;
     }
 
     try {
       this.isAvailable = await RNBluetoothClassic.isBluetoothEnabled();
     } catch (err) {
+      Alert.alert(err.message);
       console.error(err);
     }
 
     if (!this.isAvailable) {
+      Alert.alert('Bluetooth is not enabled');
       this.isAvailable = await RNBluetoothClassic.requestBluetoothEnabled();
     }
 
     if (!this.isAvailable) {
+      Alert.alert('Bluetooth enable request denied');
       return false;
     }
 
@@ -59,6 +65,12 @@ export class BluetoothSerialDataProvider implements IDataProvider {
       this.isAvailable = await this.connectedDevice.isConnected();
     } catch (err) {
       console.error(err);
+      Alert.alert(err.message);
+    }
+
+    if (!this.isAvailable) {
+      Alert.alert('Bluetooth connection failed to device');
+      return false;
     }
 
     this.onInitialized();
@@ -76,6 +88,30 @@ export class BluetoothSerialDataProvider implements IDataProvider {
       },
     );
 
+    if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+      Alert.alert('Location permission not granted');
+      return false;
+    }
+
+    if (Platform.OS === 'android' && Platform.Version <= 29) {
+      return true;
+    }
+
+    // granted = await PermissionsAndroid.request(
+    //   'android.permission.BLUETOOTH_SCAN',
+    //   {
+    //     title: 'Bluetooth Scan Permission',
+    //     message: 'app needs bluetooth access to scan the devices',
+    //     buttonPositive: 'OK',
+    //     buttonNegative: 'Cancel',
+    //   },
+    // );
+
+    // if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+    //   Alert.alert('Bluetooth Scan permission not granted');
+    //   return false;
+    // }
+
     granted = await PermissionsAndroid.request(
       'android.permission.BLUETOOTH_CONNECT',
       {
@@ -85,6 +121,11 @@ export class BluetoothSerialDataProvider implements IDataProvider {
         buttonNegative: 'Cancel',
       },
     );
+
+    if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+      Alert.alert('Bluetooth Connect permission not granted');
+      return false;
+    }
 
     return granted === PermissionsAndroid.RESULTS.GRANTED;
   };
