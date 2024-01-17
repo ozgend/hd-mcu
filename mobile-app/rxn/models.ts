@@ -88,7 +88,7 @@ const FieldInfo: {[key: string]: IFieldInfo} = {
   version: {title: 'VERSION', type: 'string'},
   name: {title: 'NAME', type: 'string'},
   uid: {title: 'UID', type: 'string'},
-  heapTotal: {title: 'MEM', unit: 'b', type: 'number'},
+  heapTotal: {title: 'MEM TOTAL', unit: 'b', type: 'number'},
   heapUsed: {title: 'MEM USED', unit: 'b', type: 'number'},
   heapPeak: {title: 'MEM PEAK', unit: 'b', type: 'number'},
   rtc: {title: 'UPTIME', type: 'date'},
@@ -111,14 +111,17 @@ export const getFieldInfo = (fieldName: string): IFieldInfo | null => {
   }
   switch (fi.type) {
     case 'number':
-      fi.formatter = (value: number) => value.toFixed(fi.precision ?? 0);
+      fi.formatter = (value: number) =>
+        value ? value.toFixed(fi.precision ?? 0) : 'N/A';
       break;
     case 'date':
       fi.formatter = (value: number) =>
-        new Date(value).toISOString().split('T')[1].split('.')[0];
+        value
+          ? new Date(value).toISOString().split('T')[1].split('.')[0]
+          : 'N/A';
       break;
     default:
-      fi.formatter = (value: any) => value;
+      fi.formatter = (value: any) => value ?? 'N/A';
       break;
   }
   return fi;
