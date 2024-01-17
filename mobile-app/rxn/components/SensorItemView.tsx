@@ -18,7 +18,7 @@ export class SensorItemView extends Component<ISensorItemProps> {
 
     const value = fieldInfo?.formatter
       ? fieldInfo.formatter(this.props.value)
-      : this.props.value;
+      : this.props.value ?? 'N/A';
 
     return (
       <View style={styles.sensorItem} key={this.props.fieldName}>

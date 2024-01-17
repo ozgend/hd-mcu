@@ -127,8 +127,8 @@ class HomeView extends Component<void, IState> {
         )}
         {!this.state.isProviderAvailable && (
           <View style={styles.centerContainer}>
-            <Text style={styles.heading}>BLUETOOTH NOT CONNECTED</Text>
-            <Text style={styles.text}>PLEASE CONNECT TO DEVICE</Text>
+            <Text style={styles.heading}>Bluetooth is disconnected.</Text>
+            <Text style={styles.text}>Please connect to the device first.</Text>
             <Text style={styles.text}> </Text>
             <MaterialCommunityIcons.Button
               name="bluetooth"

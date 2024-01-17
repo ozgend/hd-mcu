@@ -54,7 +54,7 @@ export class ServiceSensorView extends Component<
       this.setState({data});
     });
 
-    await this.setServiceState(true);
+    // await this.setServiceState(true);
   }
 
   async componentWillUnmount(): Promise<void> {
@@ -86,15 +86,26 @@ export class ServiceSensorView extends Component<
           </MaterialCommunityIcons.Button>
         </View>
         <Text> </Text>
-        {Object.keys(this.state?.data ?? {}).map(fieldName => {
-          return (
-            <SensorItemView
-              key={fieldName}
-              fieldName={fieldName}
-              value={this.state.data[fieldName as keyof typeof this.state.data]}
-            />
-          );
-        })}
+        {!this.state.isRunning && (
+          <View style={styles.centerContainer}>
+            <Text style={styles.text}>
+              <Text style={styles.heading}>Service is ready</Text>,{' '}
+              but not running. You can start the service to poll data.
+            </Text>
+          </View>
+        )}
+        {this.state?.data &&
+          Object.keys(this.state?.data ?? {}).map(fieldName => {
+            return (
+              <SensorItemView
+                key={fieldName}
+                fieldName={fieldName}
+                value={
+                  this.state.data[fieldName as keyof typeof this.state.data]
+                }
+              />
+            );
+          })}
       </ScrollView>
     );
   }
