@@ -1,12 +1,22 @@
 import React, {Component} from 'react';
-import {Button, ScrollView, Text} from 'react-native';
+import {ScrollView, Text, View} from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {IDataProvider} from '../services/interfaces';
 import {SensorItemView} from './SensorItemView';
-import {
-  ISensorViewProps,
-  ISensorViewStateData,
-  IDeviceSensorData,
-} from '../models';
+import {IDeviceSensorData} from '../models';
+import styles from '../styles';
+
+export interface ISensorViewProps<IProvider> {
+  provider: IProvider;
+  serviceName: string;
+  title: string;
+  iconName: string;
+}
+
+export interface ISensorViewStateData<TSensorData> {
+  data: TSensorData;
+  isRunning?: boolean;
+}
 
 export class ServiceSensorView extends Component<
   ISensorViewProps<IDataProvider>,
@@ -25,40 +35,56 @@ export class ServiceSensorView extends Component<
     this.setServiceState(toState);
   }
 
-  setServiceState(toState: boolean) {
-    if (this.state.isRunning === toState) {
-      console.debug(`${this.props.serviceName} skip state, already ${toState}`);
-      return;
-    }
+  async setServiceState(toState: boolean) {
+    // if (this.state.isRunning === toState) {
+    //   console.debug(`${this.props.serviceName} skip state, already ${toState}`);
+    //   return;
+    // }
     console.debug(`${this.props.serviceName} -> ${toState}`);
     this.setState({isRunning: toState});
-    this.props.provider.sendCommand(
+    await this.props.provider.sendCommand(
       this.props.serviceName,
       toState ? 'START' : 'STOP',
     );
   }
 
-  componentDidMount(): void {
+  async componentDidMount(): Promise<void> {
     console.debug(`${this.props.serviceName} mounted`);
     this.props.provider.onUpdate(this.props.serviceName, (data: any) => {
       this.setState({data});
     });
 
-    this.setServiceState(true);
+    await this.setServiceState(true);
   }
 
-  componentWillUnmount(): void {
+  async componentWillUnmount(): Promise<void> {
     console.debug(`${this.props.serviceName} unmounting`);
-    this.setServiceState(false);
+    await this.setServiceState(false);
   }
 
   render() {
     return (
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <Button
-          title={this.state.isRunning ? 'STOP' : 'START'}
-          onPress={() => this.toggleService()}
-        />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={styles.container}>
+        <View style={styles.actionBarView}>
+          <Text style={styles.actionBarHeader}>{this.props.title}</Text>
+          <MaterialCommunityIcons
+            style={styles.actionBarStatusIcon}
+            size={styles.actionBarStatusIcon.fontSize}
+            color={this.state.isRunning ? '#4f4' : '#f44'}
+            name={'circle'}
+            // name={this.state.isRunning ? 'bluetooth-transfer' : 'bluetooth-off'}
+          />
+          <MaterialCommunityIcons.Button
+            size={styles.actionBarButton.fontSize}
+            name={this.state.isRunning ? 'stop-circle' : 'play-circle'}
+            style={styles.actionBarButton}
+            color={styles.actionBarButton.color}
+            onPress={() => this.toggleService()}>
+            {this.state.isRunning ? 'STOP' : 'START'}
+          </MaterialCommunityIcons.Button>
+        </View>
         <Text> </Text>
         {Object.keys(this.state?.data ?? {}).map(fieldName => {
           return (

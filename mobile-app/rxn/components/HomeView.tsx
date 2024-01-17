@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React, {Component} from 'react';
-import {Button, Text, View} from 'react-native';
+import {Text, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,9 +15,11 @@ interface IState {
   isProviderAvailable: boolean;
   dataProvider: IDataProvider;
   receivedData: string;
+  serviceState: {[key: string]: boolean};
 }
 
 const Tab = createBottomTabNavigator();
+
 const dataProvider = new BluetoothSerialDataProvider();
 
 class HomeView extends Component<void, IState> {
@@ -28,6 +30,7 @@ class HomeView extends Component<void, IState> {
       isProviderAvailable: false,
       receivedData: '--',
       dataProvider,
+      serviceState: {},
     };
   }
 
@@ -48,7 +51,7 @@ class HomeView extends Component<void, IState> {
   }
 
   iconSet(name: string): React.ReactNode {
-    return <MaterialCommunityIcons name={name} size={26} color="#000000" />;
+    return <MaterialCommunityIcons name={name} size={26} color="#fa0" />;
   }
 
   render() {
@@ -59,56 +62,64 @@ class HomeView extends Component<void, IState> {
             <Tab.Screen
               name={BtDataServiceTypes.DEV}
               options={{
-                title: 'Device',
                 unmountOnBlur: true,
+                header: () => undefined,
                 tabBarIcon: () => this.iconSet('motorbike'),
               }}
               children={() => (
                 <ServiceSensorView
                   provider={this.state.dataProvider}
                   serviceName={BtDataServiceTypes.DEV}
+                  title={'Motorbike'}
+                  iconName={'motorbike'}
                 />
               )}
             />
             <Tab.Screen
               name={BtDataServiceTypes.MUX}
               options={{
-                title: 'MUX Thermometers',
                 unmountOnBlur: true,
+                header: () => undefined,
                 tabBarIcon: () => this.iconSet('thermometer-lines'),
               }}
               children={() => (
                 <ServiceSensorView
                   provider={this.state.dataProvider}
                   serviceName={BtDataServiceTypes.MUX}
+                  title={'MUX Thermometers'}
+                  iconName={'thermometer-lines'}
                 />
               )}
             />
             <Tab.Screen
               name={BtDataServiceTypes.SYS}
               options={{
-                title: 'System',
                 unmountOnBlur: true,
+                header: () => undefined,
                 tabBarIcon: () => this.iconSet('bluetooth-settings'),
               }}
               children={() => (
                 <ServiceSensorView
                   provider={this.state.dataProvider}
                   serviceName={BtDataServiceTypes.SYS}
+                  title={'System'}
+                  iconName={'bluetooth-settings'}
                 />
               )}
             />
             <Tab.Screen
               name={BtDataServiceTypes.TSM}
               options={{
-                title: 'Turn Signal Module',
                 unmountOnBlur: true,
+                header: () => undefined,
                 tabBarIcon: () => this.iconSet('arrow-left-right'),
               }}
               children={() => (
                 <ServiceSensorView
                   provider={this.state.dataProvider}
                   serviceName={BtDataServiceTypes.TSM}
+                  title={'Turn Signal Module'}
+                  iconName={'arrow-left-right'}
                 />
               )}
             />
@@ -116,9 +127,16 @@ class HomeView extends Component<void, IState> {
         )}
         {!this.state.isProviderAvailable && (
           <View style={styles.centerContainer}>
-            <Text style={styles.sensorTitle}>bluetooth not connected</Text>
-            <Text style={styles.sensorTitle}>please connect to a device</Text>
-            <Button title="Connect" onPress={() => this.makeConnection()} />
+            <Text style={styles.heading}>BLUETOOTH NOT CONNECTED</Text>
+            <Text style={styles.text}>PLEASE CONNECT TO DEVICE</Text>
+            <Text style={styles.text}> </Text>
+            <MaterialCommunityIcons.Button
+              name="bluetooth"
+              style={styles.button}
+              color={styles.button.color}
+              onPress={() => this.makeConnection()}>
+              CONNECT
+            </MaterialCommunityIcons.Button>
           </View>
         )}
       </NavigationContainer>

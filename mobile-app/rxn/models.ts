@@ -1,13 +1,3 @@
-export interface ISensorViewProps<IProvider> {
-  provider: IProvider;
-  serviceName: string;
-}
-
-export interface ISensorViewStateData<TSensorData> {
-  data: TSensorData;
-  isRunning?: boolean;
-}
-
 export interface IServiceState {}
 
 export interface IOtaMetadata {
@@ -141,4 +131,4 @@ export const BtDataServiceTypes = {
   TSM: 'TSM',
 };
 
-export type BtDataServiceKey = keyof typeof BtDataServiceTypes;
+export const BtDataServiceKey = Object.keys(BtDataServiceTypes);

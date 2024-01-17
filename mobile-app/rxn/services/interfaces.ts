@@ -14,12 +14,12 @@ export interface IDataSource {
 
 export interface IDataProvider {
   isAvailable: boolean;
-  datasource?: IDataSource;
+  hasStream: boolean;
   initialize(): Promise<boolean>;
   onUpdate(service: string, callback: (data: any) => void): void;
   // onConnect(service: string, callback: () => void): void;
   // onDisconnect(service: string, callback: () => void): void;
-  sendCommand(service: string, command: string): void;
+  sendCommand(service: string, command: string): Promise<void>;
   startStream(): boolean;
   stopStream(): boolean;
 }

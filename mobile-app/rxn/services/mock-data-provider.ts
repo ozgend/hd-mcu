@@ -56,6 +56,7 @@ const mockDataSource: {[key: string]: () => any} = {
 
 export class MockDataProvider implements IDataProvider {
   isAvailable = true;
+  hasStream = false;
   private pid: {[key: string]: any} = {};
   private listeners: any = {};
 
@@ -67,25 +68,29 @@ export class MockDataProvider implements IDataProvider {
     this.listeners[serviceName] = callback;
   }
 
-  sendCommand(serviceName: string, command: string): void {
-    console.log('sendCommand', serviceName, command);
-    if (command === 'START') {
-      if (this.pid[serviceName]) {
-        console.log(`${serviceName} already running`);
-        return;
+  sendCommand(serviceName: string, command: string): Promise<void> {
+    return new Promise(resolve => {
+      console.log('sendCommand', serviceName, command);
+      if (command === 'START') {
+        if (this.pid[serviceName]) {
+          console.log(`${serviceName} already running`);
+          return;
+        }
+        this.pid[serviceName] = setInterval(() => {
+          this.listeners[serviceName]
+            ? this.listeners[serviceName](mockDataSource[serviceName]())
+            : null;
+        }, 1000);
+      } else if (command === 'STOP') {
+        clearInterval(this.pid[serviceName]);
+        delete this.pid[serviceName];
       }
-      this.pid[serviceName] = setInterval(() => {
-        this.listeners[serviceName]
-          ? this.listeners[serviceName](mockDataSource[serviceName]())
-          : null;
-      }, 1000);
-    } else if (command === 'STOP') {
-      clearInterval(this.pid[serviceName]);
-      delete this.pid[serviceName];
-    }
+      resolve();
+    });
   }
 
   startStream(): boolean {
+    this.hasStream = true;
     return true;
   }
   stopStream(): boolean {
