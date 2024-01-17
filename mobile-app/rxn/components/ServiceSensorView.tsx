@@ -1,17 +1,14 @@
 import React, {Component} from 'react';
+import {Button, ScrollView, Text} from 'react-native';
+import {IDataProvider} from '../services/interfaces';
+import {SensorItemView} from './SensorItemView';
 import {
-  IDeviceSensorData,
   ISensorViewProps,
   ISensorViewStateData,
-  BtDataServiceTypes,
-} from '../../models';
-import {SensorItem} from './SensorItem';
-import {IDataProvider} from '../../services/interfaces';
-import {Button, ScrollView, Text} from 'react-native';
+  IDeviceSensorData,
+} from '../models';
 
-const service = BtDataServiceTypes.DEV;
-
-export class DeviceSensorView extends Component<
+export class ServiceSensorView extends Component<
   ISensorViewProps<IDataProvider>,
   ISensorViewStateData<IDeviceSensorData>
 > {
@@ -23,18 +20,27 @@ export class DeviceSensorView extends Component<
     };
   }
 
-  toggleService(toState?: boolean) {
-    this.props.provider.sendCommand(service, toState ? 'START' : 'STOP');
-    this.setState({isRunning: toState});
+  toggleService() {
+    const toState = !this.state.isRunning;
+    this.setServiceState(toState);
   }
 
-  setServiceState(isRunning: boolean) {
-    this.setState({isRunning});
+  setServiceState(toState: boolean) {
+    if (this.state.isRunning === toState) {
+      console.debug(`${this.props.serviceName} skip state, already ${toState}`);
+      return;
+    }
+    console.debug(`${this.props.serviceName} -> ${toState}`);
+    this.setState({isRunning: toState});
+    this.props.provider.sendCommand(
+      this.props.serviceName,
+      toState ? 'START' : 'STOP',
+    );
   }
 
   componentDidMount(): void {
-    console.debug(`${service} mounted`);
-    this.props.provider.onUpdate(service, (data: any) => {
+    console.debug(`${this.props.serviceName} mounted`);
+    this.props.provider.onUpdate(this.props.serviceName, (data: any) => {
       this.setState({data});
     });
 
@@ -42,7 +48,7 @@ export class DeviceSensorView extends Component<
   }
 
   componentWillUnmount(): void {
-    console.debug(`${service} unmounting`);
+    console.debug(`${this.props.serviceName} unmounting`);
     this.setServiceState(false);
   }
 
@@ -56,7 +62,7 @@ export class DeviceSensorView extends Component<
         <Text> </Text>
         {Object.keys(this.state?.data ?? {}).map(fieldName => {
           return (
-            <SensorItem
+            <SensorItemView
               key={fieldName}
               fieldName={fieldName}
               value={this.state.data[fieldName as keyof typeof this.state.data]}

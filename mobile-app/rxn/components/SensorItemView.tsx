@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 import {View, Text} from 'react-native';
-import styles from '../../styles';
-import {getFieldInfo} from '../../models';
+import styles from '../styles';
+import {getFieldInfo} from '../models';
 
 export interface ISensorItemProps {
   fieldName: string;
   value: string | number | boolean | null | undefined | any;
 }
 
-export class SensorItem extends Component<ISensorItemProps> {
+export class SensorItemView extends Component<ISensorItemProps> {
   render() {
     const fieldInfo = getFieldInfo(this.props.fieldName);
 

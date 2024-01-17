@@ -7,8 +7,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import styles, {TabTheme} from '../styles';
 import {IDataProvider} from '../services/interfaces';
 import {BtDataServiceTypes} from '../models';
-import {MockDataProvider} from '../services/mock-data-provider';
-import {BaseSensorViewComponent} from './Views/BaseSensorViewComponent';
+import {ServiceSensorView} from './ServiceSensorView';
+import {BluetoothSerialDataProvider} from '../services/bt-data-provider';
 
 interface IState {
   isProviderBroadcasting: boolean;
@@ -18,9 +18,9 @@ interface IState {
 }
 
 const Tab = createBottomTabNavigator();
-const dataProvider = new MockDataProvider();
+const dataProvider = new BluetoothSerialDataProvider();
 
-class Home extends Component<void, IState> {
+class HomeView extends Component<void, IState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -64,7 +64,7 @@ class Home extends Component<void, IState> {
                 tabBarIcon: () => this.iconSet('motorbike'),
               }}
               children={() => (
-                <BaseSensorViewComponent
+                <ServiceSensorView
                   provider={this.state.dataProvider}
                   serviceName={BtDataServiceTypes.DEV}
                 />
@@ -78,7 +78,7 @@ class Home extends Component<void, IState> {
                 tabBarIcon: () => this.iconSet('thermometer-lines'),
               }}
               children={() => (
-                <BaseSensorViewComponent
+                <ServiceSensorView
                   provider={this.state.dataProvider}
                   serviceName={BtDataServiceTypes.MUX}
                 />
@@ -92,7 +92,7 @@ class Home extends Component<void, IState> {
                 tabBarIcon: () => this.iconSet('bluetooth-settings'),
               }}
               children={() => (
-                <BaseSensorViewComponent
+                <ServiceSensorView
                   provider={this.state.dataProvider}
                   serviceName={BtDataServiceTypes.SYS}
                 />
@@ -106,7 +106,7 @@ class Home extends Component<void, IState> {
                 tabBarIcon: () => this.iconSet('arrow-left-right'),
               }}
               children={() => (
-                <BaseSensorViewComponent
+                <ServiceSensorView
                   provider={this.state.dataProvider}
                   serviceName={BtDataServiceTypes.TSM}
                 />
@@ -126,4 +126,4 @@ class Home extends Component<void, IState> {
   }
 }
 
-export default Home;
+export default HomeView;
