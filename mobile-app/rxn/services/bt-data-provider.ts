@@ -150,7 +150,7 @@ export class BluetoothSerialDataProvider implements IDataProvider {
       console.log(`${service} already ${command}}`);
       return;
     }
-    await this.connectedDevice?.write(`${service}=${command}\r`);
+    await this.connectedDevice?.write(`${service}=${command}\n`);
     this.serviceState[service] = command === 'START';
   }
 
