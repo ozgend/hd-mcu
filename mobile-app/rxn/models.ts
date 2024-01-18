@@ -112,8 +112,8 @@ const SensorFieldInfo: { [key: string]: IFieldInfo } = {
 const ServiceStatusFieldInfo: { [key: string]: IFieldInfo } = {
   serviceCode: { title: 'SERVICE', type: 'string' },
   serviceType: { title: 'TYPE', type: 'string' },
-  updateInterval: { title: 'UPDATE-TO', unit: 'ms', type: 'number' },
-  idleTimeout: { title: 'IDLE-TO', unit: 'ms', type: 'number' },
+  updateInterval: { title: 'UPDATE-TO', unit: 'ms', type: 'number', available: false },
+  idleTimeout: { title: 'IDLE-TO', unit: 'ms', type: 'number', available: false },
   broadcastMode: { title: 'BROADCAST', type: 'string' },
   status: { title: 'STATUS', type: 'string' },
 };

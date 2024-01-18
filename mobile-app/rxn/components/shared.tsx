@@ -185,8 +185,9 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     backgroundColor: '#222',
-    borderBottomColor: '#444',
+    borderColor: '#444',
     textTransform: 'uppercase',
+    borderTopWidth: 1,
   },
   infoTitle: {
     paddingHorizontal: 4,
@@ -212,6 +213,13 @@ export const styles = StyleSheet.create({
     textAlign: 'right',
     textTransform: 'uppercase',
     minWidth: 50,
+    color: '#fa0',
+  },
+  statusText: {
+    padding: 30,
+    fontSize: 16,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
     color: '#fa0',
   },
 });

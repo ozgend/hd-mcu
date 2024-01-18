@@ -162,18 +162,21 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
             <MaterialCommunityIcons.Button name="bluetooth" style={styles.button} color={styles.button.color} onPress={() => this.initializeProvider()}>
               START
             </MaterialCommunityIcons.Button>
+            <Text style={styles.text}> </Text>
+            {this.state.isBusy && !this.state.isDeviceConnected && <Text style={styles.textSmall}>{this.state.status}</Text>}
+            {!this.state.isBusy && !this.state.isDeviceConnected && <Text style={styles.textSmall}> </Text>}
           </View>
         )}
         {!this.state.isDeviceConnected && (
           <View style={styles.container}>
-            <Text style={styles.textSmall}>{this.state.status}</Text>
+            {this.state.isDeviceDiscovered && <Text style={styles.statusText}>connect to device</Text>}
+            <Text style={styles.text}> </Text>
             <FlatList
               data={this.state.devices}
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => this.selectDevice(item)}>
-                  <Text>
-                    {item.name} {item.address}
-                  </Text>
+                <TouchableOpacity onPress={() => this.selectDevice(item)} style={styles.infoItem}>
+                  <Text style={styles.infoTitle}>{item.name} </Text>
+                  <Text style={styles.infoValue}>{item.address} </Text>
                 </TouchableOpacity>
               )}
               keyExtractor={item => item.address}
