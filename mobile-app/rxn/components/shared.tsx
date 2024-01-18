@@ -1,18 +1,24 @@
+import React from 'react';
 import {StyleSheet} from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export const TabTheme = {
+export const getIcon = (name: string): React.ReactNode => {
+  return <MaterialCommunityIcons name={name} size={26} color="#fa0" />;
+};
+
+export const tabTheme = {
   dark: true,
   colors: {
-    primary: '#222',
+    primary: '#fff',
     background: '#222',
     card: '#222',
     text: '#fa0',
-    border: '#444',
+    border: '#fa0',
     notification: '#fa0',
   },
 };
 
-export default StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 4,

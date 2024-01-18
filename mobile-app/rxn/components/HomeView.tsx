@@ -1,10 +1,9 @@
-/* eslint-disable react/no-unstable-nested-components */
 import React, {Component} from 'react';
 import {Text, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import styles, {TabTheme} from '../styles';
+import {styles, tabTheme, getIcon} from './shared';
 import {IDataProvider} from '../services/interfaces';
 import {BtDataServiceTypes} from '../models';
 import {ServiceSensorView} from './ServiceSensorView';
@@ -50,13 +49,9 @@ class HomeView extends Component<void, IState> {
     }
   }
 
-  iconSet(name: string): React.ReactNode {
-    return <MaterialCommunityIcons name={name} size={26} color="#fa0" />;
-  }
-
   render() {
     return (
-      <NavigationContainer theme={TabTheme}>
+      <NavigationContainer theme={tabTheme}>
         {this.state.isProviderAvailable && this.state.dataProvider && (
           <Tab.Navigator>
             <Tab.Screen
@@ -64,14 +59,14 @@ class HomeView extends Component<void, IState> {
               options={{
                 unmountOnBlur: true,
                 header: () => undefined,
-                tabBarIcon: () => this.iconSet('motorbike'),
+                tabBarIcon: () => getIcon('engine'),
               }}
               children={() => (
                 <ServiceSensorView
                   provider={this.state.dataProvider}
                   serviceName={BtDataServiceTypes.DEV}
                   title={'Motorbike'}
-                  iconName={'motorbike'}
+                  iconName={'engine'}
                 />
               )}
             />
@@ -80,14 +75,14 @@ class HomeView extends Component<void, IState> {
               options={{
                 unmountOnBlur: true,
                 header: () => undefined,
-                tabBarIcon: () => this.iconSet('thermometer-lines'),
+                tabBarIcon: () => getIcon('thermometer'),
               }}
               children={() => (
                 <ServiceSensorView
                   provider={this.state.dataProvider}
                   serviceName={BtDataServiceTypes.MUX}
-                  title={'MUX Thermometers'}
-                  iconName={'thermometer-lines'}
+                  title={'Thermometers'}
+                  iconName={'thermometer'}
                 />
               )}
             />
@@ -96,14 +91,14 @@ class HomeView extends Component<void, IState> {
               options={{
                 unmountOnBlur: true,
                 header: () => undefined,
-                tabBarIcon: () => this.iconSet('bluetooth-settings'),
+                tabBarIcon: () => getIcon('chip'),
               }}
               children={() => (
                 <ServiceSensorView
                   provider={this.state.dataProvider}
                   serviceName={BtDataServiceTypes.SYS}
                   title={'System'}
-                  iconName={'bluetooth-settings'}
+                  iconName={'chip'}
                 />
               )}
             />
@@ -112,7 +107,7 @@ class HomeView extends Component<void, IState> {
               options={{
                 unmountOnBlur: true,
                 header: () => undefined,
-                tabBarIcon: () => this.iconSet('arrow-left-right'),
+                tabBarIcon: () => getIcon('arrow-left-right'),
               }}
               children={() => (
                 <ServiceSensorView

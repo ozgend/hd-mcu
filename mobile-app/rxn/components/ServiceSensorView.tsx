@@ -3,8 +3,8 @@ import {ScrollView, Text, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {IDataProvider} from '../services/interfaces';
 import {SensorItemView} from './SensorItemView';
-import {IDeviceSensorData} from '../models';
-import styles from '../styles';
+import {IServiceState} from '../models';
+import {styles} from './shared';
 
 export interface ISensorViewProps<IProvider> {
   provider: IProvider;
@@ -20,7 +20,7 @@ export interface ISensorViewStateData<TSensorData> {
 
 export class ServiceSensorView extends Component<
   ISensorViewProps<IDataProvider>,
-  ISensorViewStateData<IDeviceSensorData>
+  ISensorViewStateData<IServiceState>
 > {
   constructor(props: any) {
     super(props);
@@ -36,10 +36,6 @@ export class ServiceSensorView extends Component<
   }
 
   async setServiceState(toState: boolean) {
-    // if (this.state.isRunning === toState) {
-    //   console.debug(`${this.props.serviceName} skip state, already ${toState}`);
-    //   return;
-    // }
     console.debug(`${this.props.serviceName} -> ${toState}`);
     this.setState({isRunning: toState});
     await this.props.provider.sendCommand(
@@ -74,7 +70,6 @@ export class ServiceSensorView extends Component<
             size={styles.actionBarStatusIcon.fontSize}
             color={this.state.isRunning ? '#4f4' : '#f44'}
             name={'circle'}
-            // name={this.state.isRunning ? 'bluetooth-transfer' : 'bluetooth-off'}
           />
           <MaterialCommunityIcons.Button
             size={styles.actionBarButton.fontSize}
@@ -89,8 +84,11 @@ export class ServiceSensorView extends Component<
         {!this.state.isRunning && (
           <View style={styles.centerContainer}>
             <Text style={styles.text}>
-              <Text style={styles.heading}>Service is ready</Text>,{' '}
-              but not running. You can start the service to poll data.
+              <Text style={styles.heading}>
+                {`${this.props.title} [${this.props.serviceName}]`}
+              </Text>{' '}
+              Service is ready, but not running. You can start the service to
+              poll data.
             </Text>
           </View>
         )}
