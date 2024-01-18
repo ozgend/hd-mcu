@@ -3,6 +3,7 @@ const IDeviceSensorData = {
   batt: 0.0,
   rpm: 0.0,
   speed: 0.0,
+  uptime: 0,
 };
 
 const IMuxedSensorData = {
@@ -25,8 +26,6 @@ const ISystemStatsData = {
   heapTotal: 0,
   heapUsed: 0,
   heapPeak: 0,
-  rtc: 0,
-  now: 0,
 };
 
 const ITsmData = {

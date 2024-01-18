@@ -11,7 +11,7 @@ let _muxChIndex = 0;
 
 class MuxedSensorService extends BaseService {
   constructor(eventBus) {
-    super(ServiceCode.MuxSensor, ServiceType.ON_DEMAND, 2000, eventBus);
+    super(ServiceCode.MuxSensor, ServiceType.ON_DEMAND, 3000, eventBus);
     this.data = IMuxedSensorData;
   }
 
@@ -21,6 +21,7 @@ class MuxedSensorService extends BaseService {
 
   start() {
     super.start();
+    super.update();
 
     _muxChannels.forEach(ch => {
       this.data[`ch_${ch}`] = 0;

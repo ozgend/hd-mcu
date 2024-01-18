@@ -1,0 +1,10 @@
+{
+  "arch": "cortex-m0-plus",
+  "platform": "rp2",
+  "version": "1.1.0-beta.4",
+  "name": "pico",
+  "uid": "D26568688754322C",
+  "heapTotal": 184312,
+  "heapUsed": 49904,
+  "heapPeak": 51824
+}

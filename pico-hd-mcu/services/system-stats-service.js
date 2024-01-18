@@ -4,7 +4,7 @@ const { ISystemStatsData } = require('../schema');
 
 class SystemStatsService extends BaseService {
   constructor(eventBus) {
-    super(ServiceCode.SystemStats, ServiceType.ON_DEMAND, 2000, eventBus);
+    super(ServiceCode.SystemStats, ServiceType.ON_DEMAND, 5000, eventBus);
     this.data = ISystemStatsData;
   }
 
@@ -15,6 +15,7 @@ class SystemStatsService extends BaseService {
     this.data.version = process.version;
     this.data.name = board.name;
     this.data.uid = board.uid;
+    super.update();
   }
 
   update() {
@@ -22,8 +23,6 @@ class SystemStatsService extends BaseService {
     this.data.heapTotal = mem.heapTotal;
     this.data.heapUsed = mem.heapUsed;
     this.data.heapPeak = mem.heapPeak;
-    this.data.rtc = millis();
-    this.data.now = Date.now();
     super.update();
   }
 };

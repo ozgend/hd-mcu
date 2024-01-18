@@ -74,8 +74,16 @@ export class ServiceSensorView extends Component<
           <MaterialCommunityIcons.Button
             size={styles.actionBarButton.fontSize}
             name={this.state.isRunning ? 'stop-circle' : 'play-circle'}
-            style={styles.actionBarButton}
-            color={styles.actionBarButton.color}
+            style={
+              this.state.isRunning
+                ? styles.actionBarButtonRunning
+                : styles.actionBarButton
+            }
+            color={
+              this.state.isRunning
+                ? styles.actionBarButtonRunning.color
+                : styles.actionBarButton.color
+            }
             onPress={() => this.toggleService()}>
             {this.state.isRunning ? 'STOP' : 'START'}
           </MaterialCommunityIcons.Button>
@@ -83,13 +91,10 @@ export class ServiceSensorView extends Component<
         <Text> </Text>
         {!this.state.isRunning && (
           <View style={styles.centerContainer}>
-            <Text style={styles.text}>
-              <Text style={styles.heading}>
-                {`${this.props.title} [${this.props.serviceName}]`}
-              </Text>{' '}
-              Service is ready, but not running. You can start the service to
-              poll data.
+            <Text style={styles.heading}>
+              {`${this.props.title} [${this.props.serviceName}]`} is ready
             </Text>
+            <Text style={styles.text}>start the service to poll data</Text>
           </View>
         )}
         {this.state?.data &&
