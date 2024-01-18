@@ -1,10 +1,15 @@
-const { ServiceCode, ServiceType } = require('../constants');
+const { ServiceCode, ServiceType, Broadcasting } = require('../constants');
 const BaseService = require('../base-service');
 const { ISystemStatsData } = require('../schema');
 
 class SystemStatsService extends BaseService {
   constructor(eventBus) {
-    super(ServiceCode.SystemStats, ServiceType.ON_DEMAND, 5000, eventBus);
+    super({
+      eventBus,
+      code: ServiceCode.SystemStats,
+      type: ServiceType.ON_DEMAND,
+      broadcastMode: Broadcasting.OnDemandPolling
+    });
     this.data = ISystemStatsData;
   }
 
@@ -15,15 +20,15 @@ class SystemStatsService extends BaseService {
     this.data.version = process.version;
     this.data.name = board.name;
     this.data.uid = board.uid;
-    super.update();
+    super.publishData();
   }
 
-  update() {
+  publishData() {
     const mem = process.memoryUsage();
     this.data.heapTotal = mem.heapTotal;
     this.data.heapUsed = mem.heapUsed;
     this.data.heapPeak = mem.heapPeak;
-    super.update();
+    super.publishData();
   }
 };
 

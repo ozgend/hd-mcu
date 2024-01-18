@@ -1,5 +1,5 @@
 const { Button } = require('button');
-const { Hardware, Gpio, ServiceCode, ServiceCommand, ServiceType } = require('../constants');
+const { Hardware, Gpio, ServiceCode, ServiceCommand, ServiceType, Broadcasting } = require('../constants');
 const BaseService = require('../base-service');
 const logger = require('../logger');
 
@@ -125,8 +125,13 @@ const _checkAction = (btnLeft, btnRight) => {
 };
 
 class TurnSignalService extends BaseService {
-  constructor(messageBus) {
-    super(ServiceCode.TurnSignalModule, ServiceType.ON_DEMAND, 1000, messageBus);
+  constructor(eventBus) {
+    super({
+      eventBus,
+      code: ServiceCode.TurnSignalModule,
+      type: ServiceType.ON_DEMAND,
+      broadcastMode: Broadcasting.OnDemandPolling
+    });
   }
 
   setup() {
@@ -183,10 +188,10 @@ class TurnSignalService extends BaseService {
     }
   }
 
-  update() {
+  publishData() {
     this.data.state = _state;
     this.data.action = _action;
-    super.update();
+    super.publishData();
   }
 }
 

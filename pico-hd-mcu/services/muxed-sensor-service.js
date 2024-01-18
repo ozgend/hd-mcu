@@ -1,6 +1,6 @@
 const MAX6675 = require('../lib/max6675-hw-spi');
 const HC4051 = require('../lib/hc4051');
-const { ServiceCode, Gpio, ServiceType, Hardware } = require('../constants');
+const { ServiceCode, Gpio, ServiceType, Broadcasting } = require('../constants');
 const BaseService = require('../base-service');
 const logger = require('../logger');
 const { IMuxedSensorData } = require('../schema');
@@ -11,17 +11,18 @@ let _muxChIndex = 0;
 
 class MuxedSensorService extends BaseService {
   constructor(eventBus) {
-    super(ServiceCode.MuxSensor, ServiceType.ON_DEMAND, 3000, eventBus);
+    super({
+      eventBus,
+      code: ServiceCode.MuxSensor,
+      type: ServiceType.ON_DEMAND,
+      broadcastMode: Broadcasting.OnDemandPolling
+    });
     this.data = IMuxedSensorData;
-  }
-
-  setup() {
-    super.setup();
   }
 
   start() {
     super.start();
-    super.update();
+    super.publishData();
 
     _muxChannels.forEach(ch => {
       this.data[`ch_${ch}`] = 0;
@@ -55,8 +56,8 @@ class MuxedSensorService extends BaseService {
     }
   }
 
-  update() {
-    super.update();
+  publishData() {
+    super.publishData();
   }
 };
 

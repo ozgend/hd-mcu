@@ -1,7 +1,7 @@
 const { EventEmitter } = require('events');
 const { UART } = require('uart');
 const logger = require('./logger');
-const { ServiceCode, EventName } = require('./constants');
+const { ServiceCode, EventType, Seperator } = require('./constants');
 
 const uartOptions = {
   baudrate: 9600,
@@ -27,7 +27,7 @@ Serial.on('data', (data) => {
 
   data.forEach((byte) => {
     if (byte === 10) {
-      eventBus.emit(EventName.DataFromSerial, _serialPayload.trim());
+      eventBus.emit(EventType.DataFromSerial, _serialPayload.trim());
       _serialPayload = '';
     }
     else if (byte !== 0) {
@@ -38,26 +38,21 @@ Serial.on('data', (data) => {
 });
 
 // events from services
-eventBus.on(EventName.DataFromService, (serviceCode, eventName, serviceData) => {
-  logger.debug(ServiceCode.EventBus, EventName.DataFromService, { serviceCode, eventName, serviceData });
-  Serial.write(`${serviceCode}.${eventName}=${JSON.stringify(serviceData)}\n`);
-});
-
-eventBus.on(EventName.SchemaFromService, (serviceCode, eventName, serviceData) => {
-  logger.debug(ServiceCode.EventBus, EventName.SchemaFromService, { serviceCode, eventName, serviceData });
-  Serial.write(`${serviceCode}.${eventName}=${JSON.stringify(serviceData)}\n`);
+eventBus.on(EventType.DataFromService, (serviceCode, eventType, serviceData) => {
+  logger.debug(ServiceCode.EventBus, EventType.DataFromService, { serviceCode, eventType, serviceData });
+  Serial.write(`${serviceCode}.${eventType}=${JSON.stringify(serviceData)}\n`);
 });
 
 // events from serial
-eventBus.on(EventName.DataFromSerial, (serialPayload) => {
-  logger.debug(ServiceCode.EventBus, EventName.DataFromSerial, { serialPayload });
-  const parts = serialPayload.split('=');
+eventBus.on(EventType.DataFromSerial, (serialPayload) => {
+  logger.debug(ServiceCode.EventBus, EventType.DataFromSerial, { serialPayload });
+  const parts = serialPayload.split(Seperator.SerialCommand);
 
-  if (serialPayload.startsWith('MODULE')) {
-    eventBus.emit(EventName.CommandForModule, parts[1]);
+  if (serialPayload.startsWith(ServiceCode.Module)) {
+    eventBus.emit(EventType.CommandForModule, parts[1]);
   }
   else {
-    eventBus.emit(EventName.CommandForService, ...parts);
+    eventBus.emit(EventType.CommandForService, ...parts);
   }
 });
 
@@ -68,8 +63,8 @@ setInterval(() => {
   //logger.info(ServiceCode.EventBus, '0_heartbeat');
 }, 5000);
 
-const publishToSerial = (serviceCode, eventName, serviceData) => {
-  eventBus.emit(EventName.DataFromService, serviceCode, eventName, serviceData);
+const publishToSerial = (serviceCode, eventType, serviceData) => {
+  eventBus.emit(EventType.DataFromService, serviceCode, eventType, serviceData);
 };
 
 module.exports = { eventBus, publishToSerial };

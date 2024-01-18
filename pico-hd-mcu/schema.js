@@ -1,4 +1,4 @@
-const IDeviceSensorData = {
+const IVehicleSensorData = {
   temp: 0.0,
   batt: 0.0,
   rpm: 0.0,
@@ -33,4 +33,4 @@ const ITsmData = {
   action: { left: false, right: false },
 };
 
-module.exports = { IDeviceSensorData, IMuxedSensorData, ISystemStatsData, ITsmData };
+module.exports = { IVehicleSensorData, IMuxedSensorData, ISystemStatsData, ITsmData };
