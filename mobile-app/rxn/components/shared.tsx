@@ -19,6 +19,12 @@ export const tabTheme = {
 };
 
 export const styles = StyleSheet.create({
+  progressView: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#222',
+    height: 20,
+  },
   container: {
     flex: 1,
     padding: 4,
@@ -31,12 +37,14 @@ export const styles = StyleSheet.create({
   actionBarView: {
     paddingTop: 4,
     paddingBottom: 4,
+    height: 50,
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     verticalAlign: 'middle',
     textTransform: 'uppercase',
     textAlignVertical: 'center',
+    backgroundColor: '#222',
   },
   actionBarHeader: {
     flex: 1,
@@ -63,8 +71,9 @@ export const styles = StyleSheet.create({
     alignItems: 'flex-end',
     textAlignVertical: 'center',
     textTransform: 'uppercase',
-    verticalAlign: 'top',
+    verticalAlign: 'middle',
     width: 90,
+    shadowColor: '#fa0',
   },
   actionBarButtonRunning: {
     borderCurve: 'continuous',
@@ -130,6 +139,14 @@ export const styles = StyleSheet.create({
   text: {
     fontSize: 22,
     fontWeight: '200',
+    color: '#fa0',
+    textTransform: 'uppercase',
+    alignItems: 'flex-end',
+    textAlign: 'right',
+    alignContent: 'flex-end',
+  },
+  textSmall: {
+    fontSize: 14,
     color: '#fa0',
     textTransform: 'uppercase',
     alignItems: 'flex-end',

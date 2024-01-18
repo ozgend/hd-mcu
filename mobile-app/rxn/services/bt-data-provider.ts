@@ -1,66 +1,123 @@
 import { Alert, PermissionsAndroid, Platform, ToastAndroid } from 'react-native';
-import { IDataProvider } from './interfaces';
-import RNBluetoothClassic, { BluetoothDevice, BluetoothDeviceReadEvent } from 'react-native-bluetooth-classic';
-import { BtDataServiceCodeKeys, BtDataServiceCodeValues } from '../models';
+import { IDataProvider, IDataProviderDevice } from './interfaces';
+import RNBluetoothClassic, { BluetoothDevice, BluetoothDeviceReadEvent, BluetoothEventSubscription } from 'react-native-bluetooth-classic';
 import { Seperator, ServiceCommand } from '../constants';
 
 const macid = '00:22:09:01:8D:2B';
 
 export class BluetoothSerialDataProvider implements IDataProvider {
-  isAvailable: boolean = false;
-  hasStream: boolean = false;
-  private btStream: any;
+  private btStream: BluetoothEventSubscription | null = null;
   private serviceListeners: { [key: string]: any } = {};
-  private devices: BluetoothDevice[] = [];
   private connectedDevice: BluetoothDevice | null = null;
 
-  onInitialized: () => void = () => {};
-  onStreaming: (state: boolean) => void = () => {};
-  // onDataReceived: (data: any) => void = () => {};
+  public isInitialized: boolean = false;
+  public isDeviceConnected: boolean = false;
+  public isStreamStarted: boolean = false;
 
-  requestServiceData(serviceCode: string): Promise<void> {
-    return this.sendServiceCommand(serviceCode, ServiceCommand.DATA);
-  }
-  requestServiceInfo(serviceCode: string): Promise<void> {
-    return this.sendServiceCommand(serviceCode, ServiceCommand.STATUS);
-  }
+  public onProviderInitialized: () => void = () => {};
+  public onProviderHeartbeat: (data: any) => void = () => {};
+  public onProviderStreamStatusChange: (state: boolean) => void = () => {};
+  public onProviderStreamStarted: () => void = () => {};
+  public onProviderStreamStopped: () => void = () => {};
+  public onProviderDeviceDiscovered: (devices: IDataProviderDevice[]) => void = () => {};
+  public onProviderDeviceConnected: (device: IDataProviderDevice) => void = () => {};
+  public onProviderDeviceDisconnected: () => void = () => {};
 
-  addServiceEventListener(serviceCode: string, serviceEvent: string, callback: (data: any) => void): void {
-    if (!this.serviceListeners[serviceCode]) {
-      this.serviceListeners[serviceCode] = {};
+  public async initialize(): Promise<boolean> {
+    if (this.isInitialized) {
+      Alert.alert('Bluetooth already initialized');
+      return true;
     }
-    this.serviceListeners[serviceCode][serviceEvent] = callback;
-  }
 
-  removeServiceEventListener(serviceCode: string, serviceEvent: string): void {
-    if (!this.serviceListeners[serviceCode]) {
-      return;
+    const hasBluetoothPermissions = await this.requestBtPermissions();
+
+    if (!hasBluetoothPermissions) {
+      Alert.alert('Bluetooth requested permissions not granted');
+      return false;
     }
-    if (serviceEvent) {
-      delete this.serviceListeners[serviceCode][serviceEvent];
-    } else {
-      delete this.serviceListeners[serviceCode];
+
+    let isBluetoothAvailable = false;
+
+    try {
+      isBluetoothAvailable = await RNBluetoothClassic.isBluetoothAvailable();
+    } catch (err) {
+      console.error(err);
+      Alert.alert(err as string);
+    }
+
+    if (!isBluetoothAvailable) {
+      Alert.alert('Bluetooth is not available');
+      return false;
+    }
+
+    try {
+      isBluetoothAvailable = await RNBluetoothClassic.isBluetoothEnabled();
+      if (!isBluetoothAvailable) {
+        ToastAndroid.show('Bluetooth enable request sent', ToastAndroid.SHORT);
+        isBluetoothAvailable = await RNBluetoothClassic.requestBluetoothEnabled();
+      }
+    } catch (err) {
+      Alert.alert(err as string);
+      console.error(err);
+    }
+
+    if (!isBluetoothAvailable) {
+      Alert.alert('Bluetooth is not enabled or not available');
+    }
+
+    this.isInitialized = true;
+    this.onProviderInitialized();
+    return this.isInitialized;
+  }
+
+  public async scanDevices(): Promise<boolean> {
+    const devices = await RNBluetoothClassic.startDiscovery();
+    const deviceList = devices.map(d => {
+      return { name: d.name, address: d.address };
+    });
+    this.onProviderDeviceDiscovered(deviceList);
+    return true;
+  }
+
+  public async connectDevice(device: IDataProviderDevice): Promise<boolean> {
+    if (this.isDeviceConnected) {
+      Alert.alert('Bluetooth device already connected');
+      return true;
+    }
+
+    try {
+      this.connectedDevice = await RNBluetoothClassic.connectToDevice(device.address, { delimiter: '\n' });
+      this.isDeviceConnected = await this.connectedDevice.isConnected();
+      if (!this.isDeviceConnected) {
+        Alert.alert(`Bluetooth connection failed to device ${device.name} [${device.address}]`);
+        return false;
+      } else {
+        this.onProviderDeviceConnected(device);
+      }
+      return this.isDeviceConnected;
+    } catch (err) {
+      console.error(err);
+      Alert.alert(`Bluetooth connection failed to device ${device.name} [${device.address}]`);
+      return false;
     }
   }
 
-  async sendServiceCommand(serviceCode: string, serviceCommand: string): Promise<void> {
-    console.log('sendCommand', serviceCode, serviceCommand);
-    await this.connectedDevice?.write(`${serviceCode}${Seperator.SerialCommand}${serviceCommand}\n`);
-  }
-
-  getEventListener(serviceCode: string, serviceEvent: string): (data: any) => void {
-    if (!this.serviceListeners[serviceCode]) {
-      return () => {};
+  public startStream(): boolean {
+    if (this.isStreamStarted) {
+      Alert.alert('Bluetooth stream already started');
+      return true;
     }
-    return this.serviceListeners[serviceCode][serviceEvent] || (() => {});
-  }
 
-  startStream(): boolean {
+    if (!this.connectedDevice) {
+      Alert.alert('Bluetooth device not connected');
+      return false;
+    }
+
     this.btStream = this.connectedDevice?.onDataReceived((event: BluetoothDeviceReadEvent) => {
       console.debug('onDataReceived', event.data);
 
       if (event.data.includes('0_heartbeat')) {
-        this.hasStream = true;
+        this.isStreamStarted = true;
         return;
       }
 
@@ -74,76 +131,61 @@ export class BluetoothSerialDataProvider implements IDataProvider {
         ToastAndroid.show('Invalid or corrupted data, skipped.', ToastAndroid.SHORT);
       }
     });
-    this.onStreaming(true);
+    this.onProviderStreamStatusChange(true);
     return true;
   }
 
-  stopStream(): boolean {
-    this.btStream.remove();
+  public stopStream(): boolean {
+    if (!this.isStreamStarted) {
+      Alert.alert('Bluetooth stream already stopped');
+      return true;
+    }
+    this.btStream?.remove();
     this.btStream = null;
-    this.hasStream = false;
-    this.onStreaming(false);
+    this.isStreamStarted = false;
+    this.onProviderStreamStatusChange(false);
     return true;
   }
 
-  async initialize(): Promise<boolean> {
-    this.isAvailable = true;
-    this.isAvailable = await this.requestBt();
-
-    if (!this.isAvailable) {
-      Alert.alert('Bluetooth requested permissions not granted');
-      return false;
+  public addServiceEventListener(serviceCode: string, serviceEvent: string, callback: (data: any) => void): void {
+    if (!this.serviceListeners[serviceCode]) {
+      this.serviceListeners[serviceCode] = {};
     }
-
-    try {
-      this.isAvailable = await RNBluetoothClassic.isBluetoothAvailable();
-    } catch (err) {
-      console.error(err);
-      Alert.alert(err as string);
-    }
-
-    if (!this.isAvailable) {
-      Alert.alert('Bluetooth is not available');
-      return false;
-    }
-
-    try {
-      this.isAvailable = await RNBluetoothClassic.isBluetoothEnabled();
-    } catch (err) {
-      Alert.alert(err as string);
-      console.error(err);
-    }
-
-    if (!this.isAvailable) {
-      Alert.alert('Bluetooth is not enabled');
-      this.isAvailable = await RNBluetoothClassic.requestBluetoothEnabled();
-    }
-
-    if (!this.isAvailable) {
-      Alert.alert('Bluetooth enable request denied');
-      return false;
-    }
-
-    try {
-      this.connectedDevice = await RNBluetoothClassic.connectToDevice(macid, {
-        delimiter: '\n',
-      });
-      this.isAvailable = await this.connectedDevice.isConnected();
-    } catch (err) {
-      console.error(err);
-      Alert.alert(err as string);
-    }
-
-    if (!this.isAvailable) {
-      Alert.alert('Bluetooth connection failed to device');
-      return false;
-    }
-
-    this.onInitialized();
-    return this.isAvailable;
+    this.serviceListeners[serviceCode][serviceEvent] = callback;
   }
 
-  requestBt = async () => {
+  public removeServiceEventListener(serviceCode: string, serviceEvent: string): void {
+    if (!this.serviceListeners[serviceCode]) {
+      return;
+    }
+    if (serviceEvent) {
+      delete this.serviceListeners[serviceCode][serviceEvent];
+    } else {
+      delete this.serviceListeners[serviceCode];
+    }
+  }
+
+  public requestBtServiceData(serviceCode: string): Promise<void> {
+    return this.sendBtServiceCommand(serviceCode, ServiceCommand.DATA);
+  }
+
+  public requestBtServiceInfo(serviceCode: string): Promise<void> {
+    return this.sendBtServiceCommand(serviceCode, ServiceCommand.STATUS);
+  }
+
+  public async sendBtServiceCommand(serviceCode: string, serviceCommand: string): Promise<void> {
+    console.log('sendCommand', serviceCode, serviceCommand);
+    await this.connectedDevice?.write(`${serviceCode}${Seperator.SerialCommand}${serviceCommand}\n`);
+  }
+
+  private getEventListener(serviceCode: string, serviceEvent: string): (data: any) => void {
+    if (!this.serviceListeners[serviceCode]) {
+      return () => {};
+    }
+    return this.serviceListeners[serviceCode][serviceEvent] || (() => {});
+  }
+
+  private async requestBtPermissions(): Promise<boolean> {
     let granted = await PermissionsAndroid.request('android.permission.ACCESS_FINE_LOCATION', {
       title: 'Location Permission',
       message: 'app needs access to your location ',
@@ -188,5 +230,5 @@ export class BluetoothSerialDataProvider implements IDataProvider {
     }
 
     return granted === PermissionsAndroid.RESULTS.GRANTED;
-  };
+  }
 }

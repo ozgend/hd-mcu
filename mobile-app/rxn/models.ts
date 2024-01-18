@@ -166,7 +166,7 @@ export const ServiceProperty: { [key: string]: IServiceAttributes } = {
   VHC: { title: 'Vehicle', icon: 'engine', pollInterval: 1000 },
   MUX: { title: 'Thermometer', icon: 'thermometer', pollInterval: 5000 },
   SYS: { title: 'System', icon: 'chip', pollInterval: 5000 },
-  TSM: { title: 'Turn Signal Module', icon: 'arrow-left-right' },
+  TSM: { title: 'Turn Signal', icon: 'arrow-left-right' },
 };
 
 export const BtDataServiceTypes = {
