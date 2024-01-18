@@ -126,10 +126,9 @@ const _checkAction = (btnLeft, btnRight) => {
 
 class TurnSignalService extends BaseService {
   constructor(eventBus) {
-    super({
-      eventBus,
-      code: ServiceCode.TurnSignalModule,
-      type: ServiceType.ON_DEMAND,
+    super(eventBus, {
+      serviceCode: ServiceCode.TurnSignalModule,
+      serviceType: ServiceType.ON_DEMAND,
       broadcastMode: Broadcasting.OnDemandPolling
     });
   }

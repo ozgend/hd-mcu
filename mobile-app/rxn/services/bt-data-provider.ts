@@ -1,31 +1,90 @@
-import {Alert, PermissionsAndroid, Platform, ToastAndroid} from 'react-native';
-import {IDataProvider} from './interfaces';
-import RNBluetoothClassic, {
-  BluetoothDevice,
-  BluetoothDeviceReadEvent,
-} from 'react-native-bluetooth-classic';
-import {BtDataServiceKey, BtDataServiceTypes} from '../models';
+import { Alert, PermissionsAndroid, Platform, ToastAndroid } from 'react-native';
+import { IDataProvider } from './interfaces';
+import RNBluetoothClassic, { BluetoothDevice, BluetoothDeviceReadEvent } from 'react-native-bluetooth-classic';
+import { BtDataServiceCodeKeys, BtDataServiceCodeValues } from '../models';
+import { Seperator, ServiceCommand } from '../constants';
 
 const macid = '00:22:09:01:8D:2B';
 
 export class BluetoothSerialDataProvider implements IDataProvider {
   isAvailable: boolean = false;
   hasStream: boolean = false;
-  private pid: any;
-  private listeners: any = {};
+  private btStream: any;
+  private serviceListeners: { [key: string]: any } = {};
   private devices: BluetoothDevice[] = [];
   private connectedDevice: BluetoothDevice | null = null;
-  private serviceState: {[key: string]: boolean} = {};
-
-  constructor() {
-    BtDataServiceKey.forEach(key => {
-      this.serviceState[key] = false;
-    });
-  }
 
   onInitialized: () => void = () => {};
   onStreaming: (state: boolean) => void = () => {};
-  onDataReceived: (data: any) => void = () => {};
+  // onDataReceived: (data: any) => void = () => {};
+
+  requestServiceData(serviceCode: string): Promise<void> {
+    return this.sendServiceCommand(serviceCode, ServiceCommand.DATA);
+  }
+  requestServiceInfo(serviceCode: string): Promise<void> {
+    return this.sendServiceCommand(serviceCode, ServiceCommand.STATUS);
+  }
+
+  addServiceEventListener(serviceCode: string, serviceEvent: string, callback: (data: any) => void): void {
+    if (!this.serviceListeners[serviceCode]) {
+      this.serviceListeners[serviceCode] = {};
+    }
+    this.serviceListeners[serviceCode][serviceEvent] = callback;
+  }
+
+  removeServiceEventListener(serviceCode: string, serviceEvent: string): void {
+    if (!this.serviceListeners[serviceCode]) {
+      return;
+    }
+    if (serviceEvent) {
+      delete this.serviceListeners[serviceCode][serviceEvent];
+    } else {
+      delete this.serviceListeners[serviceCode];
+    }
+  }
+
+  async sendServiceCommand(serviceCode: string, serviceCommand: string): Promise<void> {
+    console.log('sendCommand', serviceCode, serviceCommand);
+    await this.connectedDevice?.write(`${serviceCode}${Seperator.SerialCommand}${serviceCommand}\n`);
+  }
+
+  getEventListener(serviceCode: string, serviceEvent: string): (data: any) => void {
+    if (!this.serviceListeners[serviceCode]) {
+      return () => {};
+    }
+    return this.serviceListeners[serviceCode][serviceEvent] || (() => {});
+  }
+
+  startStream(): boolean {
+    this.btStream = this.connectedDevice?.onDataReceived((event: BluetoothDeviceReadEvent) => {
+      console.debug('onDataReceived', event.data);
+
+      if (event.data.includes('0_heartbeat')) {
+        this.hasStream = true;
+        return;
+      }
+
+      try {
+        const [target, payload] = event.data.split(Seperator.ServiceData);
+        const [serviceCode, serviceEvent] = target.split(Seperator.SerialCommand);
+        const listener = this.getEventListener(serviceCode, serviceEvent);
+        listener(JSON.parse(payload));
+      } catch (err) {
+        console.warn(err);
+        ToastAndroid.show('Invalid or corrupted data, skipped.', ToastAndroid.SHORT);
+      }
+    });
+    this.onStreaming(true);
+    return true;
+  }
+
+  stopStream(): boolean {
+    this.btStream.remove();
+    this.btStream = null;
+    this.hasStream = false;
+    this.onStreaming(false);
+    return true;
+  }
 
   async initialize(): Promise<boolean> {
     this.isAvailable = true;
@@ -85,15 +144,12 @@ export class BluetoothSerialDataProvider implements IDataProvider {
   }
 
   requestBt = async () => {
-    let granted = await PermissionsAndroid.request(
-      'android.permission.ACCESS_FINE_LOCATION',
-      {
-        title: 'Location Permission',
-        message: 'app needs access to your location ',
-        buttonPositive: 'OK',
-        buttonNegative: 'Cancel',
-      },
-    );
+    let granted = await PermissionsAndroid.request('android.permission.ACCESS_FINE_LOCATION', {
+      title: 'Location Permission',
+      message: 'app needs access to your location ',
+      buttonPositive: 'OK',
+      buttonNegative: 'Cancel',
+    });
 
     if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
       Alert.alert('Location permission not granted');
@@ -119,15 +175,12 @@ export class BluetoothSerialDataProvider implements IDataProvider {
     //   return false;
     // }
 
-    granted = await PermissionsAndroid.request(
-      'android.permission.BLUETOOTH_CONNECT',
-      {
-        title: 'Bluetooth Connect Permission',
-        message: 'app needs bluetooth access to connect to devices',
-        buttonPositive: 'OK',
-        buttonNegative: 'Cancel',
-      },
-    );
+    granted = await PermissionsAndroid.request('android.permission.BLUETOOTH_CONNECT', {
+      title: 'Bluetooth Connect Permission',
+      message: 'app needs bluetooth access to connect to devices',
+      buttonPositive: 'OK',
+      buttonNegative: 'Cancel',
+    });
 
     if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
       Alert.alert('Bluetooth Connect permission not granted');
@@ -136,54 +189,4 @@ export class BluetoothSerialDataProvider implements IDataProvider {
 
     return granted === PermissionsAndroid.RESULTS.GRANTED;
   };
-
-  onUpdate(serviceName: string, callback: (data: any) => void): void {
-    this.listeners[serviceName] = callback;
-  }
-
-  async sendCommand(service: string, command: string): Promise<void> {
-    console.log('sendCommand', service, command);
-    if (
-      (command === 'START' && this.serviceState[service]) ||
-      (command === 'STOP' && this.serviceState[service] === false)
-    ) {
-      console.log(`${service} already ${command}}`);
-      return;
-    }
-    await this.connectedDevice?.write(`${service}=${command}\n`);
-    this.serviceState[service] = command === 'START';
-  }
-
-  startStream(): boolean {
-    this.onDataReceived = this.listeners.dataReceived ?? this.onDataReceived;
-    this.pid = this.connectedDevice?.onDataReceived(
-      (event: BluetoothDeviceReadEvent) => {
-        if (event.data.includes('0_heartbeat')) {
-          this.hasStream = true;
-        }
-        console.debug('onDataReceived', event.data);
-        this.onDataReceived(event.data);
-        Object.keys(BtDataServiceTypes).forEach(key => {
-          if (event.data.startsWith(key)) {
-            try {
-              const raw = event.data.replace(/.+\.UPDATE=/gm, '');
-              this.listeners[key] ? this.listeners[key](JSON.parse(raw)) : null;
-            } catch (err) {
-              console.warn(err);
-              ToastAndroid.show('Skipping corrupted data.', ToastAndroid.SHORT);
-            }
-          }
-        });
-      },
-    );
-    this.onStreaming(true);
-    return true;
-  }
-
-  stopStream(): boolean {
-    this.sendCommand('MODULE', 'STOP');
-    this.pid.remove();
-    this.pid = null;
-    return true;
-  }
 }

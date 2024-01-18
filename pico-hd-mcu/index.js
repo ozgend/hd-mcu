@@ -17,7 +17,7 @@ const _services = [
 
 _services.forEach(service => {
   service.setup();
-  if (service.type === ServiceType.ALWAYS_RUN) {
+  if (service.ServiceType === ServiceType.ALWAYS_RUN) {
     service.start();
   }
 });

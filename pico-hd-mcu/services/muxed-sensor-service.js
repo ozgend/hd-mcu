@@ -1,9 +1,9 @@
-const MAX6675 = require('../lib/max6675-hw-spi');
-const HC4051 = require('../lib/hc4051');
-const { ServiceCode, Gpio, ServiceType, Broadcasting } = require('../constants');
-const BaseService = require('../base-service');
-const logger = require('../logger');
-const { IMuxedSensorData } = require('../schema');
+const MAX6675 = require("../lib/max6675-hw-spi");
+const HC4051 = require("../lib/hc4051");
+const { ServiceCode, Gpio, ServiceType, Broadcasting } = require("../constants");
+const BaseService = require("../base-service");
+const logger = require("../logger");
+const { IMuxedSensorData } = require("../schema");
 
 const _muxChannels = [0, 1, 2, 3];
 let _readerPid = 0;
@@ -11,11 +11,10 @@ let _muxChIndex = 0;
 
 class MuxedSensorService extends BaseService {
   constructor(eventBus) {
-    super({
-      eventBus,
-      code: ServiceCode.MuxSensor,
-      type: ServiceType.ON_DEMAND,
-      broadcastMode: Broadcasting.OnDemandPolling
+    super(eventBus, {
+      serviceCode: ServiceCode.MuxSensor,
+      serviceType: ServiceType.ON_DEMAND,
+      broadcastMode: Broadcasting.OnDemandPolling,
     });
     this.data = IMuxedSensorData;
   }
@@ -24,7 +23,7 @@ class MuxedSensorService extends BaseService {
     super.start();
     super.publishData();
 
-    _muxChannels.forEach(ch => {
+    _muxChannels.forEach((ch) => {
       this.data[`ch_${ch}`] = 0;
     });
 
@@ -37,7 +36,7 @@ class MuxedSensorService extends BaseService {
     _readerPid = setInterval(() => {
       this.mux.enableChannelIndex(_muxChIndex);
       this.data[`ch_${_muxChannels[_muxChIndex]}`] = this.thermoSensor.readCelcius() ?? 0;
-      logger.debug(ServiceCode.MuxSensor, 'interval.read', { ch: _muxChannels[_muxChIndex], cx: _muxChIndex, value: this.data[`ch_${_muxChannels[_muxChIndex]}`], values: this.data });
+      logger.debug(ServiceCode.MuxSensor, "interval.read", { ch: _muxChannels[_muxChIndex], cx: _muxChIndex, value: this.data[`ch_${_muxChannels[_muxChIndex]}`], values: this.data });
       _muxChIndex++;
       if (_muxChIndex >= _muxChannels.length) {
         _muxChIndex = 0;
@@ -49,6 +48,7 @@ class MuxedSensorService extends BaseService {
     super.stop();
     clearInterval(_readerPid);
     _readerPid = 0;
+    _muxChIndex = 0;
     if (this.thermoSensor) {
       this.thermoSensor.close();
       delete this.thermoSensor;
@@ -59,6 +59,6 @@ class MuxedSensorService extends BaseService {
   publishData() {
     super.publishData();
   }
-};
+}
 
 module.exports = MuxedSensorService;

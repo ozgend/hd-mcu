@@ -1,113 +1,97 @@
-import React, {Component} from 'react';
-import {ScrollView, Text, View} from 'react-native';
+import React, { Component } from 'react';
+import { ScrollView, Text, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {IDataProvider} from '../services/interfaces';
-import {SensorItemView} from './SensorItemView';
-import {IServiceState} from '../models';
-import {styles} from './shared';
+import { IDataProvider } from '../services/interfaces';
+import { SensorItemView } from './SensorItemView';
+import { IServiceAttributes, IServiceState, IServiceStatusInfo, ServiceProperty } from '../models';
+import { styles } from './shared';
+import { ServiceCommand, ServiceEvent } from '../constants';
+import { ServiceInfoView } from './ServiceInfoView';
 
 export interface ISensorViewProps<IProvider> {
   provider: IProvider;
-  serviceName: string;
-  title: string;
-  iconName: string;
+  serviceCode: string;
 }
 
 export interface ISensorViewStateData<TSensorData> {
-  data: TSensorData;
-  isRunning?: boolean;
+  serviceData: TSensorData;
+  serviceInfo: IServiceStatusInfo | any;
+  isPolling: boolean;
 }
 
-export class ServiceSensorView extends Component<
-  ISensorViewProps<IDataProvider>,
-  ISensorViewStateData<IServiceState>
-> {
+export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>, ISensorViewStateData<IServiceState>> {
   constructor(props: any) {
     super(props);
-    this.state = {
-      isRunning: false,
-      data: {},
-    };
+    this.state = { isPolling: false, serviceData: {}, serviceInfo: {} };
   }
-
-  toggleService() {
-    const toState = !this.state.isRunning;
-    this.setServiceState(toState);
-  }
-
-  async setServiceState(toState: boolean) {
-    console.debug(`${this.props.serviceName} -> ${toState}`);
-    this.setState({isRunning: toState});
-    await this.props.provider.sendCommand(
-      this.props.serviceName,
-      toState ? 'START' : 'STOP',
-    );
-  }
+  workerPid: any;
+  serviceAttributes: IServiceAttributes = ServiceProperty[this.props.serviceCode];
 
   async componentDidMount(): Promise<void> {
-    console.debug(`${this.props.serviceName} mounted`);
-    this.props.provider.onUpdate(this.props.serviceName, (data: any) => {
-      this.setState({data});
+    console.debug(`${this.props.serviceCode} mounted`);
+
+    this.props.provider.addServiceEventListener(this.props.serviceCode, ServiceEvent.DATA, (serviceData: any) => {
+      this.setState({ serviceData });
     });
 
-    // await this.setServiceState(true);
+    this.props.provider.addServiceEventListener(this.props.serviceCode, ServiceEvent.STATUS, (serviceInfo: IServiceStatusInfo) => {
+      this.setState({ serviceInfo });
+    });
+
+    this.props.provider.requestServiceInfo(this.props.serviceCode);
   }
 
   async componentWillUnmount(): Promise<void> {
-    console.debug(`${this.props.serviceName} unmounting`);
-    await this.setServiceState(false);
+    console.debug(`${this.props.serviceCode} unmounting`);
+    clearInterval(this.workerPid);
+    this.props.provider.removeServiceEventListener(this.props.serviceCode);
+    await this.props.provider.sendServiceCommand(this.props.serviceCode, ServiceCommand.STOP);
+  }
+
+  toggleService(): void {
+    this.props.provider.requestServiceInfo(this.props.serviceCode);
+    if (!this.state.isPolling) {
+      this.workerPid = setInterval(() => {
+        this.props.provider.requestServiceData(this.props.serviceCode);
+      }, this.serviceAttributes.pollInterval ?? 5000);
+    } else {
+      clearInterval(this.workerPid);
+      this.props.provider.sendServiceCommand(this.props.serviceCode, ServiceCommand.STOP);
+    }
+    this.setState({ isPolling: !this.state.isPolling });
+    console.debug(`${this.props.serviceCode} ${this.state.isPolling ? 'started' : 'stopped'}`);
   }
 
   render() {
     return (
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={styles.container}>
+      <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.container}>
         <View style={styles.actionBarView}>
-          <Text style={styles.actionBarHeader}>{this.props.title}</Text>
-          <MaterialCommunityIcons
-            style={styles.actionBarStatusIcon}
-            size={styles.actionBarStatusIcon.fontSize}
-            color={this.state.isRunning ? '#4f4' : '#f44'}
-            name={'circle'}
-          />
+          <Text style={styles.actionBarHeader}>{this.serviceAttributes.title}</Text>
+          <MaterialCommunityIcons style={styles.actionBarStatusIcon} size={styles.actionBarStatusIcon.fontSize} color={this.state.isPolling ? '#4f4' : '#f44'} name={'circle'} />
           <MaterialCommunityIcons.Button
             size={styles.actionBarButton.fontSize}
-            name={this.state.isRunning ? 'stop-circle' : 'play-circle'}
-            style={
-              this.state.isRunning
-                ? styles.actionBarButtonRunning
-                : styles.actionBarButton
-            }
-            color={
-              this.state.isRunning
-                ? styles.actionBarButtonRunning.color
-                : styles.actionBarButton.color
-            }
+            name={this.state.isPolling ? 'stop-circle' : 'play-circle'}
+            style={this.state.isPolling ? styles.actionBarButtonRunning : styles.actionBarButton}
+            color={this.state.isPolling ? styles.actionBarButtonRunning.color : styles.actionBarButton.color}
             onPress={() => this.toggleService()}>
-            {this.state.isRunning ? 'STOP' : 'START'}
+            {this.state.isPolling ? 'STOP' : 'START'}
           </MaterialCommunityIcons.Button>
         </View>
         <Text> </Text>
-        {!this.state.isRunning && (
+        {!this.state.isPolling && (
           <View style={styles.centerContainer}>
             <Text style={styles.heading}>
-              {`${this.props.title} [${this.props.serviceName}]`} is ready
+              {`${this.serviceAttributes.title} [${this.props.serviceCode}]`} {this.state.serviceInfo?.status ?? 'in progress...'}
             </Text>
-            <Text style={styles.text}>start the service to poll data</Text>
           </View>
         )}
-        {this.state?.data &&
-          Object.keys(this.state?.data ?? {}).map(fieldName => {
-            return (
-              <SensorItemView
-                key={fieldName}
-                fieldName={fieldName}
-                value={
-                  this.state.data[fieldName as keyof typeof this.state.data]
-                }
-              />
-            );
+        {this.state?.serviceInfo &&
+          Object.keys(this.state?.serviceInfo ?? {}).map(fieldName => {
+            return <ServiceInfoView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />;
+          })}
+        {this.state?.serviceData &&
+          Object.keys(this.state?.serviceData ?? {}).map(fieldName => {
+            return <SensorItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} />;
           })}
       </ScrollView>
     );

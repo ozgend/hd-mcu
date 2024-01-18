@@ -1,22 +1,30 @@
-import {
-  IDeviceSensorData,
-  IMuxedSensorData,
-  ISystemStatsData,
-  ITsmData,
-} from '../models';
-import {IDataProvider} from './interfaces';
+import { Broadcasting, ServiceEvent, ServiceStatus, ServiceType } from '../constants';
+import { IVehicleSensorData, IMuxedSensorData, ISystemStatsData, ITsmData, IServiceStatusInfo } from '../models';
+import { IDataProvider } from './interfaces';
 
 const initialTime: number = Date.now();
 const totalMemory: number = 2 * 1024 * 1024;
 
-const mockDataSource: {[key: string]: () => any} = {
-  DEV: () => {
+const mockStatusSource = (serviceCode: string): IServiceStatusInfo => {
+  return {
+    broadcastMode: Broadcasting.OnDemandPolling,
+    isRunning: false,
+    serviceCode: serviceCode,
+    serviceType: ServiceType.ON_DEMAND,
+    status: ServiceStatus.Available,
+    idleTimeout: 0,
+    updateInterval: 0,
+  } as IServiceStatusInfo;
+};
+
+const mockDataSource: { [key: string]: () => any } = {
+  VHC: () => {
     return {
       batt: 12.5 + Math.random() * 10,
       rpm: Math.random() * 100 + 1200,
       speed: 0,
       temp: 40 - Math.random() * 3,
-    } as IDeviceSensorData;
+    } as IVehicleSensorData;
   },
 
   MUX: () => {
@@ -34,8 +42,8 @@ const mockDataSource: {[key: string]: () => any} = {
 
   TSM: () => {
     return {
-      action: {left: true, right: false},
-      state: {left: true, right: false},
+      action: { left: true, right: false },
+      state: { left: true, right: false },
     } as ITsmData;
   },
 
@@ -57,34 +65,58 @@ const mockDataSource: {[key: string]: () => any} = {
 export class MockDataProvider implements IDataProvider {
   isAvailable = true;
   hasStream = false;
-  private pid: {[key: string]: any} = {};
-  private listeners: any = {};
+  private serviceListeners: { [key: string]: any } = {};
 
   async initialize(): Promise<boolean> {
     return true;
   }
 
-  onUpdate(serviceName: string, callback: (data: any) => void): void {
-    this.listeners[serviceName] = callback;
+  addServiceEventListener(serviceCode: string, serviceEvent: string, callback: (data: any) => void): void {
+    if (!this.serviceListeners[serviceCode]) {
+      this.serviceListeners[serviceCode] = {};
+    }
+    this.serviceListeners[serviceCode][serviceEvent] = callback;
   }
 
-  sendCommand(serviceName: string, command: string): Promise<void> {
+  removeServiceEventListener(serviceCode: string, serviceEvent: string): void {
+    if (!this.serviceListeners[serviceCode]) {
+      return;
+    }
+    if (serviceEvent) {
+      delete this.serviceListeners[serviceCode][serviceEvent];
+    } else {
+      delete this.serviceListeners[serviceCode];
+    }
+  }
+
+  getEventListener(serviceCode: string, serviceEvent: string): (data: any) => void {
+    if (!this.serviceListeners[serviceCode]) {
+      return () => {};
+    }
+    return this.serviceListeners[serviceCode][serviceEvent] || (() => {});
+  }
+
+  requestServiceData(serviceCode: string): Promise<void> {
     return new Promise(resolve => {
-      console.log('sendCommand', serviceName, command);
-      if (command === 'START') {
-        if (this.pid[serviceName]) {
-          console.log(`${serviceName} already running`);
-          return;
-        }
-        this.pid[serviceName] = setInterval(() => {
-          this.listeners[serviceName]
-            ? this.listeners[serviceName](mockDataSource[serviceName]())
-            : null;
-        }, 1000);
-      } else if (command === 'STOP') {
-        clearInterval(this.pid[serviceName]);
-        delete this.pid[serviceName];
-      }
+      setTimeout(() => {
+        this.getEventListener(serviceCode, ServiceEvent.DATA)(mockDataSource[serviceCode]());
+      }, 1000);
+      resolve();
+    });
+  }
+
+  requestServiceInfo(serviceCode: string): Promise<void> {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        this.getEventListener(serviceCode, ServiceEvent.STATUS)(mockDataSource[serviceCode]());
+      }, 1000);
+      resolve();
+    });
+  }
+
+  sendServiceCommand(serviceName: string, serviceCommand: string): Promise<void> {
+    return new Promise(resolve => {
+      console.log('sendCommand', serviceName, serviceCommand);
       resolve();
     });
   }

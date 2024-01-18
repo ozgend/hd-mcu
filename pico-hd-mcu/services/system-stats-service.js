@@ -4,10 +4,9 @@ const { ISystemStatsData } = require('../schema');
 
 class SystemStatsService extends BaseService {
   constructor(eventBus) {
-    super({
-      eventBus,
-      code: ServiceCode.SystemStats,
-      type: ServiceType.ON_DEMAND,
+    super(eventBus, {
+      serviceCode: ServiceCode.SystemStats,
+      serviceType: ServiceType.ON_DEMAND,
       broadcastMode: Broadcasting.OnDemandPolling
     });
     this.data = ISystemStatsData;

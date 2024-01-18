@@ -5,10 +5,9 @@ const { IVehicleSensorData } = require('../schema');
 
 class VehicleSensorService extends BaseService {
   constructor(eventBus) {
-    super({
-      eventBus,
-      code: ServiceCode.VehicleSensor,
-      type: ServiceType.ON_DEMAND,
+    super(eventBus, {
+      serviceCode: ServiceCode.VehicleSensor,
+      serviceType: ServiceType.ON_DEMAND,
       broadcastMode: Broadcasting.OnDemandPolling
     });
     this.data = IVehicleSensorData;

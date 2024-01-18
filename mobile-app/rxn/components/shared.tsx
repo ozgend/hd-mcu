@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export const getIcon = (name: string): React.ReactNode => {
@@ -157,6 +157,34 @@ export const styles = StyleSheet.create({
     fontSize: 36,
     textTransform: 'uppercase',
     textAlign: 'right',
+    fontWeight: 'normal',
+    flexGrow: 1,
+    color: '#fa0',
+  },
+  infoItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 2,
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    backgroundColor: '#222',
+    borderBottomColor: '#444',
+    textTransform: 'uppercase',
+  },
+  infoTitle: {
+    paddingHorizontal: 4,
+    fontSize: 16,
+    fontWeight: '200',
+    textTransform: 'uppercase',
+    textAlign: 'right',
+    minWidth: 100,
+    color: '#fa0',
+  },
+  infoValue: {
+    paddingHorizontal: 4,
+    fontSize: 16,
+    textTransform: 'uppercase',
+    textAlign: 'left',
     fontWeight: 'normal',
     flexGrow: 1,
     color: '#fa0',

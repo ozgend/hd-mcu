@@ -1,30 +1,30 @@
-const { ServiceCommand, EventType, ServiceStatus, ServiceEvent, Broadcasting } = require('./constants');
-const logger = require('./logger');
+const { ServiceCommand, EventType, ServiceStatus, ServiceEvent, Broadcasting } = require("./constants");
+const logger = require("./logger");
 
 class BaseService {
-  constructor({ code, type, updateInterval, eventBus, broadcastMode, idleTimeout }) {
+  constructor(eventBus, { serviceCode, serviceType, updateInterval, broadcastMode, idleTimeout }) {
     this.options = {
-      code,
-      type,
+      serviceCode,
+      serviceType,
       updateInterval: updateInterval ?? 1000 * 5,
-      broadcastMode: broadcastMode ?? Broadcasting.OnDemandPolling,
       idleTimeout: idleTimeout ?? 1000 * 120,
-      eventBus: eventBus ?? { emit: () => { } }
+      broadcastMode: broadcastMode ?? Broadcasting.OnDemandPolling,
     };
-    this.status = ServiceStatus.Available;
+    this.eventBus = eventBus ?? { emit: () => {} };
+    this.status = ServiceStatus.Initialized;
     this.broadcastPid = null;
     this.isRunning = false;
     this.data = {};
 
-    this.options.eventBus.on(EventType.CommandForService, (code, command) => {
-      if (code === this.options.code) {
+    this.eventBus.on(EventType.CommandForService, (code, command) => {
+      if (code === this.options.serviceCode) {
         this.handleCommand(command);
       }
     });
   }
 
   handleCommand(command) {
-    logger.info(this.options.code, 'handleCommand', command);
+    logger.info(this.options.serviceCode, "handleCommand", command);
     switch (command) {
       case ServiceCommand.START:
         this.start();
@@ -36,10 +36,11 @@ class BaseService {
         this.publishStatus();
         break;
       case ServiceCommand.DATA:
+        this.start();
         this.publishData();
         break;
       default:
-        break
+        break;
     }
   }
 
@@ -48,53 +49,62 @@ class BaseService {
   }
 
   setup() {
-    logger.info(this.options.code, 'setup');
-    this.status = ServiceStatus.Ready;
+    logger.info(this.options.serviceCode, "setup");
+    this.status = ServiceStatus.Available;
+    this.publishStatus();
   }
 
   start() {
-    logger.info(this.options.code, 'starting');
+    logger.info(this.options.serviceCode, "starting");
     if (this.isStarted()) {
-      logger.error(this.options.code, 'already running');
+      logger.error(this.options.serviceCode, "already running");
       return;
     }
     this.isRunning = true;
     if (this.options.broadcastMode === Broadcasting.ContinuousStream) {
-      this.broadcastPid = setInterval(() => { this.publishData(); }, this.options.updateInterval);
+      this.broadcastPid = setInterval(() => {
+        this.publishData();
+      }, this.options.updateInterval);
     }
-    logger.info(this.options.code, 'started.');
+    logger.info(this.options.serviceCode, "started.");
     if (this.options.broadcastMode === Broadcasting.ContinuousStream) {
-      setTimeout(() => { this.stop(); }, this.options.idleTimeout);
+      setTimeout(() => {
+        this.stop();
+      }, this.options.idleTimeout);
     }
     this.status = ServiceStatus.Started;
+    this.publishStatus();
   }
 
   stop() {
-    logger.info(this.options.code, 'stopping');
+    logger.info(this.options.serviceCode, "stopping");
     if (!this.isRunning) {
-      logger.error(this.options.code, 'already stopped');
+      logger.error(this.options.serviceCode, "already stopped");
       return;
     }
-    clearInterval(this.broadcastPid);
+    if (this.broadcastPid) {
+      clearInterval(this.broadcastPid);
+    }
     this.isRunning = false;
     this.broadcastPid = null;
-    logger.info(this.options.code, 'stopped.');
+    logger.info(this.options.serviceCode, "stopped.");
     this.status = ServiceStatus.Stopped;
+    this.publishStatus();
   }
 
   getInfo() {
-    return { code: this.options.code, isRunning: this.isRunning, status: this.status, type: this.options.type, broadcast: this.options.broadcastMode, idleTimeout: this.options.idleTimeout };
+    return { status: this.status, isRunning: this.isRunning, ...this.options };
   }
 
   publishStatus() {
-    logger.debug(this.options.code, ServiceEvent.STATUS, this.isRunning);
-    this.options.eventBus.emit(EventType.DataFromService, this.options.code, ServiceEvent.STATUS, this.getInfo());
+    logger.debug(this.options.serviceCode, ServiceEvent.STATUS, this.isRunning);
+    this.eventBus.emit(EventType.DataFromService, this.options.serviceCode, ServiceEvent.STATUS, this.getInfo());
   }
 
   publishData() {
-    logger.debug(this.options.code, ServiceEvent.DATA);
-    this.options.eventBus.emit(EventType.DataFromService, this.options.code, ServiceEvent.DATA, this.data);
+    logger.debug(this.options.serviceCode, ServiceEvent.DATA);
+    this.eventBus.emit(EventType.DataFromService, this.options.serviceCode, ServiceEvent.DATA, this.data);
   }
-};
+}
 
 module.exports = BaseService;
