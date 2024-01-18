@@ -1,32 +1,3 @@
-.vscode/
-.DS_Store
-*cache
-*.log
-*.pid
-*.lck
-bin/
-build/
-archive/
-*.zip
-*.tar.gz
-pcb/*backups/
-pico-hd-mcu/bundle.js
-
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-/captures
-.externalNativeBuild
-.cxx
-local.properties
-
-
 # OSX
 #
 .DS_Store
@@ -63,7 +34,7 @@ local.properties
 *.keystore
 !debug.keystore
 
-# node.js
+# node.js 
 #
 node_modules/
 npm-debug.log

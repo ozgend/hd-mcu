@@ -6,8 +6,13 @@
 
 - [x] hardware serial
 - [x] bluetooth serial
-  - [ ] bluetooth ota updates
-  - [ ] mobile app
+  - [x] mobile app
+    - [x] hot reload
+    - [x] code-push ota updates
+- [ ] mcu bluetooth ota updates
+- [ ] polling from client instead of broadcasting
+  - [ ] reduced power consumption
+  - [ ] reduced cpu clock usage
 - [x] turn signal flasher module
   - [x] left/right turn signal flasher
   - [x] hazard flasher
@@ -22,6 +27,7 @@
     - [x] temperature sensor
     - [x] rpm sensor
     - [x] speed sensor
+    - [x] aux *2
 
 ### software
 
