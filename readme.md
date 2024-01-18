@@ -6,10 +6,10 @@
 
 - [x] hardware serial
 - [x] bluetooth serial
+  - [ ] mcu bluetooth ota updates
   - [x] mobile app
     - [x] hot reload
     - [x] code-push ota updates
-- [ ] mcu bluetooth ota updates
 - [ ] polling from client instead of broadcasting
   - [ ] reduced power consumption
   - [ ] reduced cpu clock usage

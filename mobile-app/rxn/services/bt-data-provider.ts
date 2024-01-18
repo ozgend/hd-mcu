@@ -1,4 +1,4 @@
-import {Alert, PermissionsAndroid, Platform} from 'react-native';
+import {Alert, PermissionsAndroid, Platform, ToastAndroid} from 'react-native';
 import {IDataProvider} from './interfaces';
 import RNBluetoothClassic, {
   BluetoothDevice,
@@ -165,8 +165,13 @@ export class BluetoothSerialDataProvider implements IDataProvider {
         this.onDataReceived(event.data);
         Object.keys(BtDataServiceTypes).forEach(key => {
           if (event.data.startsWith(key)) {
-            const raw = event.data.replace(/.+\.UPDATE=/gm, '');
-            this.listeners[key] ? this.listeners[key](JSON.parse(raw)) : null;
+            try {
+              const raw = event.data.replace(/.+\.UPDATE=/gm, '');
+              this.listeners[key] ? this.listeners[key](JSON.parse(raw)) : null;
+            } catch (err) {
+              console.warn(err);
+              ToastAndroid.show('Skipping corrupted data.', ToastAndroid.SHORT);
+            }
           }
         });
       },
