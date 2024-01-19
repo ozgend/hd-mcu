@@ -56,6 +56,7 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
   }
 
   toggleService(): void {
+    console.debug(`${this.props.serviceCode} polling ${!this.state.isPolling ? 'start' : 'stop'}`);
     this.setState({ isBusy: true });
     this.props.provider.requestBtServiceInfo(this.props.serviceCode);
     if (!this.state.isPolling) {
@@ -67,7 +68,6 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
       this.props.provider.sendBtServiceCommand(this.props.serviceCode, ServiceCommand.STOP);
     }
     this.setState({ isPolling: !this.state.isPolling });
-    console.debug(`${this.props.serviceCode} ${this.state.isPolling ? 'started' : 'stopped'}`);
   }
 
   render() {

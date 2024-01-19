@@ -178,6 +178,16 @@ export const styles = StyleSheet.create({
     flexGrow: 1,
     color: '#fa0',
   },
+  deviceListItem: {
+    padding: 10,
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    backgroundColor: '#222',
+    borderColor: '#444',
+    textTransform: 'uppercase',
+    borderTopWidth: 1,
+  },
   infoItem: {
     paddingHorizontal: 12,
     paddingVertical: 2,

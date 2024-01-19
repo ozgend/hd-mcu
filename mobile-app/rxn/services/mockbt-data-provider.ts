@@ -127,8 +127,20 @@ const totalMemory: number = 2 * 1024 * 1024;
 
 const mockBtDevices: IDataProviderDevice[] = [
   {
-    name: 'HD-MCU',
+    name: 'HD-MCU-1',
     address: '00:22:09:01:8D:2B',
+  },
+  {
+    name: 'HD-MCU-2',
+    address: '00:22:09:01:8D:MOCK2',
+  },
+  {
+    name: 'HD-MCU-3',
+    address: '00:22:09:01:8D:MOCK3',
+  },
+  {
+    name: 'HD-MCU-4',
+    address: '00:22:09:01:8D:MOCK4',
   },
 ];
 

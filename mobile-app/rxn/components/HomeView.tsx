@@ -97,6 +97,8 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
 
     this.setState({ connectedDevice: device });
     this.setState({ isDeviceConnected: true });
+
+    this.startStream();
   };
 
   onProviderDeviceDisconnected: () => void = () => {
@@ -107,6 +109,14 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
     this.setState({ connectedDevice: null });
     this.setState({ isDeviceConnected: false });
   };
+
+  startStream() {
+    console.debug('starting stream');
+    this.setState({ status: 'starting stream' });
+    this.setState({ isBusy: true });
+
+    this.props.provider.startStream();
+  }
 
   selectDevice: (device: IDataProviderDevice) => void = (device: IDataProviderDevice) => {
     console.debug('selecting device', device);
@@ -174,7 +184,7 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
             <FlatList
               data={this.state.devices}
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => this.selectDevice(item)} style={styles.infoItem}>
+                <TouchableOpacity onPress={() => this.selectDevice(item)} style={styles.deviceListItem}>
                   <Text style={styles.infoTitle}>{item.name} </Text>
                   <Text style={styles.infoValue}>{item.address} </Text>
                 </TouchableOpacity>

@@ -33,15 +33,18 @@ class MuxedSensorService extends BaseService {
     this.mux = new HC4051({ pinA: Gpio.MUX_OUT_A, pinB: Gpio.MUX_OUT_B, pinC: Gpio.MUX_OUT_C, connectedChannels: _muxChannels });
     this.mux.init();
 
-    _readerPid = setInterval(() => {
-      this.mux.enableChannelIndex(_muxChIndex);
-      this.data[`ch_${_muxChannels[_muxChIndex]}`] = this.thermoSensor.readCelcius() ?? 0;
-      logger.debug(ServiceCode.MuxSensor, "interval.read", { ch: _muxChannels[_muxChIndex], cx: _muxChIndex, value: this.data[`ch_${_muxChannels[_muxChIndex]}`], values: this.data });
-      _muxChIndex++;
-      if (_muxChIndex >= _muxChannels.length) {
-        _muxChIndex = 0;
-      }
-    }, 1000);
+    // start delayed read
+    setTimeout(() => {
+      _readerPid = setInterval(() => {
+        this.mux.enableChannelIndex(_muxChIndex);
+        this.data[`ch_${_muxChannels[_muxChIndex]}`] = this.thermoSensor.readCelcius() ?? 0;
+        logger.debug(ServiceCode.MuxSensor, "interval.read", { ch: _muxChannels[_muxChIndex], cx: _muxChIndex, value: this.data[`ch_${_muxChannels[_muxChIndex]}`], values: this.data });
+        _muxChIndex++;
+        if (_muxChIndex >= _muxChannels.length) {
+          _muxChIndex = 0;
+        }
+      }, 1000);
+    }, 3000);
   }
 
   stop() {

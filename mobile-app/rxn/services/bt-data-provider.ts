@@ -71,7 +71,8 @@ export class BluetoothSerialDataProvider implements IDataProvider {
   }
 
   public async scanDevices(): Promise<boolean> {
-    const devices = await RNBluetoothClassic.startDiscovery();
+    // const devices = await RNBluetoothClassic.startDiscovery();
+    const devices = await RNBluetoothClassic.getBondedDevices();
     const deviceList = devices.map(d => {
       return { name: d.name, address: d.address };
     });
