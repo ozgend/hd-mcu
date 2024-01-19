@@ -55,65 +55,65 @@ const Gpio = {
 };
 
 const Seperator = {
-  SerialCommand: "+",
-  ServiceData: "=",
+  SerialCommand: '+',
+  ServiceData: '=',
 };
 
 const ServiceType = {
-  ALWAYS_RUN: "ALWAYS_RUN",
-  ON_DEMAND: "ON_DEMAND",
-  ONE_TIME: "ONE_TIME",
+  ALWAYS_RUN: 'ALWAYS_RUN',
+  ON_DEMAND: 'ON_DEMAND',
+  ONE_TIME: 'ONE_TIME',
 };
 
 const Broadcasting = {
-  ContinuousStream: "CONTINUOUS_STREAM",
-  OnDemandPolling: "ON_DEMAND_POLLING",
+  ContinuousStream: 'CONTINUOUS_STREAM',
+  OnDemandPolling: 'ON_DEMAND_POLLING',
 };
 
 const ServiceCode = {
-  Module: "MODULE",
-  TurnSignalModule: "TSM",
-  SystemStats: "SYS",
-  VehicleSensor: "VHC",
-  MuxSensor: "MUX",
-  EventBus: "BUS",
-  Main: "MAIN",
-  Heartbeat: "BEAT",
+  Module: 'MODULE',
+  TurnSignalModule: 'TSM',
+  SystemStats: 'SYS',
+  VehicleSensor: 'VHC',
+  MuxSensor: 'MUX',
+  EventBus: 'BUS',
+  Main: 'MAIN',
+  Heartbeat: 'BEAT',
 };
 
 const ServiceCommand = {
-  START: "START",
-  STOP: "STOP",
-  DIAG: "DIAG",
-  LEFT: "LEFT",
-  RIGHT: "RIGHT",
-  ALL: "ALL",
-  BOTH: "BOTH",
-  NONE: "NONE",
-  QUERY: "?",
-  DATA: "DATA",
-  STATUS: "STATUS",
+  START: 'START',
+  STOP: 'STOP',
+  DIAG: 'DIAG',
+  LEFT: 'LEFT',
+  RIGHT: 'RIGHT',
+  ALL: 'ALL',
+  BOTH: 'BOTH',
+  NONE: 'NONE',
+  QUERY: '?',
+  DATA: 'DATA',
+  STATUS: 'STATUS',
 };
 
 const ServiceEvent = {
-  DATA: "DATA",
-  ERR: "ERR",
-  STATUS: "STATUS",
+  DATA: 'DATA',
+  ERR: 'ERR',
+  STATUS: 'STATUS',
 };
 
 const ServiceStatus = {
-  Initialized: "INITIALIZED",
-  Available: "AVAILABLE",
-  Started: "STARTED",
-  Stopped: "STOPPED",
-  Error: "ERROR",
+  Initialized: 'INITIALIZED',
+  Available: 'AVAILABLE',
+  Started: 'STARTED',
+  Stopped: 'STOPPED',
+  Error: 'ERROR',
 };
 
 const EventType = {
-  CommandForModule: "MODULE_COMMAND",
-  CommandForService: "SERVICE_COMMAND",
-  DataFromService: "SERVICE_DATA",
-  DataFromSerial: "SERIAL_DATA",
+  CommandForModule: 'MODULE_COMMAND',
+  CommandForService: 'SERVICE_COMMAND',
+  DataFromService: 'SERVICE_DATA',
+  DataFromSerial: 'SERIAL_DATA',
 };
 
 module.exports = { Hardware, Gpio, ServiceType, ServiceEvent, ServiceCode, ServiceCommand, EventType, Seperator, ServiceStatus, Broadcasting };

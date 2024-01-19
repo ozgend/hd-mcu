@@ -1,5 +1,5 @@
-const { ServiceCommand, EventType, ServiceStatus, ServiceEvent, Broadcasting } = require("./constants");
-const logger = require("./logger");
+const { ServiceCommand, EventType, ServiceStatus, ServiceEvent, Broadcasting } = require('./constants');
+const logger = require('./logger');
 
 class BaseService {
   constructor(eventBus, { serviceCode, serviceType, updateInterval, broadcastMode, idleTimeout }) {
@@ -10,7 +10,7 @@ class BaseService {
       idleTimeout: idleTimeout ?? 1000 * 120,
       broadcastMode: broadcastMode ?? Broadcasting.OnDemandPolling,
     };
-    this.eventBus = eventBus ?? { emit: () => {} };
+    this.eventBus = eventBus ?? { emit: () => { } };
     this.status = ServiceStatus.Initialized;
     this.broadcastPid = null;
     this.isRunning = false;
@@ -24,7 +24,7 @@ class BaseService {
   }
 
   handleCommand(command) {
-    logger.info(this.options.serviceCode, "handleCommand", command);
+    logger.info(this.options.serviceCode, 'handleCommand', command);
     switch (command) {
       case ServiceCommand.START:
         this.start();
@@ -49,15 +49,15 @@ class BaseService {
   }
 
   setup() {
-    logger.info(this.options.serviceCode, "setup");
+    logger.info(this.options.serviceCode, 'setup');
     this.status = ServiceStatus.Available;
-    this.publishStatus();
+    // this.publishStatus();
   }
 
   start() {
-    logger.info(this.options.serviceCode, "starting");
+    logger.info(this.options.serviceCode, 'starting');
     if (this.isStarted()) {
-      logger.error(this.options.serviceCode, "already running");
+      logger.error(this.options.serviceCode, 'already running');
       return;
     }
     this.isRunning = true;
@@ -66,7 +66,7 @@ class BaseService {
         this.publishData();
       }, this.options.updateInterval);
     }
-    logger.info(this.options.serviceCode, "started.");
+    logger.info(this.options.serviceCode, 'started.');
     if (this.options.broadcastMode === Broadcasting.ContinuousStream) {
       setTimeout(() => {
         this.stop();
@@ -77,9 +77,9 @@ class BaseService {
   }
 
   stop() {
-    logger.info(this.options.serviceCode, "stopping");
+    logger.info(this.options.serviceCode, 'stopping');
     if (!this.isRunning) {
-      logger.error(this.options.serviceCode, "already stopped");
+      logger.error(this.options.serviceCode, 'already stopped');
       return;
     }
     if (this.broadcastPid) {
@@ -87,7 +87,7 @@ class BaseService {
     }
     this.isRunning = false;
     this.broadcastPid = null;
-    logger.info(this.options.serviceCode, "stopped.");
+    logger.info(this.options.serviceCode, 'stopped.');
     this.status = ServiceStatus.Stopped;
     this.publishStatus();
   }

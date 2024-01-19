@@ -1,7 +1,7 @@
-const { EventEmitter } = require("events");
-const { UART } = require("uart");
-const logger = require("./logger");
-const { ServiceCode, EventType, Seperator } = require("./constants");
+const { EventEmitter } = require('events');
+const { UART } = require('uart');
+const logger = require('./logger');
+const { ServiceCode, EventType, Seperator } = require('./constants');
 
 const uartOptions = {
   baudrate: 9600,
@@ -14,21 +14,21 @@ const uartOptions = {
 
 const textDecoder = new TextDecoder();
 const Serial = new UART(0, uartOptions);
-logger.info(ServiceCode.EventBus, "uart ready", uartOptions.baudrate);
+logger.info(ServiceCode.EventBus, 'uart ready', uartOptions.baudrate);
 
-class EventBus extends EventEmitter {}
+class EventBus extends EventEmitter { }
 const eventBus = new EventBus();
-logger.info(ServiceCode.EventBus, "emitter ready");
+logger.info(ServiceCode.EventBus, 'emitter ready');
 
-let _serialPayload = "";
+let _serialPayload = '';
 
-Serial.on("data", (data) => {
-  logger.debug(ServiceCode.EventBus, "serial.on.data", { raw: data, length: data.length, text: textDecoder.decode(data) });
+Serial.on('data', (data) => {
+  logger.debug(ServiceCode.EventBus, 'serial.on.data', { raw: data, length: data.length, text: textDecoder.decode(data) });
 
   data.forEach((byte) => {
     if (byte === 10) {
       eventBus.emit(EventType.DataFromSerial, _serialPayload.trim());
-      _serialPayload = "";
+      _serialPayload = '';
     } else if (byte !== 0) {
       _serialPayload += String.fromCharCode(byte).trim();
     }
@@ -53,10 +53,10 @@ eventBus.on(EventType.DataFromSerial, (serialPayload) => {
   }
 });
 
-logger.info(ServiceCode.EventBus, "eventBus ready");
+logger.info(ServiceCode.EventBus, 'eventBus ready');
 
 setInterval(() => {
-  Serial.write("0_heartbeat\n");
+  Serial.write('0_heartbeat\n');
   //logger.info(ServiceCode.EventBus, '0_heartbeat');
 }, 5000);
 

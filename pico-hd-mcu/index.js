@@ -9,10 +9,10 @@ const VehicleSensorService = require('./services/vehicle-sensor-service');
 const MuxedSensorService = require('./services/muxed-sensor-service');
 
 const _services = [
-  new TurnSignalService(eventBus),
   new SystemStatsService(eventBus),
   new VehicleSensorService(eventBus),
-  new MuxedSensorService(eventBus)
+  new MuxedSensorService(eventBus),
+  new TurnSignalService(eventBus),
 ];
 
 _services.forEach(service => {
