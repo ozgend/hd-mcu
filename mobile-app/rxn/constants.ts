@@ -36,19 +36,14 @@ export const ServiceCode = {
 export const ServiceCommand = {
   START: 'START',
   STOP: 'STOP',
+  DATA: 'DATA',
+  INFO: '?',
+};
+
+export const TurnSignalCommands = {
   DIAG: 'DIAG',
   LEFT: 'LEFT',
   RIGHT: 'RIGHT',
   ALL: 'ALL',
-  BOTH: 'BOTH',
   NONE: 'NONE',
-  QUERY: '?',
-  DATA: 'DATA',
-  STATUS: 'STATUS',
-};
-
-export const ServiceEvent = {
-  DATA: 'DATA',
-  ERR: 'ERR',
-  STATUS: 'STATUS',
 };

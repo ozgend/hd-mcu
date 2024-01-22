@@ -36,8 +36,8 @@ export interface IDataProvider extends IDataProviderEvents {
   stopStream(): boolean;
 
   // serial connection actions
-  addServiceEventListener(serviceCode: string, serviceEvent: string, callback: (data: any) => void): void;
-  removeServiceEventListener(serviceCode: string, serviceEvent?: string): void;
+  addServiceEventListener(serviceCode: string, serviceCommand: string, callback: (data: any) => void): void;
+  removeServiceEventListener(serviceCode: string, serviceCommand?: string): void;
   requestBtServiceData(serviceCode: string): Promise<void>;
   requestBtServiceInfo(serviceCode: string): Promise<void>;
   sendBtServiceCommand(serviceCode: string, serviceCommand: string): Promise<void>;

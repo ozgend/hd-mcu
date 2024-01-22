@@ -4,7 +4,7 @@ import HomeView from './components/HomeView';
 import { MockBluetoothSerialDataProvider } from './services/mockbt-data-provider';
 import { BluetoothSerialDataProvider } from './services/bt-data-provider';
 
-const dataProvider = new BluetoothSerialDataProvider();
+const dataProvider = new MockBluetoothSerialDataProvider();
 
 class App extends Component {
   render() {

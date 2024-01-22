@@ -1,5 +1,5 @@
 const { Button } = require('button');
-const { Hardware, Gpio, ServiceCode, ServiceCommand, ServiceType, Broadcasting } = require('../constants');
+const { Hardware, Gpio, ServiceCode, TurnSignalCommand, ServiceType, Broadcasting } = require('../constants');
 const BaseService = require('../base-service');
 const logger = require('../logger');
 
@@ -129,7 +129,8 @@ class TurnSignalService extends BaseService {
     super(eventBus, {
       serviceCode: ServiceCode.TurnSignalModule,
       serviceType: ServiceType.ON_DEMAND,
-      broadcastMode: Broadcasting.OnDemandPolling
+      broadcastMode: Broadcasting.OnDemandPolling,
+      commands: Object.values(TurnSignalCommand),
     });
   }
 
@@ -166,20 +167,19 @@ class TurnSignalService extends BaseService {
   handleCommand(command) {
     super.handleCommand(command);
     switch (command) {
-      case ServiceCommand.DIAG:
+      case TurnSignalCommand.DIAG:
         _diagnostic();
         break;
-      case ServiceCommand.NONE:
+      case TurnSignalCommand.NONE:
         _setFlasher(false, false);
         break;
-      case ServiceCommand.ALL:
-      case ServiceCommand.BOTH:
+      case TurnSignalCommand.ALL:
         _setFlasher(true, true);
         break;
-      case ServiceCommand.LEFT:
+      case TurnSignalCommand.LEFT:
         _setFlasher(true, false);
         break;
-      case ServiceCommand.RIGHT:
+      case TurnSignalCommand.RIGHT:
         _setFlasher(false, true);
         break;
       default:

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Button, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { IDataProvider } from '../services/interfaces';
 import { SensorItemView } from './SensorItemView';
 import * as Progress from 'react-native-progress';
-import { IServiceAttributes, IServiceState, IServiceStatusInfo, ServiceProperty } from '../models';
+import { IServiceAttributes, IServiceState, IServiceStatusInfo, SensorFieldInfo, ServiceProperty, ServiceStatusFieldInfo } from '../models';
 import { styles } from './shared';
-import { ServiceCommand, ServiceEvent } from '../constants';
+import { ServiceCommand } from '../constants';
 import { ServiceInfoView } from './ServiceInfoView';
 
 export interface ISensorViewProps<IProvider> {
@@ -34,12 +34,12 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
     console.debug(`${this.props.serviceCode} mounted`);
     this.setState({ isBusy: true });
 
-    this.props.provider.addServiceEventListener(this.props.serviceCode, ServiceEvent.DATA, (serviceData: any) => {
+    this.props.provider.addServiceEventListener(this.props.serviceCode, ServiceCommand.DATA, (serviceData: any) => {
       this.setState({ isBusy: false });
       this.setState({ serviceData });
     });
 
-    this.props.provider.addServiceEventListener(this.props.serviceCode, ServiceEvent.STATUS, (serviceInfo: IServiceStatusInfo) => {
+    this.props.provider.addServiceEventListener(this.props.serviceCode, ServiceCommand.INFO, (serviceInfo: IServiceStatusInfo) => {
       this.setState({ isBusy: false });
       this.setState({ serviceInfo });
     });
@@ -98,13 +98,21 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
           </View>
         )}
         {this.state?.serviceInfo &&
-          Object.keys(this.state?.serviceInfo ?? {}).map(fieldName => {
-            return <ServiceInfoView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />;
-          })}
+          Object.keys(this.state?.serviceInfo ?? {})
+            .sort((a, b) => {
+              return (ServiceStatusFieldInfo[a]?.order ?? 0) - (ServiceStatusFieldInfo[b]?.order ?? 0);
+            })
+            .map(fieldName => {
+              return <ServiceInfoView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />;
+            })}
         {this.state?.serviceData &&
-          Object.keys(this.state?.serviceData ?? {}).map(fieldName => {
-            return <SensorItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} />;
-          })}
+          Object.keys(this.state?.serviceData ?? {})
+            .sort((a, b) => {
+              return (SensorFieldInfo[a]?.order ?? 0) - (SensorFieldInfo[b]?.order ?? 0);
+            })
+            .map(fieldName => {
+              return <SensorItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} />;
+            })}
       </ScrollView>
     );
   }

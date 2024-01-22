@@ -71,11 +71,11 @@ const Broadcasting = {
 };
 
 const ServiceCode = {
-  Module: 'MODULE',
   TurnSignalModule: 'TSM',
   SystemStats: 'SYS',
   VehicleSensor: 'VHC',
-  MuxSensor: 'MUX',
+  ThermoSensor: 'THE',
+  Module: 'MODULE',
   EventBus: 'BUS',
   Main: 'MAIN',
   Heartbeat: 'BEAT',
@@ -84,21 +84,16 @@ const ServiceCode = {
 const ServiceCommand = {
   START: 'START',
   STOP: 'STOP',
-  DIAG: 'DIAG',
+  INFO: '?',
+  DATA: 'DATA',
+};
+
+const TurnSignalCommand = {
   LEFT: 'LEFT',
   RIGHT: 'RIGHT',
   ALL: 'ALL',
-  BOTH: 'BOTH',
   NONE: 'NONE',
-  QUERY: '?',
-  DATA: 'DATA',
-  STATUS: 'STATUS',
-};
-
-const ServiceEvent = {
-  DATA: 'DATA',
-  ERR: 'ERR',
-  STATUS: 'STATUS',
+  DIAG: 'DIAG',
 };
 
 const ServiceStatus = {
@@ -116,4 +111,4 @@ const EventType = {
   DataFromSerial: 'SERIAL_DATA',
 };
 
-module.exports = { Hardware, Gpio, ServiceType, ServiceEvent, ServiceCode, ServiceCommand, EventType, Seperator, ServiceStatus, Broadcasting };
+module.exports = { Hardware, Gpio, ServiceType, ServiceCode, ServiceCommand, TurnSignalCommand, EventType, Seperator, ServiceStatus, Broadcasting };

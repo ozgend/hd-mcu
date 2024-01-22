@@ -60,15 +60,16 @@ export interface ITsmControlData {
 }
 
 export interface IFieldInfo {
+  order?: number;
   title: string;
   unit?: string;
-  type: 'number' | 'date' | 'string';
+  type: 'number' | 'date' | 'string' | 'array';
   precision?: number;
   available?: boolean;
   formatter?: (value: any) => string;
 }
 
-const SensorFieldInfo: { [key: string]: IFieldInfo } = {
+export const SensorFieldInfo: { [key: string]: IFieldInfo } = {
   batt: {
     title: 'BATTERY',
     unit: 'V',
@@ -109,13 +110,14 @@ const SensorFieldInfo: { [key: string]: IFieldInfo } = {
   },
 };
 
-const ServiceStatusFieldInfo: { [key: string]: IFieldInfo } = {
-  serviceCode: { title: 'SERVICE', type: 'string' },
-  serviceType: { title: 'TYPE', type: 'string' },
+export const ServiceStatusFieldInfo: { [key: string]: IFieldInfo } = {
+  serviceCode: { title: 'SERVICE', type: 'string', order: 0 },
+  serviceType: { title: 'TYPE', type: 'string', order: 1 },
   updateInterval: { title: 'UPDATE-TO', unit: 'ms', type: 'number', available: false },
   idleTimeout: { title: 'IDLE-TO', unit: 'ms', type: 'number', available: false },
-  broadcastMode: { title: 'BROADCAST', type: 'string' },
-  status: { title: 'STATUS', type: 'string' },
+  broadcastMode: { title: 'BROADCAST', type: 'string', available: false },
+  status: { title: 'STATUS', type: 'string', order: 2 },
+  commands: { title: 'COMMANDS', type: 'array', order: 3 },
 };
 
 export const getSensorFieldInfo = (fieldName: string): IFieldInfo | null => {
@@ -127,22 +129,24 @@ export const getSensorFieldInfo = (fieldName: string): IFieldInfo | null => {
   if (fi.formatter) {
     return fi;
   }
-  switch (fi.type) {
-    case 'number':
-      fi.formatter = (value: number) => (value ? value.toFixed(fi.precision ?? 0) : 'N/A');
-      break;
-    case 'date':
-      fi.formatter = (value: number) => (value ? new Date(value).toISOString().split('T')[1].split('.')[0] : 'N/A');
-      break;
-    default:
-      fi.formatter = (value: any) => value ?? 'N/A';
-      break;
-  }
+  fi.formatter = getTypeFormatter(fi);
   return fi;
 };
 
-export const getServiceStateFieldInfo = (fieldName: string): IFieldInfo => {
-  return ServiceStatusFieldInfo[fieldName];
+export const getServiceStateFieldInfo = (fieldName: string): IFieldInfo | null => {
+  const fi = ServiceStatusFieldInfo[fieldName];
+  if (!fi) {
+    return null;
+  }
+  fi.available = fi.available ?? true;
+  if (fi.available === false) {
+    return null;
+  }
+  if (fi.formatter) {
+    return fi;
+  }
+  fi.formatter = getTypeFormatter(fi);
+  return fi;
 };
 
 export const ServiceName = {
@@ -154,6 +158,25 @@ export const ServiceName = {
   BUS: 'Event Bus',
   MAIN: 'Main',
   BEAT: 'Heartbeat',
+};
+
+const getTypeFormatter = (fi: IFieldInfo) => {
+  let formatter: (value: any) => string;
+  switch (fi.type) {
+    case 'number':
+      formatter = (value: number) => (value ? value.toFixed(fi.precision ?? 0) : 'N/A');
+      break;
+    case 'date':
+      formatter = (value: number) => (value ? new Date(value).toISOString().split('T')[1].split('.')[0] : 'N/A');
+      break;
+    case 'array':
+      formatter = (value: any) => (value ? value.join(', ') : 'N/A');
+      break;
+    default:
+      formatter = (value: any) => value ?? 'N/A';
+      break;
+  }
+  return formatter;
 };
 
 export interface IServiceAttributes {

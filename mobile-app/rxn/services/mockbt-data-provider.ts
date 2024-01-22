@@ -1,6 +1,6 @@
 import { Alert } from 'react-native';
 import { IDataProvider, IDataProviderDevice } from './interfaces';
-import { Broadcasting, ServiceCommand, ServiceStatus, ServiceType } from '../constants';
+import { Broadcasting, ServiceCode, ServiceCommand, ServiceStatus, ServiceType, TurnSignalCommands } from '../constants';
 import { IServiceStatusInfo, IVehicleSensorData, IMuxedSensorData, ITsmData, ISystemStatsData } from '../models';
 
 export class MockBluetoothSerialDataProvider implements IDataProvider {
@@ -77,19 +77,19 @@ export class MockBluetoothSerialDataProvider implements IDataProvider {
     return true;
   }
 
-  public addServiceEventListener(serviceCode: string, serviceEvent: string, callback: (data: any) => void): void {
+  public addServiceEventListener(serviceCode: string, serviceCommand: string, callback: (data: any) => void): void {
     if (!this.serviceListeners[serviceCode]) {
       this.serviceListeners[serviceCode] = {};
     }
-    this.serviceListeners[serviceCode][serviceEvent] = callback;
+    this.serviceListeners[serviceCode][serviceCommand] = callback;
   }
 
-  public removeServiceEventListener(serviceCode: string, serviceEvent: string): void {
+  public removeServiceEventListener(serviceCode: string, serviceCommand: string): void {
     if (!this.serviceListeners[serviceCode]) {
       return;
     }
-    if (serviceEvent) {
-      delete this.serviceListeners[serviceCode][serviceEvent];
+    if (serviceCommand) {
+      delete this.serviceListeners[serviceCode][serviceCommand];
     } else {
       delete this.serviceListeners[serviceCode];
     }
@@ -100,25 +100,25 @@ export class MockBluetoothSerialDataProvider implements IDataProvider {
   }
 
   public requestBtServiceInfo(serviceCode: string): Promise<void> {
-    return this.sendBtServiceCommand(serviceCode, ServiceCommand.STATUS);
+    return this.sendBtServiceCommand(serviceCode, ServiceCommand.INFO);
   }
 
   public async sendBtServiceCommand(serviceCode: string, serviceCommand: string): Promise<void> {
     console.log('sendCommand', serviceCode, serviceCommand);
     return new Promise(resolve => {
       setTimeout(() => {
-        const payload = serviceCommand === ServiceCommand.STATUS ? mockStatusSource(serviceCode) : mockDataSource[serviceCode]();
+        const payload = serviceCommand === ServiceCommand.INFO ? mockStatusSource(serviceCode) : mockDataSource[serviceCode]();
         this.getEventListener(serviceCode, serviceCommand)(payload);
       }, 2000);
       resolve();
     });
   }
 
-  private getEventListener(serviceCode: string, serviceEvent: string): (data: any) => void {
+  private getEventListener(serviceCode: string, serviceCommand: string): (data: any) => void {
     if (!this.serviceListeners[serviceCode]) {
       return () => {};
     }
-    return this.serviceListeners[serviceCode][serviceEvent] || (() => {});
+    return this.serviceListeners[serviceCode][serviceCommand] || (() => {});
   }
 }
 
@@ -153,6 +153,7 @@ const mockStatusSource = (serviceCode: string): IServiceStatusInfo => {
     status: ServiceStatus.Available,
     idleTimeout: 0,
     updateInterval: 0,
+    commands: serviceCode === ServiceCode.TurnSignalModule ? [...Object.values(ServiceCommand), ...Object.values(TurnSignalCommands)] : Object.values(ServiceCommand),
   } as IServiceStatusInfo;
 };
 

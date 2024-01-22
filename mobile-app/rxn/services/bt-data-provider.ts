@@ -124,8 +124,8 @@ export class BluetoothSerialDataProvider implements IDataProvider {
 
       try {
         const [target, payload] = event.data.split(Seperator.ServiceData);
-        const [serviceCode, serviceEvent] = target.split(Seperator.SerialCommand);
-        const listener = this.getEventListener(serviceCode, serviceEvent);
+        const [serviceCode, serviceCommand] = target.split(Seperator.SerialCommand);
+        const listener = this.getEventListener(serviceCode, serviceCommand);
         listener(JSON.parse(payload));
       } catch (err) {
         console.warn(err);
@@ -148,19 +148,19 @@ export class BluetoothSerialDataProvider implements IDataProvider {
     return true;
   }
 
-  public addServiceEventListener(serviceCode: string, serviceEvent: string, callback: (data: any) => void): void {
+  public addServiceEventListener(serviceCode: string, serviceCommand: string, callback: (data: any) => void): void {
     if (!this.serviceListeners[serviceCode]) {
       this.serviceListeners[serviceCode] = {};
     }
-    this.serviceListeners[serviceCode][serviceEvent] = callback;
+    this.serviceListeners[serviceCode][serviceCommand] = callback;
   }
 
-  public removeServiceEventListener(serviceCode: string, serviceEvent: string): void {
+  public removeServiceEventListener(serviceCode: string, serviceCommand: string): void {
     if (!this.serviceListeners[serviceCode]) {
       return;
     }
-    if (serviceEvent) {
-      delete this.serviceListeners[serviceCode][serviceEvent];
+    if (serviceCommand) {
+      delete this.serviceListeners[serviceCode][serviceCommand];
     } else {
       delete this.serviceListeners[serviceCode];
     }
@@ -171,7 +171,7 @@ export class BluetoothSerialDataProvider implements IDataProvider {
   }
 
   public requestBtServiceInfo(serviceCode: string): Promise<void> {
-    return this.sendBtServiceCommand(serviceCode, ServiceCommand.STATUS);
+    return this.sendBtServiceCommand(serviceCode, ServiceCommand.INFO);
   }
 
   public async sendBtServiceCommand(serviceCode: string, serviceCommand: string): Promise<void> {
@@ -179,11 +179,11 @@ export class BluetoothSerialDataProvider implements IDataProvider {
     await this.connectedDevice?.write(`${serviceCode}${Seperator.SerialCommand}${serviceCommand}\n`);
   }
 
-  private getEventListener(serviceCode: string, serviceEvent: string): (data: any) => void {
+  private getEventListener(serviceCode: string, serviceCommand: string): (data: any) => void {
     if (!this.serviceListeners[serviceCode]) {
       return () => {};
     }
-    return this.serviceListeners[serviceCode][serviceEvent] || (() => {});
+    return this.serviceListeners[serviceCode][serviceCommand] || (() => {});
   }
 
   private async requestBtPermissions(): Promise<boolean> {
