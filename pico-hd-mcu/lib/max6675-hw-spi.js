@@ -2,8 +2,8 @@
 // https://github.com/zhenek-kreker/MAX6675/blob/master/MAX6675.cpp
 // https://github.com/adafruit/MAX6675-library/blob/master/max6675.cpp
 
-const { GPIO } = require('gpio');
-const { SPI } = require('spi');
+const { GPIO } = require("gpio");
+const { SPI } = require("spi");
 
 const MAX6675_BPS = 2 * 1000 * 1000;
 const MAX6675_OPEN_BIT = 0x4;
@@ -21,7 +21,7 @@ class MAX6675 {
       sck: options.sck || 10,
       clk: options.sck || 10,
       miso: options.miso || 12,
-      mosi: -1
+      mosi: -1,
     };
   }
 
@@ -30,7 +30,7 @@ class MAX6675 {
       this.spiBus = new SPI(this.bus, this.spiOptions);
       this.spiCs = new GPIO(this.cs, OUTPUT);
       this.spiCs.high();
-      console.log('MAX6675: init');
+      console.log("MAX6675: init");
       console.log(this.spiCs);
       console.log(this.spiBus);
       return true;
@@ -43,7 +43,7 @@ class MAX6675 {
 
   close() {
     if (this.spiBus) {
-      console.log('MAX6675: close')
+      console.log("MAX6675: close");
       this.spiBus.close();
     }
   }
@@ -54,7 +54,7 @@ class MAX6675 {
     let bytes = this.readRaw();
 
     if (bytes & MAX6675_OPEN_BIT) {
-      console.error('MAX6675: no thermocouple attached!');
+      console.error("MAX6675: no thermocouple attached!");
       return null;
     }
     const value = (bytes >> 3) * MAX6675_CONVERSION_RATIO;
@@ -78,12 +78,11 @@ class MAX6675 {
       // console.log(`MAX6675: readRaw.sent: ${sent}b`);
       let bytes = this.spiBus.recv(16);
       if (bytes === null) {
-        console.error('MAX6675: recv error');
+        console.error("MAX6675: recv error");
       }
       // console.log(`MAX6675: readRaw.bytes: ${bytes} length: ${bytes.length}`);
       return bytes;
-    }
-    catch (err) {
+    } catch (err) {
       console.error(err);
     }
     return [];
@@ -95,8 +94,7 @@ class MAX6675 {
       raw |= this.spiBus.transfer(new Uint8Array([0]));
       // console.log(`MAX6675: readRaw.bytes: ${raw}`);
       return raw;
-    }
-    catch (err) {
+    } catch (err) {
       console.error(err);
     }
     return [];

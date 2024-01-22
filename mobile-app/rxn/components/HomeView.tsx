@@ -1,137 +1,196 @@
-import React, {Component} from 'react';
-import {Text, View} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, { Component } from 'react';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { NavigationContainer, PreventRemoveContext } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {styles, tabTheme, getIcon} from './shared';
-import {IDataProvider} from '../services/interfaces';
-import {BtDataServiceTypes} from '../models';
-import {ServiceSensorView} from './ServiceSensorView';
-import {BluetoothSerialDataProvider} from '../services/bt-data-provider';
+import * as Progress from 'react-native-progress';
+import { styles, tabTheme, getIcon } from './shared';
+import { IDataProvider, IDataProviderDevice, IDataProviderEvents } from '../services/interfaces';
+import { BtDataServiceTypes } from '../models';
+import { ServiceSensorView } from './ServiceSensorView';
+
+interface IProps {
+  provider: IDataProvider;
+}
 
 interface IState {
-  isProviderBroadcasting: boolean;
-  isProviderAvailable: boolean;
-  dataProvider: IDataProvider;
-  receivedData: string;
-  serviceState: {[key: string]: boolean};
+  status: string;
+  isBusy: boolean;
+  isProviderStreamStarted: boolean;
+  isProviderInitialized: boolean;
+  isDeviceDiscovered: boolean;
+  isDeviceConnected: boolean;
+  devices: IDataProviderDevice[];
+  connectedDevice: IDataProviderDevice | null;
 }
 
 const Tab = createBottomTabNavigator();
 
-const dataProvider = new BluetoothSerialDataProvider();
-
-class HomeView extends Component<void, IState> {
+class HomeView extends Component<IProps, IState> implements IDataProviderEvents {
   constructor(props: any) {
     super(props);
-    this.state = {
-      isProviderBroadcasting: false,
-      isProviderAvailable: false,
-      receivedData: '--',
-      dataProvider,
-      serviceState: {},
-    };
+    this.state = { isProviderStreamStarted: false, isProviderInitialized: false, devices: [], connectedDevice: null, isDeviceConnected: false, isDeviceDiscovered: false, status: '', isBusy: false };
+
+    this.props.provider.onProviderInitialized = () => this.onProviderInitialized();
+    this.props.provider.onProviderStreamStarted = () => this.onProviderStreamStarted();
+    this.props.provider.onProviderStreamStopped = () => this.onProviderStreamStopped();
+    this.props.provider.onProviderHeartbeat = (hasHeartbeat: boolean) => this.onProviderHeartbeat(hasHeartbeat);
+    this.props.provider.onProviderStreamStatusChange = (state: boolean) => this.onProviderStreamStatusChange(state);
+    this.props.provider.onProviderDeviceDiscovered = (devices: IDataProviderDevice[]) => this.onProviderDeviceDiscovered(devices);
+    this.props.provider.onProviderDeviceConnected = (device: IDataProviderDevice) => this.onProviderDeviceConnected(device);
+    this.props.provider.onProviderDeviceDisconnected = () => this.onProviderDeviceDisconnected();
   }
 
-  onDataReceived(receivedData: any) {
-    this.setState({receivedData});
+  onProviderInitialized() {
+    console.debug('provider initialized');
+    this.setState({ status: 'provider initialized' });
+    this.setState({ isBusy: false });
+
+    this.setState({ isProviderInitialized: true });
+
+    this.setState({ status: 'scanning devices' });
+    this.setState({ isBusy: true });
+
+    this.props.provider.scanDevices();
   }
 
-  async makeConnection() {
-    this.state.dataProvider.onUpdate('dataReceived', data =>
-      this.onDataReceived(data),
-    );
-    const isProviderAvailable = await this.state.dataProvider?.initialize();
-    this.setState({isProviderAvailable});
-    if (isProviderAvailable) {
-      const isProviderBroadcasting = this.state.dataProvider.startStream();
-      this.setState({isProviderBroadcasting});
-    }
+  onProviderStreamStarted() {
+    console.debug('provider stream started');
+    this.setState({ status: 'provider stream started' });
+    this.setState({ isBusy: false });
+
+    this.setState({ isProviderStreamStarted: true });
+  }
+
+  onProviderStreamStopped() {
+    console.debug('provider stream stopped');
+    this.setState({ status: 'provider stream stopped' });
+    this.setState({ isBusy: false });
+    this.setState({ isProviderStreamStarted: false });
+    this.setState({ isDeviceDiscovered: false });
+    this.setState({ isDeviceConnected: false });
+    this.setState({ isProviderInitialized: false });
+  }
+
+  onProviderHeartbeat: (hasHeartbeat: boolean) => void = (hasHeartbeat: boolean) => {
+    console.debug('provider heartbeat', hasHeartbeat);
+  };
+
+  onProviderStreamStatusChange: (state: boolean) => void = (state: boolean) => {
+    console.debug('provider stream status change', state);
+    this.setState({ isProviderStreamStarted: state });
+  };
+
+  onProviderDeviceDiscovered: (devices: IDataProviderDevice[]) => void = (devices: IDataProviderDevice[]) => {
+    console.debug('discovered devices', devices);
+    this.setState({ status: 'discovered devices' });
+    this.setState({ isBusy: false });
+
+    this.setState({ devices });
+    this.setState({ isDeviceDiscovered: true });
+  };
+
+  onProviderDeviceConnected: (device: IDataProviderDevice) => void = (device: IDataProviderDevice) => {
+    console.debug('device connected', device);
+    this.setState({ status: 'device connected' });
+    this.setState({ isBusy: false });
+
+    this.setState({ connectedDevice: device });
+    this.setState({ isDeviceConnected: true });
+
+    this.startStream();
+  };
+
+  onProviderDeviceDisconnected: () => void = () => {
+    console.debug('device disconnected');
+    this.setState({ status: 'device disconnected' });
+    this.setState({ isBusy: false });
+
+    this.setState({ connectedDevice: null });
+    this.setState({ isDeviceConnected: false });
+  };
+
+  startStream() {
+    console.debug('starting stream');
+    this.setState({ status: 'starting stream' });
+    this.setState({ isBusy: true });
+
+    this.props.provider.startStream();
+  }
+
+  selectDevice: (device: IDataProviderDevice) => void = (device: IDataProviderDevice) => {
+    console.debug('selecting device', device);
+    this.setState({ status: 'selecting device' });
+    this.setState({ isBusy: true });
+
+    this.props.provider.connectDevice(device);
+  };
+
+  initializeProvider() {
+    console.debug('initializing provider');
+    this.setState({ status: 'initializing provider' });
+    this.setState({ isBusy: true });
+
+    this.props.provider.initialize();
   }
 
   render() {
     return (
       <NavigationContainer theme={tabTheme}>
-        {this.state.isProviderAvailable && this.state.dataProvider && (
+        {!this.state.isDeviceConnected && this.state.isBusy && <Progress.Bar indeterminate={true} color={styles.container.color} borderRadius={0} unfilledColor={styles.container.backgroundColor} borderWidth={0} width={1000} />}
+        {!this.state.isDeviceConnected && !this.state.isBusy && <Progress.Bar progress={1} color={styles.container.color} borderRadius={0} unfilledColor={styles.container.backgroundColor} borderWidth={0} width={1000} />}
+
+        {this.state.isDeviceConnected && (
           <Tab.Navigator>
             <Tab.Screen
-              name={BtDataServiceTypes.DEV}
-              options={{
-                unmountOnBlur: true,
-                header: () => undefined,
-                tabBarIcon: () => getIcon('engine'),
-              }}
-              children={() => (
-                <ServiceSensorView
-                  provider={this.state.dataProvider}
-                  serviceName={BtDataServiceTypes.DEV}
-                  title={'Motorbike'}
-                  iconName={'engine'}
-                />
-              )}
+              name={BtDataServiceTypes.Vehicle}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon('engine') }}
+              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={BtDataServiceTypes.Vehicle} />}
             />
             <Tab.Screen
-              name={BtDataServiceTypes.MUX}
-              options={{
-                unmountOnBlur: true,
-                header: () => undefined,
-                tabBarIcon: () => getIcon('thermometer'),
-              }}
-              children={() => (
-                <ServiceSensorView
-                  provider={this.state.dataProvider}
-                  serviceName={BtDataServiceTypes.MUX}
-                  title={'Thermometers'}
-                  iconName={'thermometer'}
-                />
-              )}
+              name={BtDataServiceTypes.MuxThermo}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon('thermometer') }}
+              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={BtDataServiceTypes.MuxThermo} />}
             />
             <Tab.Screen
-              name={BtDataServiceTypes.SYS}
-              options={{
-                unmountOnBlur: true,
-                header: () => undefined,
-                tabBarIcon: () => getIcon('chip'),
-              }}
-              children={() => (
-                <ServiceSensorView
-                  provider={this.state.dataProvider}
-                  serviceName={BtDataServiceTypes.SYS}
-                  title={'System'}
-                  iconName={'chip'}
-                />
-              )}
+              name={BtDataServiceTypes.System}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon('chip') }}
+              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={BtDataServiceTypes.System} />}
             />
             <Tab.Screen
-              name={BtDataServiceTypes.TSM}
-              options={{
-                unmountOnBlur: true,
-                header: () => undefined,
-                tabBarIcon: () => getIcon('arrow-left-right'),
-              }}
-              children={() => (
-                <ServiceSensorView
-                  provider={this.state.dataProvider}
-                  serviceName={BtDataServiceTypes.TSM}
-                  title={'Turn Signal Module'}
-                  iconName={'arrow-left-right'}
-                />
-              )}
+              name={BtDataServiceTypes.TurnSignalModule}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon('arrow-left-right') }}
+              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={BtDataServiceTypes.TurnSignalModule} />}
             />
           </Tab.Navigator>
         )}
-        {!this.state.isProviderAvailable && (
+        {!this.state.isDeviceConnected && (
           <View style={styles.centerContainer}>
-            <Text style={styles.heading}>bluetooth not connected</Text>
-            <Text style={styles.text}>please connect to the device first</Text>
+            <Text style={styles.heading}>bluetooth connection</Text>
+            <Text style={styles.text}>please connect to the device</Text>
             <Text style={styles.text}> </Text>
-            <MaterialCommunityIcons.Button
-              name="bluetooth"
-              style={styles.button}
-              color={styles.button.color}
-              onPress={() => this.makeConnection()}>
-              CONNECT
+            <MaterialCommunityIcons.Button name="bluetooth" style={styles.button} color={styles.button.color} onPress={() => this.initializeProvider()}>
+              START
             </MaterialCommunityIcons.Button>
+            <Text style={styles.text}> </Text>
+            {this.state.isBusy && !this.state.isDeviceConnected && <Text style={styles.textSmall}>{this.state.status}</Text>}
+            {!this.state.isBusy && !this.state.isDeviceConnected && <Text style={styles.textSmall}> </Text>}
+          </View>
+        )}
+        {!this.state.isDeviceConnected && (
+          <View style={styles.container}>
+            {this.state.isDeviceDiscovered && <Text style={styles.statusText}>connect to device</Text>}
+            <Text style={styles.text}> </Text>
+            <FlatList
+              data={this.state.devices}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => this.selectDevice(item)} style={styles.deviceListItem}>
+                  <Text style={styles.infoTitle}>{item.name} </Text>
+                  <Text style={styles.infoValue}>{item.address} </Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={item => item.address}
+            />
           </View>
         )}
       </NavigationContainer>

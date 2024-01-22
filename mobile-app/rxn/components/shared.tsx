@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export const getIcon = (name: string): React.ReactNode => {
@@ -19,6 +19,12 @@ export const tabTheme = {
 };
 
 export const styles = StyleSheet.create({
+  progressView: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#222',
+    height: 20,
+  },
   container: {
     flex: 1,
     padding: 4,
@@ -31,12 +37,14 @@ export const styles = StyleSheet.create({
   actionBarView: {
     paddingTop: 4,
     paddingBottom: 4,
+    height: 50,
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     verticalAlign: 'middle',
     textTransform: 'uppercase',
     textAlignVertical: 'center',
+    backgroundColor: '#222',
   },
   actionBarHeader: {
     flex: 1,
@@ -63,8 +71,9 @@ export const styles = StyleSheet.create({
     alignItems: 'flex-end',
     textAlignVertical: 'center',
     textTransform: 'uppercase',
-    verticalAlign: 'top',
+    verticalAlign: 'middle',
     width: 90,
+    shadowColor: '#fa0',
   },
   actionBarButtonRunning: {
     borderCurve: 'continuous',
@@ -136,6 +145,14 @@ export const styles = StyleSheet.create({
     textAlign: 'right',
     alignContent: 'flex-end',
   },
+  textSmall: {
+    fontSize: 14,
+    color: '#fa0',
+    textTransform: 'uppercase',
+    alignItems: 'flex-end',
+    textAlign: 'right',
+    alignContent: 'flex-end',
+  },
   sensorItem: {
     padding: 12,
     flex: 1,
@@ -161,12 +178,58 @@ export const styles = StyleSheet.create({
     flexGrow: 1,
     color: '#fa0',
   },
+  deviceListItem: {
+    padding: 10,
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    backgroundColor: '#222',
+    borderColor: '#444',
+    textTransform: 'uppercase',
+    borderTopWidth: 1,
+  },
+  infoItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 2,
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    backgroundColor: '#222',
+    borderColor: '#444',
+    textTransform: 'uppercase',
+    borderTopWidth: 1,
+  },
+  infoTitle: {
+    paddingHorizontal: 4,
+    fontSize: 16,
+    fontWeight: '200',
+    textTransform: 'uppercase',
+    textAlign: 'right',
+    minWidth: 100,
+    color: '#fa0',
+  },
+  infoValue: {
+    paddingHorizontal: 4,
+    fontSize: 16,
+    textTransform: 'uppercase',
+    textAlign: 'left',
+    fontWeight: 'normal',
+    flexGrow: 1,
+    color: '#fa0',
+  },
   sensorUnit: {
     fontSize: 18,
     fontWeight: '300',
     textAlign: 'right',
     textTransform: 'uppercase',
     minWidth: 50,
+    color: '#fa0',
+  },
+  statusText: {
+    padding: 30,
+    fontSize: 16,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
     color: '#fa0',
   },
 });

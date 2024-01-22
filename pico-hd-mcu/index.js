@@ -2,22 +2,22 @@ const rtc = require('rtc');
 rtc.setTime(-2209078556000);
 const logger = require('./logger');
 const { eventBus, publishToSerial } = require('./event-bus');
-const { ServiceType, ServiceCode, EventName, Gpio } = require('./constants');
+const { ServiceType, ServiceCode, EventType, Gpio } = require('./constants');
 const TurnSignalService = require('./services/turn-signal-service');
 const SystemStatsService = require('./services/system-stats-service');
-const DeviceSensorService = require('./services/device-sensor-service');
+const VehicleSensorService = require('./services/vehicle-sensor-service');
 const MuxedSensorService = require('./services/muxed-sensor-service');
 
 const _services = [
-  new TurnSignalService(eventBus),
   new SystemStatsService(eventBus),
-  new DeviceSensorService(eventBus),
-  new MuxedSensorService(eventBus)
+  new VehicleSensorService(eventBus),
+  new MuxedSensorService(eventBus),
+  new TurnSignalService(eventBus),
 ];
 
 _services.forEach(service => {
   service.setup();
-  if (service.type === ServiceType.ALWAYS_RUN) {
+  if (service.ServiceType === ServiceType.ALWAYS_RUN) {
     service.start();
   }
 });
@@ -51,7 +51,7 @@ const dispatchModuleCommand = (command) => {
   }
 };
 
-eventBus.on(EventName.CommandForModule, (command) => {
-  logger.debug(ServiceCode.Main, EventName.CommandForModule, { command });
+eventBus.on(EventType.CommandForModule, (command) => {
+  logger.debug(ServiceCode.Main, EventType.CommandForModule, { command });
   dispatchModuleCommand(command);
 });
