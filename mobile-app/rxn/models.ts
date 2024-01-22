@@ -70,21 +70,9 @@ export interface IFieldInfo {
 }
 
 export const SensorFieldInfo: { [key: string]: IFieldInfo } = {
-  batt: {
-    title: 'BATTERY',
-    unit: 'V',
-    type: 'number',
-    precision: 2,
-    available: true,
-  },
-  temp: {
-    title: 'ONBOARD TEMP',
-    unit: '°C',
-    type: 'number',
-    precision: 1,
-    available: true,
-  },
-  rpm: { title: 'REVS', unit: 'rpm', type: 'number', available: true },
+  temp: { title: 'ONBOARD TEMP', unit: '°C', type: 'number', precision: 1, available: true, order: 1 },
+  batt: { title: 'BATTERY', unit: 'V', type: 'number', precision: 2, available: true, order: 2 },
+  rpm: { title: 'REVS', unit: 'rpm', type: 'number', available: true, order: 3 },
   speed: { title: 'SPEED', unit: 'km/h', type: 'number', available: true },
   ch_0: { title: 'CYLINDER 1', unit: '°C', type: 'number', available: true },
   ch_1: { title: 'CYLINDER 2', unit: '°C', type: 'number', available: true },
@@ -103,11 +91,7 @@ export const SensorFieldInfo: { [key: string]: IFieldInfo } = {
   heapUsed: { title: 'MEM USED', unit: 'b', type: 'number' },
   heapPeak: { title: 'MEM PEAK', unit: 'b', type: 'number' },
   uptime: { title: 'UPTIME', type: 'date' },
-  state: {
-    title: 'TSM',
-    type: 'string',
-    formatter: (value: ITsmControlData) => `L: ${value.left}, R: ${value.right}`,
-  },
+  state: { title: 'TSM', type: 'string', formatter: (value: ITsmControlData) => `L: ${value.left}, R: ${value.right}` },
 };
 
 export const ServiceStatusFieldInfo: { [key: string]: IFieldInfo } = {
@@ -149,17 +133,6 @@ export const getServiceStateFieldInfo = (fieldName: string): IFieldInfo | null =
   return fi;
 };
 
-export const ServiceName = {
-  MODULE: 'Module',
-  TSM: 'Turn Signal Module',
-  SYS: 'System',
-  VHC: 'Vehicle',
-  MUX: 'Thermometer',
-  BUS: 'Event Bus',
-  MAIN: 'Main',
-  BEAT: 'Heartbeat',
-};
-
 const getTypeFormatter = (fi: IFieldInfo) => {
   let formatter: (value: any) => string;
   switch (fi.type) {
@@ -187,14 +160,14 @@ export interface IServiceAttributes {
 
 export const ServiceProperty: { [key: string]: IServiceAttributes } = {
   VHC: { title: 'Vehicle', icon: 'engine', pollInterval: 1000 },
-  MUX: { title: 'Thermometer', icon: 'thermometer', pollInterval: 5000 },
+  THE: { title: 'Thermometer', icon: 'thermometer', pollInterval: 5000 },
   SYS: { title: 'System', icon: 'chip', pollInterval: 5000 },
   TSM: { title: 'Turn Signal', icon: 'arrow-left-right' },
 };
 
 export const BtDataServiceTypes = {
   Vehicle: 'VHC',
-  MuxThermo: 'MUX',
+  Thermometer: 'THE',
   System: 'SYS',
   TurnSignalModule: 'TSM',
 };

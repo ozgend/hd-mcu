@@ -100,7 +100,7 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
         {this.state?.serviceInfo &&
           Object.keys(this.state?.serviceInfo ?? {})
             .sort((a, b) => {
-              return (ServiceStatusFieldInfo[a]?.order ?? 0) - (ServiceStatusFieldInfo[b]?.order ?? 0);
+              return (ServiceStatusFieldInfo[a]?.order ?? 99) - (ServiceStatusFieldInfo[b]?.order ?? 100);
             })
             .map(fieldName => {
               return <ServiceInfoView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />;
@@ -108,7 +108,7 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
         {this.state?.serviceData &&
           Object.keys(this.state?.serviceData ?? {})
             .sort((a, b) => {
-              return (SensorFieldInfo[a]?.order ?? 0) - (SensorFieldInfo[b]?.order ?? 0);
+              return (SensorFieldInfo[a]?.order ?? 99) - (SensorFieldInfo[b]?.order ?? 100);
             })
             .map(fieldName => {
               return <SensorItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} />;

@@ -27,7 +27,7 @@ export const ServiceCode = {
   TurnSignalModule: 'TSM',
   SystemStats: 'SYS',
   VehicleSensor: 'VHC',
-  MuxSensor: 'MUX',
+  Thermometer: 'THE',
   EventBus: 'BUS',
   Main: 'MAIN',
   Heartbeat: 'BEAT',

@@ -167,7 +167,7 @@ const mockDataSource: { [key: string]: () => any } = {
     } as IVehicleSensorData;
   },
 
-  MUX: () => {
+  THE: () => {
     return {
       ch_0: Math.random() * 10 + 500,
       ch_1: Math.random() * 10 + 500,

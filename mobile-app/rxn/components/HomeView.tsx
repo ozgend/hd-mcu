@@ -148,9 +148,9 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
               children={() => <ServiceSensorView provider={this.props.provider} serviceCode={BtDataServiceTypes.Vehicle} />}
             />
             <Tab.Screen
-              name={BtDataServiceTypes.MuxThermo}
+              name={BtDataServiceTypes.Thermometer}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon('thermometer') }}
-              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={BtDataServiceTypes.MuxThermo} />}
+              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={BtDataServiceTypes.Thermometer} />}
             />
             <Tab.Screen
               name={BtDataServiceTypes.System}
