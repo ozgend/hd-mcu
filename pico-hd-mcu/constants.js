@@ -74,7 +74,8 @@ const ServiceCode = {
   TurnSignalModule: 'TSM',
   SystemStats: 'SYS',
   VehicleSensor: 'VHC',
-  ThermoSensor: 'THE',
+  VehicleInfo: 'VHI',
+  Thermometers: 'THE',
   Module: 'MODULE',
   EventBus: 'BUS',
   Main: 'MAIN',
@@ -84,8 +85,9 @@ const ServiceCode = {
 const ServiceCommand = {
   START: 'START',
   STOP: 'STOP',
-  INFO: '?',
+  INFO: 'INFO',
   DATA: 'DATA',
+  SET: 'SET',
 };
 
 const TurnSignalCommand = {

@@ -132,6 +132,7 @@ class TurnSignalService extends BaseService {
       broadcastMode: Broadcasting.OnDemandPolling,
       commands: Object.values(TurnSignalCommand),
     });
+    // logger.debug(ServiceCode.TurnSignalModule, 'constructor', Object.values(TurnSignalCommand));
   }
 
   setup() {

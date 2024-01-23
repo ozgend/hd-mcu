@@ -1,64 +1,3 @@
-export interface IServiceState {}
-
-export interface IOtaMetadata {
-  appVersion: string;
-  isMandatory: boolean;
-  packageHash: string;
-  packageSize: number;
-  isFirstRun: boolean;
-  label: string;
-}
-
-export interface IServiceStatusInfo {
-  serviceCode: string;
-  serviceType: string;
-  updateInterval: number;
-  idleTimeout: number;
-  broadcastMode: string;
-  status: string;
-  isRunning: boolean;
-}
-
-export interface IVehicleSensorData extends IServiceState {
-  temp?: number;
-  batt?: number;
-  rpm?: number;
-  speed?: number;
-}
-
-export interface IMuxedSensorData extends IServiceState {
-  ch_0?: number;
-  ch_1?: number;
-  ch_2?: number;
-  ch_3?: number;
-  ch_4?: number;
-  ch_5?: number;
-  ch_6?: number;
-  ch_7?: number;
-}
-
-export interface ISystemStatsData extends IServiceState {
-  arch?: string;
-  platform?: string;
-  version?: string;
-  name?: string;
-  uid?: string;
-  heapTotal?: number;
-  heapUsed?: number;
-  heapPeak?: number;
-  rtc?: number;
-}
-
-export interface ITsmData extends IServiceState {
-  state?: ITsmControlData;
-  action?: ITsmControlData;
-}
-
-export interface ITsmControlData {
-  left: boolean;
-  right: boolean;
-}
-
 export interface IFieldInfo {
   order?: number;
   title: string;
@@ -91,7 +30,28 @@ export const SensorFieldInfo: { [key: string]: IFieldInfo } = {
   heapUsed: { title: 'MEM USED', unit: 'b', type: 'number' },
   heapPeak: { title: 'MEM PEAK', unit: 'b', type: 'number' },
   uptime: { title: 'UPTIME', type: 'date' },
-  state: { title: 'TSM', type: 'string', formatter: (value: ITsmControlData) => `L: ${value.left}, R: ${value.right}` },
+  state: { title: 'TSM', type: 'string', formatter: (value: any) => `L: ${value.left}, R: ${value.right}` },
+  model: { title: 'MODEL', type: 'string' },
+  vin: { title: 'VIN', type: 'string' },
+  year: { title: 'YEAR', type: 'number' },
+  make: { title: 'MAKE', type: 'string' },
+  owner: { title: 'OWNER', type: 'string' },
+  plate: { title: 'PLATE', type: 'string' },
+  regId: { title: 'REG ID', type: 'string' },
+  oilDate: { title: 'OIL DATE', type: 'date' },
+  oilInterval: { title: 'OIL INTERVAL', unit: 'km', type: 'number' },
+  tireFrontInfo: { title: 'FRONT TIRE', type: 'string' },
+  tireRearInfo: { title: 'REAR TIRE', type: 'string' },
+  tireFrontDate: { title: 'FRONT T. DATE', type: 'date' },
+  tireRearDate: { title: 'REAR T. DATE', type: 'date' },
+  beltInfo: { title: 'BELT', type: 'string' },
+  beltDate: { title: 'BELT DATE', type: 'date' },
+  batteryInfo: { title: 'BATTERY', type: 'string' },
+  batteryDate: { title: 'BATTERY DATE', type: 'date' },
+  inspectDate: { title: 'INSPECT DATE', type: 'date' },
+  inspectInterval: { title: 'INSPECT INTERVAL', unit: 'km', type: 'number' },
+  serviceDate: { title: 'SERVICE DATE', type: 'date' },
+  serviceInterval: { title: 'SERVICE INTERVAL', unit: 'km', type: 'number' },
 };
 
 export const ServiceStatusFieldInfo: { [key: string]: IFieldInfo } = {
@@ -143,7 +103,7 @@ const getTypeFormatter = (fi: IFieldInfo) => {
       formatter = (value: number) => (value ? new Date(value).toISOString().split('T')[1].split('.')[0] : 'N/A');
       break;
     case 'array':
-      formatter = (value: any) => (value ? value.join(', ') : 'N/A');
+      formatter = (value: any) => (value?.join ? value.join(', ') : 'N/A');
       break;
     default:
       formatter = (value: any) => value ?? 'N/A';
@@ -156,21 +116,13 @@ export interface IServiceAttributes {
   title: string;
   icon: string;
   pollInterval?: number;
+  pollOnce?: boolean;
 }
 
 export const ServiceProperty: { [key: string]: IServiceAttributes } = {
-  VHC: { title: 'Vehicle', icon: 'engine', pollInterval: 1000 },
+  VHI: { title: 'Vehicle Info', icon: 'information', pollOnce: true },
+  VHC: { title: 'Vehicle Sensor', icon: 'engine', pollInterval: 1000 },
   THE: { title: 'Thermometer', icon: 'thermometer', pollInterval: 5000 },
   SYS: { title: 'System', icon: 'chip', pollInterval: 5000 },
   TSM: { title: 'Turn Signal', icon: 'arrow-left-right' },
 };
-
-export const BtDataServiceTypes = {
-  Vehicle: 'VHC',
-  Thermometer: 'THE',
-  System: 'SYS',
-  TurnSignalModule: 'TSM',
-};
-
-export const BtDataServiceCodeKeys = Object.keys(BtDataServiceTypes);
-export const BtDataServiceCodeValues = Object.values(BtDataServiceTypes);

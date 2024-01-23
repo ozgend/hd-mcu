@@ -6,8 +6,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import * as Progress from 'react-native-progress';
 import { styles, tabTheme, getIcon } from './shared';
 import { IDataProvider, IDataProviderDevice, IDataProviderEvents } from '../services/interfaces';
-import { BtDataServiceTypes } from '../models';
-import { ServiceSensorView } from './ServiceSensorView';
+import { ServiceProperty } from '../models';
+import { ServiceSensorView } from './ServiceView';
+import { ServiceCode } from '../constants';
 
 interface IProps {
   provider: IDataProvider;
@@ -143,24 +144,32 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
         {this.state.isDeviceConnected && (
           <Tab.Navigator>
             <Tab.Screen
-              name={BtDataServiceTypes.Vehicle}
-              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon('engine') }}
-              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={BtDataServiceTypes.Vehicle} />}
+              name={ServiceCode.VehicleInfo}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.VehicleInfo].icon) }}
+              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={ServiceCode.VehicleInfo} />}
             />
             <Tab.Screen
-              name={BtDataServiceTypes.Thermometer}
-              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon('thermometer') }}
-              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={BtDataServiceTypes.Thermometer} />}
+              name={ServiceCode.VehicleSensor}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.VehicleSensor].icon) }}
+              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={ServiceCode.VehicleSensor} />}
             />
+
             <Tab.Screen
-              name={BtDataServiceTypes.System}
-              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon('chip') }}
-              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={BtDataServiceTypes.System} />}
+              name={ServiceCode.Thermometer}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.Thermometer].icon) }}
+              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={ServiceCode.Thermometer} />}
             />
+
             <Tab.Screen
-              name={BtDataServiceTypes.TurnSignalModule}
-              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon('arrow-left-right') }}
-              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={BtDataServiceTypes.TurnSignalModule} />}
+              name={ServiceCode.SystemStats}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.SystemStats].icon) }}
+              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={ServiceCode.SystemStats} />}
+            />
+
+            <Tab.Screen
+              name={ServiceCode.TurnSignalModule}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.TurnSignalModule].icon) }}
+              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={ServiceCode.TurnSignalModule} />}
             />
           </Tab.Navigator>
         )}

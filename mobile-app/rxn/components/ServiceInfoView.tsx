@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { styles } from './shared';
-import { IServiceStatusInfo, getSensorFieldInfo, getServiceStateFieldInfo } from '../models';
+import { getServiceStateFieldInfo } from '../models';
 
 export interface ISensorItemProps {
   fieldName: string;

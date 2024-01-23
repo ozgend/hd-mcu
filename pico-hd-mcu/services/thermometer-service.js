@@ -1,22 +1,22 @@
-const MAX6675 = require("../lib/max6675-hw-spi");
-const HC4051 = require("../lib/hc4051");
-const { ServiceCode, Gpio, ServiceType, Broadcasting } = require("../constants");
-const BaseService = require("../base-service");
-const logger = require("../logger");
-const { IMuxedSensorData } = require("../schema");
+const MAX6675 = require('../lib/max6675-hw-spi');
+const HC4051 = require('../lib/hc4051');
+const { ServiceCode, Gpio, ServiceType, Broadcasting } = require('../constants');
+const BaseService = require('../base-service');
+const logger = require('../logger');
+const { ThermometerData } = require('../../ts-schema/data.model');
 
 const _muxChannels = [0, 1, 2, 3];
 let _readerPid = 0;
 let _muxChIndex = 0;
 
-class MuxedSensorService extends BaseService {
+class ThermometerService extends BaseService {
   constructor(eventBus) {
     super(eventBus, {
-      serviceCode: ServiceCode.MuxSensor,
+      serviceCode: ServiceCode.Thermometers,
       serviceType: ServiceType.ON_DEMAND,
       broadcastMode: Broadcasting.OnDemandPolling,
     });
-    this.data = IMuxedSensorData;
+    this.data = new ThermometerData();
   }
 
   start() {
@@ -38,7 +38,7 @@ class MuxedSensorService extends BaseService {
       _readerPid = setInterval(() => {
         this.mux.enableChannelIndex(_muxChIndex);
         this.data[`ch_${_muxChannels[_muxChIndex]}`] = this.thermoSensor.readCelcius() ?? 0;
-        logger.debug(ServiceCode.MuxSensor, "interval.read", { ch: _muxChannels[_muxChIndex], cx: _muxChIndex, value: this.data[`ch_${_muxChannels[_muxChIndex]}`], values: this.data });
+        logger.debug(ServiceCode.Thermometers, 'interval.read', { ch: _muxChannels[_muxChIndex], cx: _muxChIndex, value: this.data[`ch_${_muxChannels[_muxChIndex]}`], values: this.data });
         _muxChIndex++;
         if (_muxChIndex >= _muxChannels.length) {
           _muxChIndex = 0;
@@ -64,4 +64,4 @@ class MuxedSensorService extends BaseService {
   }
 }
 
-module.exports = MuxedSensorService;
+module.exports = ThermometerService;

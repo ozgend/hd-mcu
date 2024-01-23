@@ -4,10 +4,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { IDataProvider } from '../services/interfaces';
 import { SensorItemView } from './SensorItemView';
 import * as Progress from 'react-native-progress';
-import { IServiceAttributes, IServiceState, IServiceStatusInfo, SensorFieldInfo, ServiceProperty, ServiceStatusFieldInfo } from '../models';
+import { IServiceAttributes, SensorFieldInfo, ServiceProperty, ServiceStatusFieldInfo } from '../models';
+import { IServiceState, IServiceStatusInfo } from '../../../ts-schema/data.interface';
 import { styles } from './shared';
-import { ServiceCommand } from '../constants';
+import { ServiceCode, ServiceCommand } from '../constants';
 import { ServiceInfoView } from './ServiceInfoView';
+import { VehicleInfoItemView } from './VehicleInfoItemView';
 
 export interface ISensorViewProps<IProvider> {
   provider: IProvider;
@@ -56,18 +58,28 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
   }
 
   toggleService(): void {
-    console.debug(`${this.props.serviceCode} polling ${!this.state.isPolling ? 'start' : 'stop'}`);
-    this.setState({ isBusy: true });
-    this.props.provider.requestBtServiceInfo(this.props.serviceCode);
-    if (!this.state.isPolling) {
-      this.workerPid = setInterval(() => {
-        this.props.provider.requestBtServiceData(this.props.serviceCode);
-      }, this.serviceAttributes.pollInterval ?? 5000);
+    if (this.serviceAttributes.pollOnce) {
+      this.setState({ isBusy: true });
+      this.requestServiceData();
+      this.setState({ isBusy: false });
     } else {
-      clearInterval(this.workerPid);
-      this.props.provider.sendBtServiceCommand(this.props.serviceCode, ServiceCommand.STOP);
+      console.debug(`${this.props.serviceCode} polling ${!this.state.isPolling ? 'start' : 'stop'}`);
+      this.setState({ isBusy: true });
+      this.props.provider.requestBtServiceInfo(this.props.serviceCode);
+      if (!this.state.isPolling) {
+        this.workerPid = setInterval(() => {
+          this.props.provider.requestBtServiceData(this.props.serviceCode);
+        }, this.serviceAttributes.pollInterval ?? 5000);
+      } else {
+        clearInterval(this.workerPid);
+        this.props.provider.sendBtServiceCommand(this.props.serviceCode, ServiceCommand.STOP);
+      }
+      this.setState({ isPolling: !this.state.isPolling });
     }
-    this.setState({ isPolling: !this.state.isPolling });
+  }
+
+  requestServiceData(): void {
+    this.props.provider.requestBtServiceData(this.props.serviceCode);
   }
 
   render() {
@@ -106,6 +118,16 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
               return <ServiceInfoView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />;
             })}
         {this.state?.serviceData &&
+          this.props.serviceCode === ServiceCode.VehicleInfo &&
+          Object.keys(this.state?.serviceData ?? {})
+            .sort((a, b) => {
+              return (SensorFieldInfo[a]?.order ?? 99) - (SensorFieldInfo[b]?.order ?? 100);
+            })
+            .map(fieldName => {
+              return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} />;
+            })}
+        {this.state?.serviceData &&
+          this.props.serviceCode !== ServiceCode.VehicleInfo &&
           Object.keys(this.state?.serviceData ?? {})
             .sort((a, b) => {
               return (SensorFieldInfo[a]?.order ?? 99) - (SensorFieldInfo[b]?.order ?? 100);
