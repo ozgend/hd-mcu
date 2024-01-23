@@ -4,7 +4,7 @@ import { NavigationContainer, PreventRemoveContext } from '@react-navigation/nat
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Progress from 'react-native-progress';
-import { styles, tabTheme, getIcon } from './shared';
+import { styles, tabTheme, getIcon } from '../shared';
 import { IDataProvider, IDataProviderDevice, IDataProviderEvents } from '../services/interfaces';
 import { ServiceProperty } from '../models';
 import { ServiceView } from './ServiceView';

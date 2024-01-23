@@ -1,4 +1,4 @@
-export interface IFieldInfo {
+export interface IField {
   order?: number;
   title: string;
   unit?: string;
@@ -8,53 +8,63 @@ export interface IFieldInfo {
   formatter?: (value: any) => string;
 }
 
-export const SensorFieldInfo: { [key: string]: IFieldInfo } = {
-  temp: { title: 'ONBOARD TEMP', unit: '°C', type: 'number', precision: 1, available: true, order: 1 },
-  batt: { title: 'BATTERY', unit: 'V', type: 'number', precision: 2, available: true, order: 2 },
-  rpm: { title: 'REVS', unit: 'rpm', type: 'number', available: true, order: 3 },
-  speed: { title: 'SPEED', unit: 'km/h', type: 'number', available: true },
-  ch_0: { title: 'CYLINDER 1', unit: '°C', type: 'number', available: true },
-  ch_1: { title: 'CYLINDER 2', unit: '°C', type: 'number', available: true },
-  ch_2: { title: 'EXHAUST 1', unit: '°C', type: 'number', available: true },
-  ch_3: { title: 'EXHAUST 2', unit: '°C', type: 'number', available: true },
-  ch_4: { title: 'OIL TANK', unit: '°C', type: 'number', available: true },
-  ch_5: { title: 'REGULATOR', unit: '°C', type: 'number', available: true },
-  ch_6: { title: 'CARBURETOR', unit: '°C', type: 'number', available: true },
-  ch_7: { title: 'CH7_AUX', unit: '°C', type: 'number', available: true },
-  arch: { title: 'ARCH', type: 'string' },
-  platform: { title: 'PLATFORM', type: 'string' },
-  version: { title: 'VERSION', type: 'string' },
-  name: { title: 'NAME', type: 'string' },
-  uid: { title: 'UID', type: 'string' },
-  heapTotal: { title: 'MEM TOTAL', unit: 'b', type: 'number' },
-  heapUsed: { title: 'MEM USED', unit: 'b', type: 'number' },
-  heapPeak: { title: 'MEM PEAK', unit: 'b', type: 'number' },
-  uptime: { title: 'UPTIME', type: 'date' },
-  state: { title: 'TSM', type: 'string', formatter: (value: any) => `L: ${value.left}, R: ${value.right}` },
-  model: { title: 'MODEL', type: 'string' },
-  vin: { title: 'VIN', type: 'string' },
-  year: { title: 'YEAR', type: 'number' },
-  make: { title: 'MAKE', type: 'string' },
-  owner: { title: 'OWNER', type: 'string' },
-  plate: { title: 'PLATE', type: 'string' },
-  regId: { title: 'REG ID', type: 'string' },
-  oilDate: { title: 'OIL DATE', type: 'date' },
-  oilInterval: { title: 'OIL INTERVAL', unit: 'km', type: 'number' },
-  tireFrontInfo: { title: 'FRONT TIRE', type: 'string' },
-  tireRearInfo: { title: 'REAR TIRE', type: 'string' },
-  tireFrontDate: { title: 'FRONT T. DATE', type: 'date' },
-  tireRearDate: { title: 'REAR T. DATE', type: 'date' },
-  beltInfo: { title: 'BELT', type: 'string' },
-  beltDate: { title: 'BELT DATE', type: 'date' },
-  batteryInfo: { title: 'BATTERY', type: 'string' },
-  batteryDate: { title: 'BATTERY DATE', type: 'date' },
-  inspectDate: { title: 'INSPECT DATE', type: 'date' },
-  inspectInterval: { title: 'INSPECT INTERVAL', unit: 'km', type: 'number' },
-  serviceDate: { title: 'SERVICE DATE', type: 'date' },
-  serviceInterval: { title: 'SERVICE INTERVAL', unit: 'km', type: 'number' },
+export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
+  VHC: {
+    temp: { title: 'ONBOARD TEMP', unit: '°C', type: 'number', precision: 1, order: 1 },
+    batt: { title: 'BATTERY', unit: 'V', type: 'number', precision: 2, order: 2 },
+    rpm: { title: 'REVS', unit: 'rpm', type: 'number', order: 3 },
+    speed: { title: 'SPEED', unit: 'km/h', type: 'number', order: 4 },
+  },
+  VHI: {
+    make: { title: 'MAKE', type: 'string', order: 1 },
+    model: { title: 'MODEL', type: 'string', order: 2 },
+    year: { title: 'YEAR', type: 'number', order: 3 },
+    owner: { title: 'OWNER', type: 'string', order: 4 },
+    vin: { title: 'VIN', type: 'string', order: 5 },
+    plate: { title: 'PLATE', type: 'string', order: 6 },
+    regId: { title: 'REG ID', type: 'string', order: 7 },
+    oilDate: { title: 'OIL DATE', type: 'date', order: 8 },
+    oilInterval: { title: 'OIL INTERVAL', unit: 'km', type: 'number', order: 9 },
+    inspectDate: { title: 'INSPECT DATE', type: 'date', order: 10 },
+    inspectInterval: { title: 'INSPECT INTERVAL', unit: 'km', type: 'number', order: 11 },
+    serviceDate: { title: 'SERVICE DATE', type: 'date', order: 12 },
+    serviceInterval: { title: 'SERVICE INTERVAL', unit: 'km', type: 'number', order: 13 },
+    tireFrontInfo: { title: 'FRONT TIRE', type: 'string', order: 14 },
+    tireRearInfo: { title: 'REAR TIRE', type: 'string', order: 15 },
+    tireFrontDate: { title: 'FRONT T. DATE', type: 'date', order: 16 },
+    tireRearDate: { title: 'REAR T. DATE', type: 'date', order: 17 },
+    beltInfo: { title: 'BELT', type: 'string', order: 18 },
+    beltDate: { title: 'BELT DATE', type: 'date', order: 19 },
+    batteryInfo: { title: 'BATTERY', type: 'string', order: 20 },
+    batteryDate: { title: 'BATTERY DATE', type: 'date', order: 21 },
+  },
+  SYS: {
+    arch: { title: 'ARCH', type: 'string', order: 1 },
+    platform: { title: 'PLATFORM', type: 'string', order: 2 },
+    version: { title: 'VERSION', type: 'string', order: 3 },
+    name: { title: 'NAME', type: 'string', order: 4 },
+    uid: { title: 'UID', type: 'string', order: 5 },
+    heapTotal: { title: 'MEM TOTAL', unit: 'b', type: 'number', order: 6 },
+    heapUsed: { title: 'MEM USED', unit: 'b', type: 'number', order: 7 },
+    heapPeak: { title: 'MEM PEAK', unit: 'b', type: 'number', order: 8 },
+    uptime: { title: 'UPTIME', type: 'date', order: 9 },
+  },
+  TSM: {
+    state: { title: 'TSM', type: 'string', formatter: (value: any) => `L: ${value.left}, R: ${value.right}` },
+  },
+  THE: {
+    ch_0: { title: 'CYLINDER 1', unit: '°C', type: 'number', order: 1 },
+    ch_1: { title: 'CYLINDER 2', unit: '°C', type: 'number', order: 2 },
+    ch_2: { title: 'EXHAUST 1', unit: '°C', type: 'number', order: 3 },
+    ch_3: { title: 'EXHAUST 2', unit: '°C', type: 'number', order: 4 },
+    ch_4: { title: 'OIL TANK', unit: '°C', type: 'number', order: 5 },
+    ch_5: { title: 'REGULATOR', unit: '°C', type: 'number', order: 6 },
+    ch_6: { title: 'CARBURETOR', unit: '°C', type: 'number', order: 7 },
+    ch_7: { title: 'CH7_AUX', unit: '°C', type: 'number', order: 8 },
+  },
 };
 
-export const ServiceStatusFieldInfo: { [key: string]: IFieldInfo } = {
+export const ServiceInfoFields: { [key: string]: IField } = {
   serviceCode: { title: 'SERVICE', type: 'string', order: 0 },
   serviceType: { title: 'TYPE', type: 'string', order: 1 },
   updateInterval: { title: 'UPDATE-TO', unit: 'ms', type: 'number', available: false },
@@ -64,8 +74,8 @@ export const ServiceStatusFieldInfo: { [key: string]: IFieldInfo } = {
   commands: { title: 'COMMANDS', type: 'array', order: 3 },
 };
 
-export const getSensorFieldInfo = (fieldName: string): IFieldInfo | null => {
-  const fi = SensorFieldInfo[fieldName];
+export const getDataField = (serviceCode: string, fieldName: string): IField | null => {
+  const fi = ServiceDataFields[serviceCode][fieldName];
   if (!fi) {
     return null;
   }
@@ -77,8 +87,8 @@ export const getSensorFieldInfo = (fieldName: string): IFieldInfo | null => {
   return fi;
 };
 
-export const getServiceStateFieldInfo = (fieldName: string): IFieldInfo | null => {
-  const fi = ServiceStatusFieldInfo[fieldName];
+export const getInfoField = (fieldName: string): IField | null => {
+  const fi = ServiceInfoFields[fieldName];
   if (!fi) {
     return null;
   }
@@ -93,7 +103,7 @@ export const getServiceStateFieldInfo = (fieldName: string): IFieldInfo | null =
   return fi;
 };
 
-const getTypeFormatter = (fi: IFieldInfo) => {
+const getTypeFormatter = (fi: IField) => {
   let formatter: (value: any) => string;
   switch (fi.type) {
     case 'number':

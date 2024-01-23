@@ -1,16 +1,17 @@
 import React, { Component, useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
-import { styles } from './shared';
-import { getSensorFieldInfo } from '../models';
+import { styles } from '../shared';
+import { getDataField } from '../models';
 
 export interface IInfoItemProps {
+  serviceCode: string;
   fieldName: string;
   value: string | number | boolean | null | undefined | any;
 }
 
 export class VehicleInfoItemView extends Component<IInfoItemProps> {
   render() {
-    const fieldInfo = getSensorFieldInfo(this.props.fieldName);
+    const fieldInfo = getDataField(this.props.serviceCode, this.props.fieldName);
 
     if (!fieldInfo?.available) {
       return null;

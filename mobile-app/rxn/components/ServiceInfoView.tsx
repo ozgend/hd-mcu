@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { styles } from './shared';
-import { getServiceStateFieldInfo } from '../models';
+import { styles } from '../shared';
+import { getInfoField } from '../models';
 
 export interface ISensorItemProps {
   fieldName: string;
@@ -18,7 +18,7 @@ export class ServiceInfoView extends Component<ISensorItemProps> {
       return null;
     }
 
-    const fieldInfo = getServiceStateFieldInfo(this.props.fieldName);
+    const fieldInfo = getInfoField(this.props.fieldName);
 
     if (!fieldInfo) {
       return null;

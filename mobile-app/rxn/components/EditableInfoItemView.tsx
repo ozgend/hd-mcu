@@ -1,9 +1,10 @@
 import React, { Component, useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
-import { styles } from './shared';
-import { getSensorFieldInfo } from '../models';
+import { styles } from '../shared';
+import { getDataField } from '../models';
 
 export interface IInfoItemProps {
+  serviceCode: string;
   fieldName: string;
   value: string | number | boolean | null | undefined | any;
   setServiceData: (fieldName: string, value: string | number | boolean | null | undefined | any) => void;
@@ -15,7 +16,7 @@ export class EditableInfoItemView extends Component<IInfoItemProps> {
     this.state = { value: this.props.value?.toString() ?? '' };
   }
   render() {
-    const fieldInfo = getSensorFieldInfo(this.props.fieldName);
+    const fieldInfo = getDataField(this.props.serviceCode, this.props.fieldName);
 
     if (!fieldInfo?.available) {
       return null;
@@ -32,9 +33,6 @@ export class EditableInfoItemView extends Component<IInfoItemProps> {
           onEndEditing={event => {
             this.props.setServiceData(this.props.fieldName, event.nativeEvent.text);
           }}
-          // onChangeText={newValue => {
-          //   this.props.setServiceData(this.props.fieldName, newValue);
-          // }}
         />
       </View>
     );
