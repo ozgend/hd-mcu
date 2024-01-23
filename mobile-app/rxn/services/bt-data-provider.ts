@@ -1,6 +1,6 @@
 import { Alert, PermissionsAndroid, Platform, ToastAndroid } from 'react-native';
 import { IDataProvider, IDataProviderDevice } from './interfaces';
-import RNBluetoothClassic, { BluetoothDevice, BluetoothDeviceReadEvent, BluetoothEventSubscription } from 'react-native-bluetooth-classic';
+import RNBluetoothClassic, { BluetoothDevice, BluetoothDeviceEvent, BluetoothDeviceReadEvent, BluetoothEventSubscription } from 'react-native-bluetooth-classic';
 import { Seperator, ServiceCommand } from '../constants';
 
 const macid = '00:22:09:01:8D:2B';
@@ -25,8 +25,10 @@ export class BluetoothSerialDataProvider implements IDataProvider {
 
   public async initialize(): Promise<boolean> {
     if (this.isInitialized) {
-      Alert.alert('Bluetooth already initialized');
-      return true;
+      // Alert.alert('Bluetooth already initialized');
+      this.isInitialized = true;
+      this.onProviderInitialized();
+      return this.isInitialized;
     }
 
     const hasBluetoothPermissions = await this.requestBtPermissions();
@@ -81,8 +83,10 @@ export class BluetoothSerialDataProvider implements IDataProvider {
   }
 
   public async connectDevice(device: IDataProviderDevice): Promise<boolean> {
+    this.isDeviceConnected = (await this.connectedDevice?.isConnected()) ?? false;
     if (this.isDeviceConnected) {
-      Alert.alert('Bluetooth device already connected');
+      // Alert.alert('Bluetooth device already connected');
+      this.onProviderDeviceConnected(device);
       return true;
     }
 
@@ -94,23 +98,33 @@ export class BluetoothSerialDataProvider implements IDataProvider {
         return false;
       } else {
         this.onProviderDeviceConnected(device);
+        RNBluetoothClassic.onDeviceDisconnected((event: BluetoothDeviceEvent) => {
+          this.isDeviceConnected = false;
+          this.onProviderDeviceDisconnected();
+        });
       }
       return this.isDeviceConnected;
     } catch (err) {
       console.error(err);
       Alert.alert(`Bluetooth connection failed to device ${device.name} [${device.address}]`);
+      this.onProviderDeviceDisconnected();
       return false;
     }
   }
 
   public startStream(): boolean {
     if (this.isStreamStarted) {
-      Alert.alert('Bluetooth stream already started');
+      // Alert.alert('Bluetooth stream already started');
+      this.onProviderStreamStatusChange(true);
+      this.onProviderStreamStarted();
       return true;
     }
 
     if (!this.connectedDevice) {
       Alert.alert('Bluetooth device not connected');
+      this.onProviderStreamStatusChange(false);
+      this.onProviderStreamStopped();
+
       return false;
     }
 
@@ -133,6 +147,7 @@ export class BluetoothSerialDataProvider implements IDataProvider {
       }
     });
     this.onProviderStreamStatusChange(true);
+    this.onProviderStreamStarted();
     return true;
   }
 
