@@ -189,9 +189,13 @@ export class BluetoothSerialDataProvider implements IDataProvider {
     return this.sendBtServiceCommand(serviceCode, ServiceCommand.INFO);
   }
 
-  public async sendBtServiceCommand(serviceCode: string, serviceCommand: string): Promise<void> {
-    console.log('sendCommand', serviceCode, serviceCommand);
-    await this.connectedDevice?.write(`${serviceCode}${Seperator.SerialCommand}${serviceCommand}\n`);
+  public async sendBtServiceCommand(serviceCode: string, serviceCommand: string, servicePayload?: any): Promise<void> {
+    console.log('sendCommand', serviceCode, serviceCommand, servicePayload);
+    if (servicePayload) {
+      await this.connectedDevice?.write(`${serviceCode}${Seperator.SerialCommand}${serviceCommand}${Seperator.ServiceData}${JSON.stringify(servicePayload)}\n`);
+    } else {
+      await this.connectedDevice?.write(`${serviceCode}${Seperator.SerialCommand}${serviceCommand}\n`);
+    }
   }
 
   private getEventListener(serviceCode: string, serviceCommand: string): (data: any) => void {

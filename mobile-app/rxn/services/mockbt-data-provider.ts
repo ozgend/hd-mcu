@@ -1,7 +1,7 @@
 import { Alert } from 'react-native';
 import { IDataProvider, IDataProviderDevice } from './interfaces';
 import { Broadcasting, ServiceCode, ServiceCommand, ServiceStatus, ServiceType, TurnSignalCommands } from '../constants';
-import { IServiceStatusInfo, IVehicleSensorData, IMuxedSensorData, ITsmData, ISystemStatsData } from '../models';
+import { IServiceStatusInfo, ISystemStatsData, IThermometerData, ITsmData, IVehicleSensorData } from '../../../ts-schema/data.interface';
 
 export class MockBluetoothSerialDataProvider implements IDataProvider {
   private serviceListeners: { [key: string]: any } = {};
@@ -177,7 +177,7 @@ const mockDataSource: { [key: string]: () => any } = {
       ch_5: Math.random() * 10 + 500,
       ch_6: Math.random() * 10 + 500,
       ch_7: Math.random() * 10 + 500,
-    } as IMuxedSensorData;
+    } as IThermometerData;
   },
 
   TSM: () => {

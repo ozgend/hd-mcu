@@ -97,7 +97,7 @@ const getTypeFormatter = (fi: IFieldInfo) => {
   let formatter: (value: any) => string;
   switch (fi.type) {
     case 'number':
-      formatter = (value: number) => (value ? value.toFixed(fi.precision ?? 0) : 'N/A');
+      formatter = (value: number) => (value?.toFixed ? value.toFixed(fi.precision ?? 0) : 'N/A');
       break;
     case 'date':
       formatter = (value: number) => (value ? new Date(value).toISOString().split('T')[1].split('.')[0] : 'N/A');
@@ -117,10 +117,11 @@ export interface IServiceAttributes {
   icon: string;
   pollInterval?: number;
   pollOnce?: boolean;
+  isEditable?: boolean;
 }
 
 export const ServiceProperty: { [key: string]: IServiceAttributes } = {
-  VHI: { title: 'Vehicle Info', icon: 'information', pollOnce: true },
+  VHI: { title: 'Vehicle Info', icon: 'information', pollOnce: true, isEditable: true },
   VHC: { title: 'Vehicle Sensor', icon: 'engine', pollInterval: 1000 },
   THE: { title: 'Thermometer', icon: 'thermometer', pollInterval: 5000 },
   SYS: { title: 'System', icon: 'chip', pollInterval: 5000 },

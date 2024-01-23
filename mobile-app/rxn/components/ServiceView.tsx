@@ -10,20 +10,22 @@ import { styles } from './shared';
 import { ServiceCode, ServiceCommand } from '../constants';
 import { ServiceInfoView } from './ServiceInfoView';
 import { VehicleInfoItemView } from './VehicleInfoItemView';
+import { EditableInfoItemView } from './EditableInfoItemView';
 
-export interface ISensorViewProps<IProvider> {
+export interface IServicerViewProps<IProvider> {
   provider: IProvider;
   serviceCode: string;
 }
 
-export interface ISensorViewStateData<TSensorData> {
+export interface IServiceViewState<TSensorData> {
   serviceData: TSensorData;
   serviceInfo: IServiceStatusInfo | any;
   isPolling: boolean;
   isBusy: boolean;
+  isEditing?: boolean;
 }
 
-export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>, ISensorViewStateData<IServiceState>> {
+export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IServiceViewState<IServiceState>> {
   constructor(props: any) {
     super(props);
     this.state = { isPolling: false, serviceData: {}, serviceInfo: {}, isBusy: true };
@@ -31,6 +33,7 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
 
   workerPid: any;
   serviceAttributes: IServiceAttributes = ServiceProperty[this.props.serviceCode];
+  editedServiceData: any = {};
 
   async componentDidMount(): Promise<void> {
     console.debug(`${this.props.serviceCode} mounted`);
@@ -47,6 +50,10 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
     });
 
     this.props.provider.requestBtServiceInfo(this.props.serviceCode);
+
+    if (this.serviceAttributes.pollOnce) {
+      this.props.provider.requestBtServiceData(this.props.serviceCode);
+    }
   }
 
   async componentWillUnmount(): Promise<void> {
@@ -59,27 +66,41 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
 
   toggleService(): void {
     if (this.serviceAttributes.pollOnce) {
-      this.setState({ isBusy: true });
-      this.requestServiceData();
-      this.setState({ isBusy: false });
-    } else {
-      console.debug(`${this.props.serviceCode} polling ${!this.state.isPolling ? 'start' : 'stop'}`);
-      this.setState({ isBusy: true });
-      this.props.provider.requestBtServiceInfo(this.props.serviceCode);
-      if (!this.state.isPolling) {
-        this.workerPid = setInterval(() => {
-          this.props.provider.requestBtServiceData(this.props.serviceCode);
-        }, this.serviceAttributes.pollInterval ?? 5000);
-      } else {
-        clearInterval(this.workerPid);
-        this.props.provider.sendBtServiceCommand(this.props.serviceCode, ServiceCommand.STOP);
-      }
-      this.setState({ isPolling: !this.state.isPolling });
+      return;
     }
+
+    console.debug(`${this.props.serviceCode} polling ${!this.state.isPolling ? 'start' : 'stop'}`);
+    this.setState({ isBusy: true });
+    this.props.provider.requestBtServiceInfo(this.props.serviceCode);
+    if (!this.state.isPolling) {
+      this.workerPid = setInterval(() => {
+        this.props.provider.requestBtServiceData(this.props.serviceCode);
+      }, this.serviceAttributes.pollInterval ?? 5000);
+    } else {
+      clearInterval(this.workerPid);
+      this.props.provider.sendBtServiceCommand(this.props.serviceCode, ServiceCommand.STOP);
+    }
+
+    this.setState({ isPolling: !this.state.isPolling });
+  }
+
+  toggleEdit(): void {
+    const toState = !this.state.isEditing;
+    this.setState({ isEditing: !this.state.isEditing });
+    if (!toState) {
+      this.setState({ serviceData: Object.assign({}, this.state.serviceData, this.editedServiceData) });
+      this.props.provider.sendBtServiceCommand(this.props.serviceCode, ServiceCommand.SET, this.state.serviceData);
+    }
+    console.log(this.state.serviceData);
   }
 
   requestServiceData(): void {
     this.props.provider.requestBtServiceData(this.props.serviceCode);
+  }
+
+  setServiceData(fieldName: string, value: any): void {
+    this.setState({ serviceData: { ...this.state.serviceData, [fieldName]: value } });
+    // this.editedServiceData[fieldName] = value;
   }
 
   render() {
@@ -90,15 +111,30 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
 
         <View style={styles.actionBarView}>
           <Text style={styles.actionBarHeader}>{this.serviceAttributes.title}</Text>
-          <MaterialCommunityIcons.Button
-            backgroundColor={styles.actionBarButton.backgroundColor}
-            size={styles.actionBarButton.fontSize}
-            name={this.state.isPolling ? 'stop-circle' : 'play-circle'}
-            style={this.state.isPolling ? styles.actionBarButtonRunning : styles.actionBarButton}
-            color={this.state.isPolling ? styles.actionBarButtonRunning.color : styles.actionBarButton.color}
-            onPress={() => this.toggleService()}>
-            {this.state.isPolling ? 'STOP' : 'START'}
-          </MaterialCommunityIcons.Button>
+          {this.serviceAttributes.isEditable && (
+            <MaterialCommunityIcons.Button
+              backgroundColor={styles.actionBarButton.backgroundColor}
+              size={styles.actionBarButton.fontSize}
+              name={this.state.isEditing ? 'stop-circle' : 'play-circle'}
+              style={this.state.isEditing ? styles.actionBarButtonRunning : styles.actionBarButton}
+              color={this.state.isEditing ? styles.actionBarButtonRunning.color : styles.actionBarButton.color}
+              onPress={() => this.toggleEdit()}>
+              {this.state.isEditing ? 'SAVE' : 'EDIT'}
+            </MaterialCommunityIcons.Button>
+          )}
+
+          {!this.serviceAttributes.pollOnce && (
+            <MaterialCommunityIcons.Button
+              backgroundColor={styles.actionBarButton.backgroundColor}
+              size={styles.actionBarButton.fontSize}
+              name={this.state.isPolling ? 'stop-circle' : 'play-circle'}
+              style={this.state.isPolling ? styles.actionBarButtonRunning : styles.actionBarButton}
+              color={this.state.isPolling ? styles.actionBarButtonRunning.color : styles.actionBarButton.color}
+              onPress={() => this.toggleService()}>
+              {this.state.isPolling ? 'STOP' : 'START'}
+            </MaterialCommunityIcons.Button>
+          )}
+
           <MaterialCommunityIcons style={styles.actionBarStatusIcon} size={styles.actionBarStatusIcon.fontSize} color={this.state.isPolling ? '#4f4' : '#f44'} name={'circle'} />
         </View>
         <Text> </Text>
@@ -111,29 +147,25 @@ export class ServiceSensorView extends Component<ISensorViewProps<IDataProvider>
         )}
         {this.state?.serviceInfo &&
           Object.keys(this.state?.serviceInfo ?? {})
-            .sort((a, b) => {
-              return (ServiceStatusFieldInfo[a]?.order ?? 99) - (ServiceStatusFieldInfo[b]?.order ?? 100);
-            })
-            .map(fieldName => {
-              return <ServiceInfoView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />;
-            })}
-        {this.state?.serviceData &&
-          this.props.serviceCode === ServiceCode.VehicleInfo &&
-          Object.keys(this.state?.serviceData ?? {})
-            .sort((a, b) => {
-              return (SensorFieldInfo[a]?.order ?? 99) - (SensorFieldInfo[b]?.order ?? 100);
-            })
-            .map(fieldName => {
-              return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} />;
-            })}
+            .sort((a, b) => (ServiceStatusFieldInfo[a]?.order ?? 99) - (ServiceStatusFieldInfo[b]?.order ?? 100))
+            .map(fieldName => <ServiceInfoView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />)}
+
         {this.state?.serviceData &&
           this.props.serviceCode !== ServiceCode.VehicleInfo &&
           Object.keys(this.state?.serviceData ?? {})
-            .sort((a, b) => {
-              return (SensorFieldInfo[a]?.order ?? 99) - (SensorFieldInfo[b]?.order ?? 100);
-            })
+            .sort((a, b) => (SensorFieldInfo[a]?.order ?? 99) - (SensorFieldInfo[b]?.order ?? 100))
+            .map(fieldName => <SensorItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} />)}
+
+        {this.state?.serviceData &&
+          this.props.serviceCode === ServiceCode.VehicleInfo &&
+          Object.keys(this.state?.serviceData ?? {})
+            .sort((a, b) => (SensorFieldInfo[a]?.order ?? 99) - (SensorFieldInfo[b]?.order ?? 100))
             .map(fieldName => {
-              return <SensorItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} />;
+              if (this.state.isEditing) {
+                return <EditableInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} setServiceData={(fieldName, value) => this.setServiceData(fieldName, value)} />;
+              } else {
+                return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} />;
+              }
             })}
       </ScrollView>
     );

@@ -7,7 +7,7 @@ import * as Progress from 'react-native-progress';
 import { styles, tabTheme, getIcon } from './shared';
 import { IDataProvider, IDataProviderDevice, IDataProviderEvents } from '../services/interfaces';
 import { ServiceProperty } from '../models';
-import { ServiceSensorView } from './ServiceView';
+import { ServiceView } from './ServiceView';
 import { ServiceCode } from '../constants';
 
 interface IProps {
@@ -146,30 +146,30 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
             <Tab.Screen
               name={ServiceCode.VehicleInfo}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.VehicleInfo].icon) }}
-              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={ServiceCode.VehicleInfo} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleInfo} />}
             />
             <Tab.Screen
               name={ServiceCode.VehicleSensor}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.VehicleSensor].icon) }}
-              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={ServiceCode.VehicleSensor} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleSensor} />}
             />
 
             <Tab.Screen
               name={ServiceCode.Thermometer}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.Thermometer].icon) }}
-              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={ServiceCode.Thermometer} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.Thermometer} />}
             />
 
             <Tab.Screen
               name={ServiceCode.SystemStats}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.SystemStats].icon) }}
-              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={ServiceCode.SystemStats} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.SystemStats} />}
             />
 
             <Tab.Screen
               name={ServiceCode.TurnSignalModule}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.TurnSignalModule].icon) }}
-              children={() => <ServiceSensorView provider={this.props.provider} serviceCode={ServiceCode.TurnSignalModule} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.TurnSignalModule} />}
             />
           </Tab.Navigator>
         )}
