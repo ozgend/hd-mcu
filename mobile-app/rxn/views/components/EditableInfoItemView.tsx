@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
-import { styles } from '../shared';
-import { getDataField } from '../models';
+import { styles } from '../../shared';
+import { getDataField } from '../../models';
 
 export interface IInfoItemProps {
   serviceCode: string;

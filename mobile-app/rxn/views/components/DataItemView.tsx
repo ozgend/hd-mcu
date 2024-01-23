@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { styles } from '../shared';
-import { getDataField } from '../models';
+import { styles } from '../../shared';
+import { getDataField } from '../../models';
 
-export interface ISensorItemProps {
+interface IDataItemProps {
   serviceCode: string;
   fieldName: string;
   value: string | number | boolean | null | undefined | any;
 }
 
-export class SensorItemView extends Component<ISensorItemProps> {
+export class DataItemView extends Component<IDataItemProps> {
   render() {
     const fieldInfo = getDataField(this.props.serviceCode, this.props.fieldName);
 

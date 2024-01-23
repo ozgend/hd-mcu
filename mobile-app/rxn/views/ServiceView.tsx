@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { IDataProvider } from '../services/interfaces';
-import { SensorItemView } from './SensorItemView';
+import { DataItemView } from './components/DataItemView';
 import * as Progress from 'react-native-progress';
 import { IServiceAttributes, ServiceProperty, ServiceInfoFields, ServiceDataFields } from '../models';
 import { IServiceState, IServiceStatusInfo } from '../../../ts-schema/data.interface';
 import { styles } from '../shared';
 import { ServiceCode, ServiceCommand } from '../constants';
-import { ServiceInfoView } from './ServiceInfoView';
-import { VehicleInfoItemView } from './VehicleInfoItemView';
-import { EditableInfoItemView } from './EditableInfoItemView';
+import { InfoItemView } from './components/InfoItemView';
+import { VehicleInfoItemView } from './components/VehicleInfoItemView';
+import { EditableInfoItemView } from './components/EditableInfoItemView';
 
 export interface IServicerViewProps<IProvider> {
   provider: IProvider;
@@ -100,7 +100,6 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
 
   setServiceData(fieldName: string, value: any): void {
     this.setState({ serviceData: { ...this.state.serviceData, [fieldName]: value } });
-    // this.editedServiceData[fieldName] = value;
   }
 
   render() {
@@ -148,13 +147,13 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
         {this.state?.serviceInfo &&
           Object.keys(this.state?.serviceInfo ?? {})
             .sort((a, b) => (ServiceInfoFields[a]?.order ?? 99) - (ServiceInfoFields[b]?.order ?? 100))
-            .map(fieldName => <ServiceInfoView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />)}
+            .map(fieldName => <InfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />)}
 
         {this.state?.serviceData &&
           this.props.serviceCode !== ServiceCode.VehicleInfo &&
           Object.keys(this.state?.serviceData ?? {})
             .sort((a, b) => (ServiceDataFields[this.props.serviceCode][a]?.order ?? 99) - (ServiceDataFields[this.props.serviceCode][b]?.order ?? 100))
-            .map(fieldName => <SensorItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} />)}
+            .map(fieldName => <DataItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} />)}
 
         {this.state?.serviceData &&
           this.props.serviceCode === ServiceCode.VehicleInfo &&
