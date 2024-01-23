@@ -142,8 +142,8 @@ export class BluetoothSerialDataProvider implements IDataProvider {
         const listener = this.getEventListener(serviceCode, serviceCommand);
         listener(JSON.parse(payload));
       } catch (err) {
-        console.warn(err);
-        ToastAndroid.show('Invalid or corrupted data, skipped.', ToastAndroid.SHORT);
+        console.debug(err);
+        // ToastAndroid.show('Invalid or corrupted data, skipped.', ToastAndroid.SHORT);
       }
     });
     this.onProviderStreamStatusChange(true);

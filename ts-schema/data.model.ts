@@ -52,6 +52,10 @@ export class VehicleSensorData implements IVehicleSensorData {
   batt?: number;
   rpm?: number;
   speed?: number;
+  tireFront?: number;
+  tempFront?: number;
+  tireRear?: number;
+  tempRear?: number;
 }
 
 export class ThermometerData implements IThermometerData {

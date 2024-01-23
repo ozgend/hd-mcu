@@ -175,6 +175,7 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
         )}
         {!this.state.isDeviceConnected && (
           <View style={styles.centerContainer}>
+            <Text style={styles.brand}>R2040 HD MCU</Text>
             <Text style={styles.heading}>bluetooth connection</Text>
             <Text style={styles.text}>please connect to the device</Text>
             <Text style={styles.text}> </Text>
@@ -189,7 +190,6 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
         {!this.state.isDeviceConnected && (
           <View style={styles.container}>
             {this.state.isDeviceDiscovered && <Text style={styles.statusText}>connect to device</Text>}
-            <Text style={styles.text}> </Text>
             <FlatList
               data={this.state.devices}
               renderItem={({ item }) => (

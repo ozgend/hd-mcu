@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TsmControlData = exports.TsmData = exports.SystemStatsData = exports.ThermometerData = exports.VehicleSensorData = exports.VehicleInfoData = void 0;
-var VehicleInfoData = /** @class */ (function () {
-    function VehicleInfoData() {
+class VehicleInfoData {
+    constructor() {
         this.model = "";
         this.vin = "";
         this.year = 0;
@@ -25,36 +25,20 @@ var VehicleInfoData = /** @class */ (function () {
         this.serviceDate = 0;
         this.serviceInterval = 0;
     }
-    return VehicleInfoData;
-}());
+}
 exports.VehicleInfoData = VehicleInfoData;
-var VehicleSensorData = /** @class */ (function () {
-    function VehicleSensorData() {
-    }
-    return VehicleSensorData;
-}());
+class VehicleSensorData {
+}
 exports.VehicleSensorData = VehicleSensorData;
-var ThermometerData = /** @class */ (function () {
-    function ThermometerData() {
-    }
-    return ThermometerData;
-}());
+class ThermometerData {
+}
 exports.ThermometerData = ThermometerData;
-var SystemStatsData = /** @class */ (function () {
-    function SystemStatsData() {
-    }
-    return SystemStatsData;
-}());
+class SystemStatsData {
+}
 exports.SystemStatsData = SystemStatsData;
-var TsmData = /** @class */ (function () {
-    function TsmData() {
-    }
-    return TsmData;
-}());
+class TsmData {
+}
 exports.TsmData = TsmData;
-var TsmControlData = /** @class */ (function () {
-    function TsmControlData() {
-    }
-    return TsmControlData;
-}());
+class TsmControlData {
+}
 exports.TsmControlData = TsmControlData;

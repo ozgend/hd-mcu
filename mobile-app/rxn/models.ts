@@ -14,29 +14,33 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
     batt: { title: 'BATTERY', unit: 'V', type: 'number', precision: 2, order: 2 },
     rpm: { title: 'REVS', unit: 'rpm', type: 'number', order: 3 },
     speed: { title: 'SPEED', unit: 'km/h', type: 'number', order: 4 },
+    tireFront: { title: 'FRONT TIRE', unit: 'psi', type: 'number', precision: 1, order: 5 },
+    tireRear: { title: 'REAR TIRE', unit: 'psi', type: 'number', precision: 1, order: 6 },
+    tempFront: { title: 'FRONT TEMP', unit: '°C', type: 'number', precision: 1, order: 7 },
+    tempRear: { title: 'REAR TEMP', unit: '°C', type: 'number', precision: 1, order: 8 },
   },
   VHI: {
     make: { title: 'MAKE', type: 'string', order: 1 },
     model: { title: 'MODEL', type: 'string', order: 2 },
-    year: { title: 'YEAR', type: 'number', order: 3 },
+    year: { title: 'YEAR', type: 'string', order: 3 },
     owner: { title: 'OWNER', type: 'string', order: 4 },
     vin: { title: 'VIN', type: 'string', order: 5 },
     plate: { title: 'PLATE', type: 'string', order: 6 },
     regId: { title: 'REG ID', type: 'string', order: 7 },
-    oilDate: { title: 'OIL DATE', type: 'date', order: 8 },
-    oilInterval: { title: 'OIL INTERVAL', unit: 'km', type: 'number', order: 9 },
-    inspectDate: { title: 'INSPECT DATE', type: 'date', order: 10 },
-    inspectInterval: { title: 'INSPECT INTERVAL', unit: 'km', type: 'number', order: 11 },
-    serviceDate: { title: 'SERVICE DATE', type: 'date', order: 12 },
-    serviceInterval: { title: 'SERVICE INTERVAL', unit: 'km', type: 'number', order: 13 },
+    oilDate: { title: 'OIL DATE', type: 'string', order: 8 },
+    oilInterval: { title: 'OIL INT', unit: 'km', type: 'string', order: 9 },
+    inspectDate: { title: 'INSPECT DATE', type: 'string', order: 10 },
+    inspectInterval: { title: 'INSPECT INT', unit: 'km', type: 'string', order: 11 },
+    serviceDate: { title: 'SERVICE DATE', type: 'string', order: 12 },
+    serviceInterval: { title: 'SERVICE INT', unit: 'km', type: 'string', order: 13 },
     tireFrontInfo: { title: 'FRONT TIRE', type: 'string', order: 14 },
     tireRearInfo: { title: 'REAR TIRE', type: 'string', order: 15 },
-    tireFrontDate: { title: 'FRONT T. DATE', type: 'date', order: 16 },
-    tireRearDate: { title: 'REAR T. DATE', type: 'date', order: 17 },
+    tireFrontDate: { title: 'FRONT T. DATE', type: 'string', order: 16 },
+    tireRearDate: { title: 'REAR T. DATE', type: 'string', order: 17 },
     beltInfo: { title: 'BELT', type: 'string', order: 18 },
-    beltDate: { title: 'BELT DATE', type: 'date', order: 19 },
+    beltDate: { title: 'BELT DATE', type: 'string', order: 19 },
     batteryInfo: { title: 'BATTERY', type: 'string', order: 20 },
-    batteryDate: { title: 'BATTERY DATE', type: 'date', order: 21 },
+    batteryDate: { title: 'BATTERY DATE', type: 'string', order: 21 },
   },
   SYS: {
     arch: { title: 'ARCH', type: 'string', order: 1 },
@@ -110,7 +114,12 @@ const getTypeFormatter = (fi: IField) => {
       formatter = (value: number) => (value?.toFixed ? value.toFixed(fi.precision ?? 0) : 'N/A');
       break;
     case 'date':
-      formatter = (value: number) => (value ? new Date(value).toISOString().split('T')[1].split('.')[0] : 'N/A');
+      formatter = (value: number | string) => {
+        try {
+          value ? new Date(value).toISOString().split('T')[1].split('.')[0] : 'N/A';
+        } catch {}
+        return value?.toString();
+      };
       break;
     case 'array':
       formatter = (value: any) => (value?.join ? value.join(', ') : 'N/A');
@@ -132,7 +141,7 @@ export interface IServiceAttributes {
 
 export const ServiceProperty: { [key: string]: IServiceAttributes } = {
   VHI: { title: 'Vehicle Info', icon: 'information', pollOnce: true, isEditable: true },
-  VHC: { title: 'Vehicle Sensor', icon: 'engine', pollInterval: 1000 },
+  VHC: { title: 'Vehicle Sensor', icon: 'engine', pollInterval: 2000 },
   THE: { title: 'Thermometer', icon: 'thermometer', pollInterval: 5000 },
   SYS: { title: 'System', icon: 'chip', pollInterval: 5000 },
   TSM: { title: 'Turn Signal', icon: 'arrow-left-right' },

@@ -32,6 +32,11 @@ class VehicleSensorService extends BaseService {
     this.data.raw_speed = rawSpeed;
     this.data.speed = factorAdcValue(rawSpeed);
 
+    this.data.tireFront = 0;
+    this.data.tireRear = 0;
+    this.data.tempFront = 0;
+    this.data.tempRear = 0;
+
     super.publishData();
   }
 };

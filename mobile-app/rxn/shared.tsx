@@ -126,6 +126,17 @@ export const styles = StyleSheet.create({
     backgroundColor: '#222',
     verticalAlign: 'middle',
   },
+  brand: {
+    fontSize: 54,
+    fontWeight: '300',
+    color: '#fa0',
+    flexWrap: 'wrap',
+    textTransform: 'uppercase',
+    textAlign: 'right',
+    marginVertical: 20,
+    paddingVertical: 20,
+    width: '100%',
+  },
   heading: {
     fontSize: 22,
     fontWeight: 'normal',
