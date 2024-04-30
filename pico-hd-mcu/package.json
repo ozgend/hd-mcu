@@ -5,5 +5,10 @@
   "main": "index.js",
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "scripts": {
+    "build": "npm run typegen && npm run bundle",
+    "bundle": "kaluma bundle ./index.js",
+    "typegen": "tsc ../ts-schema/*.ts"
+  }
 }
