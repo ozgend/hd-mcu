@@ -10,6 +10,7 @@ archive/
 *.zip
 *.tar.gz
 pcb/*backups/
+plots/
 pico-hd-mcu/bundle.js
 
 *.iml
@@ -25,7 +26,6 @@ pico-hd-mcu/bundle.js
 .externalNativeBuild
 .cxx
 local.properties
-
 
 # OSX
 #
