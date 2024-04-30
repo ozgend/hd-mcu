@@ -2,18 +2,21 @@ const rtc = require('rtc');
 rtc.setTime(-2209078556000);
 const logger = require('./logger');
 const { eventBus, publishToSerial } = require('./event-bus');
-const { ServiceType, ServiceCode, EventType, Gpio } = require('./constants');
+const { ServiceType, ServiceCode, EventType } = require('./constants');
 const TurnSignalService = require('./services/turn-signal-service');
 const SystemStatsService = require('./services/system-stats-service');
 const VehicleSensorService = require('./services/vehicle-sensor-service');
-const MuxedSensorService = require('./services/muxed-sensor-service');
+const ThermometerService = require('./services/thermometer-service');
+const VehicleInfoService = require('./services/vehicle-info.service');
 
 const _services = [
-  new SystemStatsService(eventBus),
+  new VehicleInfoService(eventBus),
   new VehicleSensorService(eventBus),
-  new MuxedSensorService(eventBus),
+  new SystemStatsService(eventBus),
+  new ThermometerService(eventBus),
   new TurnSignalService(eventBus),
 ];
+
 
 _services.forEach(service => {
   service.setup();

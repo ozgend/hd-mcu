@@ -1,7 +1,7 @@
 const { EventEmitter } = require('events');
 const { UART } = require('uart');
 const logger = require('./logger');
-const { ServiceCode, EventType, Seperator } = require('./constants');
+const { ServiceCode, EventType, Seperator, ServiceCommand } = require('./constants');
 
 const uartOptions = {
   baudrate: 9600,
@@ -23,7 +23,7 @@ logger.info(ServiceCode.EventBus, 'emitter ready');
 let _serialPayload = '';
 
 Serial.on('data', (data) => {
-  logger.debug(ServiceCode.EventBus, 'serial.on.data', { raw: data, length: data.length, text: textDecoder.decode(data) });
+  //logger.debug(ServiceCode.EventBus, 'serial.on.data', { raw: data, length: data.length, text: textDecoder.decode(data) });
 
   data.forEach((byte) => {
     if (byte === 10) {
@@ -44,12 +44,25 @@ eventBus.on(EventType.DataFromService, (serviceCode, eventType, serviceData) => 
 // events from serial
 eventBus.on(EventType.DataFromSerial, (serialPayload) => {
   logger.debug(ServiceCode.EventBus, EventType.DataFromSerial, { serialPayload });
-  const parts = serialPayload.split(Seperator.SerialCommand);
+  let parts = serialPayload.split(Seperator.SerialCommand);
+  const serviceCode = parts[0];
+  let command, rawData = null;
+
+  if (parts[1].startsWith(ServiceCommand.SET)) {
+    parts = parts[1].split(Seperator.ServiceData);
+    command = parts[0];
+    rawData = parts[1];
+  }
+  else {
+    command = parts[1];
+  }
+
+  logger.debug(ServiceCode.EventBus, EventType.DataFromSerial, { serviceCode, command, data: rawData });
 
   if (serialPayload.startsWith(ServiceCode.Module)) {
-    eventBus.emit(EventType.CommandForModule, parts[1]);
+    eventBus.emit(EventType.CommandForModule, serviceCode, command, rawData);
   } else {
-    eventBus.emit(EventType.CommandForService, ...parts);
+    eventBus.emit(EventType.CommandForService, serviceCode, command, rawData);
   }
 });
 

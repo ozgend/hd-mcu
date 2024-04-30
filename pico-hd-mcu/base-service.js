@@ -1,30 +1,35 @@
-const { ServiceCommand, EventType, ServiceStatus, ServiceEvent, Broadcasting } = require('./constants');
+const { ServiceCommand, EventType, ServiceStatus, Broadcasting } = require('./constants');
 const logger = require('./logger');
 
 class BaseService {
-  constructor(eventBus, { serviceCode, serviceType, updateInterval, broadcastMode, idleTimeout }) {
+  constructor(eventBus, { serviceCode, serviceType, updateInterval, broadcastMode, idleTimeout, commands }) {
     this.options = {
       serviceCode,
       serviceType,
       updateInterval: updateInterval ?? 1000 * 5,
       idleTimeout: idleTimeout ?? 1000 * 120,
       broadcastMode: broadcastMode ?? Broadcasting.OnDemandPolling,
+      commands: (commands && commands.length > 0) ? [...Object.values(ServiceCommand), ...commands] : Object.values(ServiceCommand),
     };
+    // logger.debug(this.options.serviceCode, 'options', this.options);
     this.eventBus = eventBus ?? { emit: () => { } };
     this.status = ServiceStatus.Initialized;
     this.broadcastPid = null;
     this.isRunning = false;
     this.data = {};
 
-    this.eventBus.on(EventType.CommandForService, (code, command) => {
+    this.eventBus.on(EventType.CommandForService, (code, command, raw) => {
+      // logger.debug(this.options.serviceCode, 'nnnnnnnnnnnnnnnnnnnnnn', this.options.serviceCode, code, command, data);
+      // logger.debug(this.options.serviceCode, EventType.CommandForService, this.options.serviceCode, code, command, data);
       if (code === this.options.serviceCode) {
-        this.handleCommand(command);
+        // logger.debug(this.options.serviceCode, 'eeeeeeeeeeeeeeeeeeeeee', this.options.serviceCode, code, command, raw);
+        this.handleCommand(command, raw);
       }
     });
   }
 
-  handleCommand(command) {
-    logger.info(this.options.serviceCode, 'handleCommand', command);
+  handleCommand(command, raw) {
+    logger.debug(this.options.serviceCode, EventType.CommandForService, command, raw);
     switch (command) {
       case ServiceCommand.START:
         this.start();
@@ -32,12 +37,15 @@ class BaseService {
       case ServiceCommand.STOP:
         this.stop();
         break;
-      case ServiceCommand.STATUS:
-        this.publishStatus();
+      case ServiceCommand.INFO:
+        this.publishInformation();
         break;
       case ServiceCommand.DATA:
         this.start();
         this.publishData();
+        break;
+      case ServiceCommand.SET:
+        this.peristSettings(raw);
         break;
       default:
         break;
@@ -51,7 +59,7 @@ class BaseService {
   setup() {
     logger.info(this.options.serviceCode, 'setup');
     this.status = ServiceStatus.Available;
-    // this.publishStatus();
+    // this.publishInformation();
   }
 
   start() {
@@ -73,7 +81,7 @@ class BaseService {
       }, this.options.idleTimeout);
     }
     this.status = ServiceStatus.Started;
-    this.publishStatus();
+    this.publishInformation();
   }
 
   stop() {
@@ -89,21 +97,26 @@ class BaseService {
     this.broadcastPid = null;
     logger.info(this.options.serviceCode, 'stopped.');
     this.status = ServiceStatus.Stopped;
-    this.publishStatus();
+    this.publishInformation();
   }
 
   getInfo() {
     return { status: this.status, isRunning: this.isRunning, ...this.options };
   }
 
-  publishStatus() {
-    logger.debug(this.options.serviceCode, ServiceEvent.STATUS, this.isRunning);
-    this.eventBus.emit(EventType.DataFromService, this.options.serviceCode, ServiceEvent.STATUS, this.getInfo());
+  peristSettings(data) {
+    logger.debug(this.options.serviceCode, ServiceCommand.SET, data);
+  }
+
+
+  publishInformation() {
+    logger.debug(this.options.serviceCode, ServiceCommand.INFO, this.isRunning);
+    this.eventBus.emit(EventType.DataFromService, this.options.serviceCode, ServiceCommand.INFO, this.getInfo());
   }
 
   publishData() {
-    logger.debug(this.options.serviceCode, ServiceEvent.DATA);
-    this.eventBus.emit(EventType.DataFromService, this.options.serviceCode, ServiceEvent.DATA, this.data);
+    logger.debug(this.options.serviceCode, ServiceCommand.DATA);
+    this.eventBus.emit(EventType.DataFromService, this.options.serviceCode, ServiceCommand.DATA, this.data);
   }
 }
 

@@ -23,11 +23,12 @@ export const Broadcasting = {
 };
 
 export const ServiceCode = {
-  Module: 'MODULE',
-  TurnSignalModule: 'TSM',
   SystemStats: 'SYS',
   VehicleSensor: 'VHC',
-  MuxSensor: 'MUX',
+  VehicleInfo: 'VHI',
+  Thermometer: 'THE',
+  TurnSignalModule: 'TSM',
+  Module: 'MODULE',
   EventBus: 'BUS',
   Main: 'MAIN',
   Heartbeat: 'BEAT',
@@ -36,19 +37,15 @@ export const ServiceCode = {
 export const ServiceCommand = {
   START: 'START',
   STOP: 'STOP',
+  INFO: 'INFO',
+  DATA: 'DATA',
+  SET: 'SET',
+};
+
+export const TurnSignalCommands = {
   DIAG: 'DIAG',
   LEFT: 'LEFT',
   RIGHT: 'RIGHT',
   ALL: 'ALL',
-  BOTH: 'BOTH',
   NONE: 'NONE',
-  QUERY: '?',
-  DATA: 'DATA',
-  STATUS: 'STATUS',
-};
-
-export const ServiceEvent = {
-  DATA: 'DATA',
-  ERR: 'ERR',
-  STATUS: 'STATUS',
 };

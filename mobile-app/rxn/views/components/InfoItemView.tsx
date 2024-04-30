@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { styles } from './shared';
-import { IServiceStatusInfo, getSensorFieldInfo, getServiceStateFieldInfo } from '../models';
+import { styles } from '../../shared';
+import { getInfoField } from '../../models';
 
-export interface ISensorItemProps {
+interface InfoItemProps {
   fieldName: string;
   value: string | number | boolean | null | undefined | any;
 }
 
-export class ServiceInfoView extends Component<ISensorItemProps> {
+export class InfoItemView extends Component<InfoItemProps> {
   constructor(props: any) {
     super(props);
   }
@@ -18,7 +18,7 @@ export class ServiceInfoView extends Component<ISensorItemProps> {
       return null;
     }
 
-    const fieldInfo = getServiceStateFieldInfo(this.props.fieldName);
+    const fieldInfo = getInfoField(this.props.fieldName);
 
     if (!fieldInfo) {
       return null;

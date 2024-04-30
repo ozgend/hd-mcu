@@ -1,125 +1,85 @@
-export interface IServiceState {}
-
-export interface IOtaMetadata {
-  appVersion: string;
-  isMandatory: boolean;
-  packageHash: string;
-  packageSize: number;
-  isFirstRun: boolean;
-  label: string;
-}
-
-export interface IServiceStatusInfo {
-  serviceCode: string;
-  serviceType: string;
-  updateInterval: number;
-  idleTimeout: number;
-  broadcastMode: string;
-  status: string;
-  isRunning: boolean;
-}
-
-export interface IVehicleSensorData extends IServiceState {
-  temp?: number;
-  batt?: number;
-  rpm?: number;
-  speed?: number;
-}
-
-export interface IMuxedSensorData extends IServiceState {
-  ch_0?: number;
-  ch_1?: number;
-  ch_2?: number;
-  ch_3?: number;
-  ch_4?: number;
-  ch_5?: number;
-  ch_6?: number;
-  ch_7?: number;
-}
-
-export interface ISystemStatsData extends IServiceState {
-  arch?: string;
-  platform?: string;
-  version?: string;
-  name?: string;
-  uid?: string;
-  heapTotal?: number;
-  heapUsed?: number;
-  heapPeak?: number;
-  rtc?: number;
-}
-
-export interface ITsmData extends IServiceState {
-  state?: ITsmControlData;
-  action?: ITsmControlData;
-}
-
-export interface ITsmControlData {
-  left: boolean;
-  right: boolean;
-}
-
-export interface IFieldInfo {
+export interface IField {
+  order?: number;
   title: string;
   unit?: string;
-  type: 'number' | 'date' | 'string';
+  type: 'number' | 'date' | 'string' | 'array';
   precision?: number;
   available?: boolean;
   formatter?: (value: any) => string;
 }
 
-const SensorFieldInfo: { [key: string]: IFieldInfo } = {
-  batt: {
-    title: 'BATTERY',
-    unit: 'V',
-    type: 'number',
-    precision: 2,
-    available: true,
+export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
+  VHC: {
+    temp: { title: 'ONBOARD TEMP', unit: '°C', type: 'number', precision: 1, order: 1 },
+    batt: { title: 'BATTERY', unit: 'V', type: 'number', precision: 2, order: 2 },
+    rpm: { title: 'REVS', unit: 'rpm', type: 'number', order: 3 },
+    speed: { title: 'SPEED', unit: 'km/h', type: 'number', order: 4 },
+    tireFront: { title: 'FRONT TIRE', unit: 'psi', type: 'number', precision: 1, order: 5 },
+    tireRear: { title: 'REAR TIRE', unit: 'psi', type: 'number', precision: 1, order: 6 },
+    tempFront: { title: 'FRONT TEMP', unit: '°C', type: 'number', precision: 1, order: 7 },
+    tempRear: { title: 'REAR TEMP', unit: '°C', type: 'number', precision: 1, order: 8 },
   },
-  temp: {
-    title: 'ONBOARD TEMP',
-    unit: '°C',
-    type: 'number',
-    precision: 1,
-    available: true,
+  VHI: {
+    make: { title: 'MAKE', type: 'string', order: 1 },
+    model: { title: 'MODEL', type: 'string', order: 2 },
+    year: { title: 'YEAR', type: 'string', order: 3 },
+    owner: { title: 'OWNER', type: 'string', order: 4 },
+    vin: { title: 'VIN', type: 'string', order: 5 },
+    plate: { title: 'PLATE', type: 'string', order: 6 },
+    regId: { title: 'REG ID', type: 'string', order: 7 },
+    oilDate: { title: 'OIL DATE', type: 'string', order: 8 },
+    oilInterval: { title: 'OIL INT', unit: 'km', type: 'string', order: 9 },
+    inspectDate: { title: 'INSPECT DATE', type: 'string', order: 10 },
+    inspectInterval: { title: 'INSPECT INT', unit: 'km', type: 'string', order: 11 },
+    serviceDate: { title: 'SERVICE DATE', type: 'string', order: 12 },
+    serviceInterval: { title: 'SERVICE INT', unit: 'km', type: 'string', order: 13 },
+    tireFrontInfo: { title: 'FRONT TIRE', type: 'string', order: 14 },
+    tireRearInfo: { title: 'REAR TIRE', type: 'string', order: 15 },
+    tireFrontDate: { title: 'FRONT T. DATE', type: 'string', order: 16 },
+    tireRearDate: { title: 'REAR T. DATE', type: 'string', order: 17 },
+    beltInfo: { title: 'BELT', type: 'string', order: 18 },
+    beltDate: { title: 'BELT DATE', type: 'string', order: 19 },
+    batteryInfo: { title: 'BATTERY', type: 'string', order: 20 },
+    batteryDate: { title: 'BATTERY DATE', type: 'string', order: 21 },
   },
-  rpm: { title: 'REVS', unit: 'rpm', type: 'number', available: true },
-  speed: { title: 'SPEED', unit: 'km/h', type: 'number', available: true },
-  ch_0: { title: 'CYLINDER 1', unit: '°C', type: 'number', available: true },
-  ch_1: { title: 'CYLINDER 2', unit: '°C', type: 'number', available: true },
-  ch_2: { title: 'EXHAUST 1', unit: '°C', type: 'number', available: true },
-  ch_3: { title: 'EXHAUST 2', unit: '°C', type: 'number', available: true },
-  ch_4: { title: 'OIL TANK', unit: '°C', type: 'number', available: true },
-  ch_5: { title: 'REGULATOR', unit: '°C', type: 'number', available: true },
-  ch_6: { title: 'CARBURETOR', unit: '°C', type: 'number', available: true },
-  ch_7: { title: 'CH7_AUX', unit: '°C', type: 'number', available: true },
-  arch: { title: 'ARCH', type: 'string' },
-  platform: { title: 'PLATFORM', type: 'string' },
-  version: { title: 'VERSION', type: 'string' },
-  name: { title: 'NAME', type: 'string' },
-  uid: { title: 'UID', type: 'string' },
-  heapTotal: { title: 'MEM TOTAL', unit: 'b', type: 'number' },
-  heapUsed: { title: 'MEM USED', unit: 'b', type: 'number' },
-  heapPeak: { title: 'MEM PEAK', unit: 'b', type: 'number' },
-  uptime: { title: 'UPTIME', type: 'date' },
-  state: {
-    title: 'TSM',
-    type: 'string',
-    formatter: (value: ITsmControlData) => `L: ${value.left}, R: ${value.right}`,
+  SYS: {
+    arch: { title: 'ARCH', type: 'string', order: 1 },
+    platform: { title: 'PLATFORM', type: 'string', order: 2 },
+    version: { title: 'VERSION', type: 'string', order: 3 },
+    name: { title: 'NAME', type: 'string', order: 4 },
+    uid: { title: 'UID', type: 'string', order: 5 },
+    heapTotal: { title: 'MEM TOTAL', unit: 'b', type: 'number', order: 6 },
+    heapUsed: { title: 'MEM USED', unit: 'b', type: 'number', order: 7 },
+    heapPeak: { title: 'MEM PEAK', unit: 'b', type: 'number', order: 8 },
+    uptime: { title: 'UPTIME', type: 'date', order: 9 },
+  },
+  TSM: {
+    state: { title: 'TSM', type: 'string', formatter: (value: any) => `L: ${value.left}, R: ${value.right}` },
+  },
+  THE: {
+    ch_0: { title: 'CYLINDER 1', unit: '°C', type: 'number', order: 1 },
+    ch_1: { title: 'CYLINDER 2', unit: '°C', type: 'number', order: 2 },
+    ch_2: { title: 'EXHAUST 1', unit: '°C', type: 'number', order: 3 },
+    ch_3: { title: 'EXHAUST 2', unit: '°C', type: 'number', order: 4 },
+    ch_4: { title: 'OIL TANK', unit: '°C', type: 'number', order: 5 },
+    ch_5: { title: 'REGULATOR', unit: '°C', type: 'number', order: 6 },
+    ch_6: { title: 'CARBURETOR', unit: '°C', type: 'number', order: 7 },
+    ch_7: { title: 'CH7_AUX', unit: '°C', type: 'number', order: 8 },
   },
 };
 
-const ServiceStatusFieldInfo: { [key: string]: IFieldInfo } = {
-  serviceCode: { title: 'SERVICE', type: 'string' },
-  serviceType: { title: 'TYPE', type: 'string' },
+export const ServiceInfoFields: { [key: string]: IField } = {
+  serviceCode: { title: 'SERVICE', type: 'string', order: 0 },
+  serviceType: { title: 'TYPE', type: 'string', order: 1 },
   updateInterval: { title: 'UPDATE-TO', unit: 'ms', type: 'number', available: false },
   idleTimeout: { title: 'IDLE-TO', unit: 'ms', type: 'number', available: false },
-  broadcastMode: { title: 'BROADCAST', type: 'string' },
-  status: { title: 'STATUS', type: 'string' },
+  broadcastMode: { title: 'BROADCAST', type: 'string', available: false },
+  status: { title: 'STATUS', type: 'string', order: 2 },
+  commands: { title: 'COMMANDS', type: 'array', order: 3 },
 };
 
-export const getSensorFieldInfo = (fieldName: string): IFieldInfo | null => {
-  const fi = SensorFieldInfo[fieldName];
+export const getDataField = (serviceCode: string, fieldName: string): IField | null => {
+  const fi = ServiceDataFields[serviceCode][fieldName];
   if (!fi) {
     return null;
   }
@@ -127,54 +87,62 @@ export const getSensorFieldInfo = (fieldName: string): IFieldInfo | null => {
   if (fi.formatter) {
     return fi;
   }
-  switch (fi.type) {
-    case 'number':
-      fi.formatter = (value: number) => (value ? value.toFixed(fi.precision ?? 0) : 'N/A');
-      break;
-    case 'date':
-      fi.formatter = (value: number) => (value ? new Date(value).toISOString().split('T')[1].split('.')[0] : 'N/A');
-      break;
-    default:
-      fi.formatter = (value: any) => value ?? 'N/A';
-      break;
-  }
+  fi.formatter = getTypeFormatter(fi);
   return fi;
 };
 
-export const getServiceStateFieldInfo = (fieldName: string): IFieldInfo => {
-  return ServiceStatusFieldInfo[fieldName];
+export const getInfoField = (fieldName: string): IField | null => {
+  const fi = ServiceInfoFields[fieldName];
+  if (!fi) {
+    return null;
+  }
+  fi.available = fi.available ?? true;
+  if (fi.available === false) {
+    return null;
+  }
+  if (fi.formatter) {
+    return fi;
+  }
+  fi.formatter = getTypeFormatter(fi);
+  return fi;
 };
 
-export const ServiceName = {
-  MODULE: 'Module',
-  TSM: 'Turn Signal Module',
-  SYS: 'System',
-  VHC: 'Vehicle',
-  MUX: 'Thermometer',
-  BUS: 'Event Bus',
-  MAIN: 'Main',
-  BEAT: 'Heartbeat',
+const getTypeFormatter = (fi: IField) => {
+  let formatter: (value: any) => string;
+  switch (fi.type) {
+    case 'number':
+      formatter = (value: number) => (value?.toFixed ? value.toFixed(fi.precision ?? 0) : 'N/A');
+      break;
+    case 'date':
+      formatter = (value: number | string) => {
+        try {
+          value ? new Date(value).toISOString().split('T')[1].split('.')[0] : 'N/A';
+        } catch {}
+        return value?.toString();
+      };
+      break;
+    case 'array':
+      formatter = (value: any) => (value?.join ? value.join(', ') : 'N/A');
+      break;
+    default:
+      formatter = (value: any) => value ?? 'N/A';
+      break;
+  }
+  return formatter;
 };
 
 export interface IServiceAttributes {
   title: string;
   icon: string;
   pollInterval?: number;
+  pollOnce?: boolean;
+  isEditable?: boolean;
 }
 
 export const ServiceProperty: { [key: string]: IServiceAttributes } = {
-  VHC: { title: 'Vehicle', icon: 'engine', pollInterval: 1000 },
-  MUX: { title: 'Thermometer', icon: 'thermometer', pollInterval: 5000 },
+  VHI: { title: 'Vehicle Info', icon: 'information', pollOnce: true, isEditable: true },
+  VHC: { title: 'Vehicle Sensor', icon: 'engine', pollInterval: 2000 },
+  THE: { title: 'Thermometer', icon: 'thermometer', pollInterval: 5000 },
   SYS: { title: 'System', icon: 'chip', pollInterval: 5000 },
   TSM: { title: 'Turn Signal', icon: 'arrow-left-right' },
 };
-
-export const BtDataServiceTypes = {
-  Vehicle: 'VHC',
-  MuxThermo: 'MUX',
-  System: 'SYS',
-  TurnSignalModule: 'TSM',
-};
-
-export const BtDataServiceCodeKeys = Object.keys(BtDataServiceTypes);
-export const BtDataServiceCodeValues = Object.values(BtDataServiceTypes);

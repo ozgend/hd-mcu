@@ -1,6 +1,6 @@
 const { ServiceCode, ServiceType, Broadcasting } = require('../constants');
 const BaseService = require('../base-service');
-const { ISystemStatsData } = require('../schema');
+const { SystemStatsData } = require('../../ts-schema/data.model');
 
 class SystemStatsService extends BaseService {
   constructor(eventBus) {
@@ -9,7 +9,7 @@ class SystemStatsService extends BaseService {
       serviceType: ServiceType.ON_DEMAND,
       broadcastMode: Broadcasting.OnDemandPolling
     });
-    this.data = ISystemStatsData;
+    this.data = new SystemStatsData();
   }
 
   start() {

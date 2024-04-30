@@ -1,11 +1,4 @@
-import { IVehicleSensorData, IMuxedSensorData, ISystemStatsData, ITsmData } from '../models';
-
-export interface IDataSource {
-  getVehicleSensorData(raw?: string): IVehicleSensorData;
-  getMuxedSensorData(raw?: string): IMuxedSensorData;
-  getSystemStatsData(raw?: string): ISystemStatsData;
-  getTsmData(raw?: string): ITsmData;
-}
+import { IVehicleSensorData, IThermometerData, ISystemStatsData, ITsmData } from '../../../ts-schema/data.interface';
 
 export interface IDataProviderDevice {
   name: string;
@@ -36,9 +29,9 @@ export interface IDataProvider extends IDataProviderEvents {
   stopStream(): boolean;
 
   // serial connection actions
-  addServiceEventListener(serviceCode: string, serviceEvent: string, callback: (data: any) => void): void;
-  removeServiceEventListener(serviceCode: string, serviceEvent?: string): void;
+  addServiceEventListener(serviceCode: string, serviceCommand: string, callback: (data: any) => void): void;
+  removeServiceEventListener(serviceCode: string, serviceCommand?: string): void;
   requestBtServiceData(serviceCode: string): Promise<void>;
   requestBtServiceInfo(serviceCode: string): Promise<void>;
-  sendBtServiceCommand(serviceCode: string, serviceCommand: string): Promise<void>;
+  sendBtServiceCommand(serviceCode: string, serviceCommand: string, commandPayload?: any): Promise<void>;
 }
