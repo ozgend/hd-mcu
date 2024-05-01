@@ -10,7 +10,6 @@ archive/
 *.zip
 *.tar.gz
 pcb/*backups/
-plots/
 pico-hd-mcu/bundle.js
 
 *.iml
