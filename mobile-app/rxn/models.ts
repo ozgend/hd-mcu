@@ -1,8 +1,10 @@
+import { ISystemStatsData, IThermometerData, ITsmData, IVehicleInfoData, IVehicleSensorData } from '../../ts-schema/data.interface';
+
 export interface IField {
   order?: number;
   title: string;
   unit?: string;
-  type: 'number' | 'date' | 'string' | 'array';
+  type: 'number' | 'date' | 'time' | 'string' | 'array';
   precision?: number;
   available?: boolean;
   formatter?: (value: any) => string;
@@ -10,7 +12,7 @@ export interface IField {
 
 export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
   VHC: {
-    temp: { title: 'ONBOARD TEMP', unit: '°C', type: 'number', precision: 1, order: 1 },
+    temp: { title: 'MCU TEMP', unit: '°C', type: 'number', precision: 1, order: 1 },
     batt: { title: 'BATTERY', unit: 'V', type: 'number', precision: 2, order: 2 },
     rpm: { title: 'REVS', unit: 'rpm', type: 'number', order: 3 },
     speed: { title: 'SPEED', unit: 'km/h', type: 'number', order: 4 },
@@ -27,20 +29,20 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
     vin: { title: 'VIN', type: 'string', order: 5 },
     plate: { title: 'PLATE', type: 'string', order: 6 },
     regId: { title: 'REG ID', type: 'string', order: 7 },
-    oilDate: { title: 'OIL DATE', type: 'string', order: 8 },
+    oilDate: { title: 'OIL DATE', type: 'date', order: 8 },
     oilInterval: { title: 'OIL INT', unit: 'km', type: 'string', order: 9 },
-    inspectDate: { title: 'INSPECT DATE', type: 'string', order: 10 },
+    inspectDate: { title: 'INSPECT DATE', type: 'date', order: 10 },
     inspectInterval: { title: 'INSPECT INT', unit: 'km', type: 'string', order: 11 },
-    serviceDate: { title: 'SERVICE DATE', type: 'string', order: 12 },
+    serviceDate: { title: 'SERVICE DATE', type: 'date', order: 12 },
     serviceInterval: { title: 'SERVICE INT', unit: 'km', type: 'string', order: 13 },
-    tireFrontInfo: { title: 'FRONT TIRE', type: 'string', order: 14 },
-    tireRearInfo: { title: 'REAR TIRE', type: 'string', order: 15 },
-    tireFrontDate: { title: 'FRONT T. DATE', type: 'string', order: 16 },
-    tireRearDate: { title: 'REAR T. DATE', type: 'string', order: 17 },
+    tireFrontInfo: { title: 'FR TIRE', type: 'string', order: 14 },
+    tireRearInfo: { title: 'RR TIRE', type: 'string', order: 15 },
+    tireFrontDate: { title: 'FR TIRE DATE', type: 'date', order: 16 },
+    tireRearDate: { title: 'RR TIRE DATE', type: 'date', order: 17 },
     beltInfo: { title: 'BELT', type: 'string', order: 18 },
-    beltDate: { title: 'BELT DATE', type: 'string', order: 19 },
+    beltDate: { title: 'BELT DATE', type: 'date', order: 19 },
     batteryInfo: { title: 'BATTERY', type: 'string', order: 20 },
-    batteryDate: { title: 'BATTERY DATE', type: 'string', order: 21 },
+    batteryDate: { title: 'BATTERY DATE', type: 'date', order: 21 },
   },
   SYS: {
     arch: { title: 'ARCH', type: 'string', order: 1 },
@@ -51,7 +53,7 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
     heapTotal: { title: 'MEM TOTAL', unit: 'b', type: 'number', order: 6 },
     heapUsed: { title: 'MEM USED', unit: 'b', type: 'number', order: 7 },
     heapPeak: { title: 'MEM PEAK', unit: 'b', type: 'number', order: 8 },
-    uptime: { title: 'UPTIME', type: 'date', order: 9 },
+    uptime: { title: 'UPTIME', type: 'time', order: 9 },
   },
   TSM: {
     state: { title: 'TSM', type: 'string', formatter: (value: any) => `L: ${value.left}, R: ${value.right}` },
@@ -116,7 +118,15 @@ const getTypeFormatter = (fi: IField) => {
     case 'date':
       formatter = (value: number | string) => {
         try {
-          value ? new Date(value).toISOString().split('T')[1].split('.')[0] : 'N/A';
+          value = new Date(value).toISOString().split('T')[0];
+        } catch {}
+        return value?.toString();
+      };
+      break;
+    case 'time':
+      formatter = (value: number | string) => {
+        try {
+          value = new Date(value).toISOString().split('T')[1];
         } catch {}
         return value?.toString();
       };

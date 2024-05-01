@@ -2,6 +2,11 @@ import { Alert } from 'react-native';
 import { IDataProvider, IDataProviderDevice } from './interfaces';
 import { Broadcasting, ServiceCode, ServiceCommand, ServiceStatus, ServiceType, TurnSignalCommands } from '../constants';
 import { IServiceStatusInfo, ISystemStatsData, IThermometerData, ITsmData, IVehicleInfoData, IVehicleSensorData } from '../../../ts-schema/data.interface';
+import { readFile, writeFile, DocumentDirectoryPath } from '@dr.pogodin/react-native-fs';
+
+const simulatedDataResolveTimeMs = 150;
+const simulatedConnectionTimeMs = 250;
+const simulatedVehicleInfoFilePath: string = `${DocumentDirectoryPath}/vi.json`;
 
 export class MockBluetoothSerialDataProvider implements IDataProvider {
   private serviceListeners: { [key: string]: any } = {};
@@ -30,7 +35,7 @@ export class MockBluetoothSerialDataProvider implements IDataProvider {
     return new Promise(resolve => {
       setTimeout(() => {
         this.onProviderDeviceDiscovered(mockBtDevices);
-      }, 3000);
+      }, simulatedDataResolveTimeMs);
       resolve(true);
     });
   }
@@ -46,7 +51,7 @@ export class MockBluetoothSerialDataProvider implements IDataProvider {
         this.connectedDevice = device;
         this.isDeviceConnected = true;
         this.onProviderDeviceConnected(device);
-      }, 2000);
+      }, simulatedConnectionTimeMs);
       resolve(true);
     });
   }
@@ -103,13 +108,25 @@ export class MockBluetoothSerialDataProvider implements IDataProvider {
     return this.sendBtServiceCommand(serviceCode, ServiceCommand.INFO);
   }
 
-  public async sendBtServiceCommand(serviceCode: string, serviceCommand: string): Promise<void> {
-    console.log('sendCommand', serviceCode, serviceCommand);
+  public async sendBtServiceCommand(serviceCode: string, serviceCommand: string, servicePayload?: any): Promise<void> {
+    console.log('sendCommand', serviceCode, serviceCommand, servicePayload);
+    if (serviceCode === ServiceCode.VehicleInfo) {
+      if (serviceCommand === ServiceCommand.SET) {
+        await writeFile(simulatedVehicleInfoFilePath, JSON.stringify(servicePayload));
+      } else if (serviceCommand === ServiceCommand.DATA) {
+        const payload = await mockDataSource.VHI();
+        this.getEventListener(serviceCode, serviceCommand)(payload);
+      } else if (serviceCommand === ServiceCommand.INFO) {
+        const payload = mockStatusSource(serviceCode);
+        this.getEventListener(serviceCode, serviceCommand)(payload);
+      }
+      return;
+    }
     return new Promise(resolve => {
       setTimeout(() => {
         const payload = serviceCommand === ServiceCommand.INFO ? mockStatusSource(serviceCode) : mockDataSource[serviceCode]();
         this.getEventListener(serviceCode, serviceCommand)(payload);
-      }, 2000);
+      }, simulatedDataResolveTimeMs);
       resolve();
     });
   }
@@ -158,30 +175,38 @@ const mockStatusSource = (serviceCode: string): IServiceStatusInfo => {
 };
 
 const mockDataSource: { [key: string]: () => any } = {
-  VHI: () => {
-    return {
-      model: 'XL883N',
-      vin: '1HD1LC31XFC400000',
-      year: 2000,
-      make: 'Harley-Davidson',
-      owner: 'den',
-      plate: 'HD-1234',
-      regId: '1234567890',
-      oilDate: 0,
-      oilInterval: 5000,
-      tireFrontInfo: 'AA 90',
-      tireRearInfo: 'BB 150',
-      tireFrontDate: 0,
-      tireRearDate: 0,
-      beltInfo: '1 1/8 128T',
-      beltDate: 0,
-      batteryInfo: '12V 20Ah',
-      batteryDate: 0,
-      inspectDate: 0,
-      inspectInterval: 10000,
-      serviceDate: 0,
-      serviceInterval: 20000,
-    } as IVehicleInfoData;
+  VHI: async () => {
+    let data: IVehicleInfoData;
+    try {
+      const raw = await readFile(simulatedVehicleInfoFilePath, 'utf8');
+      data = JSON.parse(raw);
+    } catch {
+      data = {
+        model: 'XL883N',
+        vin: '1HD1LC31XFC400000',
+        year: 2000,
+        make: 'Harley-Davidson',
+        owner: 'den',
+        plate: 'HD-1234',
+        regId: '1234567890',
+        oilDate: 1714591100000,
+        oilInterval: 5000,
+        tireFrontInfo: 'AA 90',
+        tireRearInfo: 'BB 150',
+        tireFrontDate: 0,
+        tireRearDate: 0,
+        beltInfo: '1 1/8 128T',
+        beltDate: 0,
+        batteryInfo: '12V 20Ah',
+        batteryDate: 0,
+        inspectDate: 0,
+        inspectInterval: 10000,
+        serviceDate: 0,
+        serviceInterval: 20000,
+      } as IVehicleInfoData;
+      await writeFile(simulatedVehicleInfoFilePath, JSON.stringify(data));
+    }
+    return data;
   },
 
   VHC: () => {
