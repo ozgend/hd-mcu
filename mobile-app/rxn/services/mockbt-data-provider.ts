@@ -6,7 +6,7 @@ import { readFile, writeFile, DocumentDirectoryPath } from '@dr.pogodin/react-na
 
 const simulatedDataResolveTimeMs = 150;
 const simulatedConnectionTimeMs = 250;
-const simulatedVehicleInfoFilePath: string = `${DocumentDirectoryPath}/vi.json`;
+const simulatedVehicleInfoFilePath: string = `${DocumentDirectoryPath}/vinf.json`;
 
 export class MockBluetoothSerialDataProvider implements IDataProvider {
   private serviceListeners: { [key: string]: any } = {};
