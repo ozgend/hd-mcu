@@ -190,19 +190,22 @@ const mockDataSource: { [key: string]: () => any } = {
         plate: 'HD-1234',
         regId: '1234567890',
         oilDate: 1714591100000,
-        oilInterval: 5000,
+        oilKm: 59000,
+        oilIntervalKm: 3000,
         tireFrontInfo: 'AA 90',
         tireRearInfo: 'BB 150',
         tireFrontDate: 0,
         tireRearDate: 0,
+        tireFrontKm: 0,
+        tireRearKm: 0,
         beltInfo: '1 1/8 128T',
         beltDate: 0,
         batteryInfo: '12V 20Ah',
         batteryDate: 0,
         inspectDate: 0,
-        inspectInterval: 10000,
+        insuranceDate: 0,
         serviceDate: 0,
-        serviceInterval: 20000,
+        serviceKm: 0,
       } as IVehicleInfoData;
       await writeFile(simulatedVehicleInfoFilePath, JSON.stringify(data));
     }
@@ -211,10 +214,14 @@ const mockDataSource: { [key: string]: () => any } = {
 
   VHC: () => {
     return {
-      batt: 12.5 + Math.random() * 10,
+      batt: 12.5 + Math.random() * 0.5,
       rpm: Math.random() * 100 + 1200,
       speed: 0,
       temp: 40 - Math.random() * 3,
+      tireFront: 36.5 + Math.random() * 0.5,
+      tireRear: 36.5 + Math.random() * 0.5,
+      tempFront: 20 + Math.random() * 3,
+      tempRear: 20 + Math.random() * 3,
     } as IVehicleSensorData;
   },
 

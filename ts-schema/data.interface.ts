@@ -12,27 +12,30 @@ export interface IServiceStatusInfo {
 }
 
 export interface IVehicleInfoData {
-  model: string;
-  vin: string;
-  year: number;
   make: string;
+  model: string;
+  year: number;
   owner: string;
-  plate: string;
+  vin: string;
   regId: string;
+  plate: string;
   oilDate: number;
-  oilInterval: number;
+  oilKm: number;
+  oilIntervalKm: number;
   tireFrontInfo: string;
   tireRearInfo: string;
   tireFrontDate: number;
   tireRearDate: number;
+  tireFrontKm: number;
+  tireRearKm: number;
   beltInfo: string;
   beltDate: number;
   batteryInfo: string;
   batteryDate: number;
   inspectDate: number;
-  inspectInterval: number;
+  insuranceDate: number;
   serviceDate: number;
-  serviceInterval: number;
+  serviceKm: number;
 }
 
 export interface IVehicleSensorData extends IServiceState {

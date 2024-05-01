@@ -35,17 +35,16 @@ export class EditableInfoItemView extends Component<IInfoItemProps, IInfoItemSta
         <Text style={styles.infoTitleVehicle}>{fieldInfo.title}</Text>
 
         {fieldInfo.type === 'date' && (
-          <View>
+          <View style={styles.infoValueVehicleEditable}>
             <Pressable
               onPress={() => {
                 this.setState({ dateModalOpen: true });
               }}>
-              <Text style={styles.infoValueVehicle}>{formattedValue}</Text>
+              <Text style={styles.infoValueVehicleEditable}>{formattedValue}</Text>
             </Pressable>
             <DatePicker
               modal
               mode="date"
-              style={styles.infoValueVehicle}
               open={this.state.dateModalOpen}
               date={this.state.selectedDate ?? new Date()}
               onConfirm={date => {
@@ -61,7 +60,7 @@ export class EditableInfoItemView extends Component<IInfoItemProps, IInfoItemSta
 
         {fieldInfo.type !== 'date' && (
           <TextInput
-            style={styles.infoValueVehicle}
+            style={styles.infoValueVehicleEditable}
             editable={true}
             onFocus={() => {
               if (fieldInfo.type === 'date') {

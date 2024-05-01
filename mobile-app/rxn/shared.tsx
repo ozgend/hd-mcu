@@ -265,7 +265,6 @@ export const styles = StyleSheet.create({
     color: '#fa0',
   },
   infoValueVehicle: {
-    paddingHorizontal: 4,
     fontSize: 24,
     textTransform: 'uppercase',
     textAlign: 'right',
@@ -273,6 +272,17 @@ export const styles = StyleSheet.create({
     flexGrow: 1,
     color: '#fa0',
     margin: 0,
-    paddingVertical: 0,
+    padding: 0,
+  },
+  infoValueVehicleEditable: {
+    fontSize: 24,
+    textTransform: 'uppercase',
+    textAlign: 'right',
+    fontWeight: 'normal',
+    flexGrow: 1,
+    backgroundColor: '#fa0',
+    color: '#222',
+    margin: 0,
+    padding: 0,
   },
 });
