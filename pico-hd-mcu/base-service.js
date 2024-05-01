@@ -1,5 +1,5 @@
-const { ServiceCommand, EventType, ServiceStatus, Broadcasting } = require('./constants');
 const logger = require('./logger');
+const { ServiceCommand, EventType, ServiceStatus, Broadcasting } = require('./constants');
 
 class BaseService {
   constructor(eventBus, { serviceCode, serviceType, updateInterval, broadcastMode, idleTimeout, commands }) {

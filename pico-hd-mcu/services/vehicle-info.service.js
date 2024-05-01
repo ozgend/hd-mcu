@@ -1,8 +1,8 @@
-const { ServiceCode, ServiceType, Broadcasting } = require('../constants');
-const BaseService = require('../base-service');
-const { VehicleInfoData } = require('../../ts-schema/data.model');
-const logger = require('../logger');
 const fs = require('fs');
+const logger = require('../logger');
+const BaseService = require('../base-service');
+const { ServiceCode, ServiceType, Broadcasting } = require('../constants');
+const { VehicleInfoData } = require('../../ts-schema/data.model');
 
 const textDecoder = new TextDecoder();
 const textEncoder = new TextEncoder();

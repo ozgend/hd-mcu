@@ -1,7 +1,7 @@
-const { ServiceCode, Gpio, ServiceType, Hardware, Broadcasting } = require('../constants');
 const { factorAdcValue } = require('../utils');
 const BaseService = require('../base-service');
 const { VehicleSensorData } = require('../../ts-schema/data.model');
+const { ServiceCode, Gpio, ServiceType, Hardware, Broadcasting } = require('../constants');
 
 class VehicleSensorService extends BaseService {
   constructor(eventBus) {

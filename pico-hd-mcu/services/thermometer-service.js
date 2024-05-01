@@ -1,9 +1,9 @@
 const MAX6675 = require('../lib/max6675-hw-spi');
 const HC4051 = require('../lib/hc4051');
-const { ServiceCode, Gpio, ServiceType, Broadcasting } = require('../constants');
-const BaseService = require('../base-service');
 const logger = require('../logger');
+const BaseService = require('../base-service');
 const { ThermometerData } = require('../../ts-schema/data.model');
+const { ServiceCode, Gpio, ServiceType, Broadcasting } = require('../constants');
 
 const _muxChannels = [0, 1, 2, 3];
 let _readerPid = 0;
