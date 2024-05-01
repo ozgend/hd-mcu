@@ -7,7 +7,7 @@ import * as Progress from 'react-native-progress';
 import { IServiceAttributes, ServiceProperty, ServiceInfoFields, ServiceDataFields } from '../models';
 import { IServiceState, IServiceStatusInfo } from '../../../ts-schema/data.interface';
 import { styles } from '../shared';
-import { ServiceCode, ServiceCommand } from '../constants';
+import { MaxItemSize, ServiceCode, ServiceCommand } from '../constants';
 import { InfoItemView } from './components/InfoItemView';
 import { VehicleInfoItemView } from './components/VehicleInfoItemView';
 import { EditableInfoItemView } from './components/EditableInfoItemView';
@@ -23,12 +23,13 @@ export interface IServiceViewState<TSensorData> {
   isPolling: boolean;
   isBusy: boolean;
   isEditing?: boolean;
+  willDisplayServiceInfo?: boolean;
 }
 
 export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IServiceViewState<IServiceState>> {
   constructor(props: any) {
     super(props);
-    this.state = { isPolling: false, serviceData: {}, serviceInfo: {}, isBusy: true };
+    this.state = { isPolling: false, serviceData: {}, serviceInfo: {}, isBusy: true, willDisplayServiceInfo: false };
   }
 
   workerPid: any;
@@ -74,6 +75,7 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
     this.props.provider.requestBtServiceInfo(this.props.serviceCode);
     if (!this.state.isPolling) {
       this.workerPid = setInterval(() => {
+        this.setState({ isBusy: true });
         this.props.provider.requestBtServiceData(this.props.serviceCode);
       }, this.serviceAttributes.pollInterval ?? 5000);
     } else {
@@ -95,6 +97,7 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
   }
 
   requestServiceData(): void {
+    this.setState({ isBusy: true });
     this.props.provider.requestBtServiceData(this.props.serviceCode);
   }
 
@@ -109,7 +112,14 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
         {!this.state.isBusy && <Progress.Bar progress={1} color={styles.container.color} borderRadius={0} unfilledColor={styles.container.backgroundColor} borderWidth={0} width={1000} />}
 
         <View style={styles.actionBarView}>
-          <Text style={styles.actionBarHeader}>{this.serviceAttributes.title}</Text>
+          <Text
+            style={styles.actionBarHeader}
+            onPress={() => {
+              this.setState({ willDisplayServiceInfo: !this.state.willDisplayServiceInfo });
+            }}>
+            {this.serviceAttributes.title}
+          </Text>
+
           {this.serviceAttributes.isEditable && (
             <MaterialCommunityIcons.Button
               backgroundColor={styles.actionBarButton.backgroundColor}
@@ -122,6 +132,13 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
             </MaterialCommunityIcons.Button>
           )}
 
+          <MaterialCommunityIcons
+            style={Object.assign({ display: !this.serviceAttributes.pollOnce ? 'flex' : 'none' }, styles.actionBarStatusIcon)}
+            size={styles.actionBarStatusIcon.fontSize}
+            color={this.state.isPolling ? '#4f4' : '#f44'}
+            name={'circle'}
+          />
+
           {!this.serviceAttributes.pollOnce && (
             <MaterialCommunityIcons.Button
               backgroundColor={styles.actionBarButton.backgroundColor}
@@ -133,34 +150,31 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
               {this.state.isPolling ? 'STOP' : 'START'}
             </MaterialCommunityIcons.Button>
           )}
-
-          <MaterialCommunityIcons style={styles.actionBarStatusIcon} size={styles.actionBarStatusIcon.fontSize} color={this.state.isPolling ? '#4f4' : '#f44'} name={'circle'} />
         </View>
-        <Text> </Text>
-        {this.state.isBusy && (
-          <View style={styles.centerContainer}>
-            <Text style={styles.heading}>
-              {`${this.serviceAttributes.title} [${this.props.serviceCode}]`} {this.state.serviceInfo?.status ?? 'in progress...'}
-            </Text>
-          </View>
-        )}
-        {this.state?.serviceInfo &&
-          Object.keys(this.state?.serviceInfo ?? {})
-            .sort((a, b) => (ServiceInfoFields[a]?.order ?? 99) - (ServiceInfoFields[b]?.order ?? 100))
-            .map(fieldName => <InfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />)}
 
-        {<View style={styles.centerContainer}></View>}
+        <View style={styles.centerContainer}>
+          {this.state?.serviceInfo &&
+            this.state.willDisplayServiceInfo &&
+            Object.keys(this.state?.serviceInfo ?? {})
+              .sort((a, b) => (ServiceInfoFields[a]?.order ?? MaxItemSize) - (ServiceInfoFields[b]?.order ?? MaxItemSize + 1))
+              .map(fieldName => <InfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />)}
+          {this.state.willDisplayServiceInfo && (
+            <Text style={styles.infoTitle}>
+              {`[${this.props.serviceCode}]`} {this.state.serviceInfo?.status ?? 'in progress...'}
+            </Text>
+          )}
+        </View>
 
         {this.state?.serviceData &&
           this.props.serviceCode !== ServiceCode.VehicleInfo &&
           Object.keys(this.state?.serviceData ?? {})
-            .sort((a, b) => (ServiceDataFields[this.props.serviceCode][a]?.order ?? 99) - (ServiceDataFields[this.props.serviceCode][b]?.order ?? 100))
+            .sort((a, b) => (ServiceDataFields[this.props.serviceCode][a]?.order ?? MaxItemSize) - (ServiceDataFields[this.props.serviceCode][b]?.order ?? MaxItemSize + 1))
             .map(fieldName => <DataItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} />)}
 
         {this.state?.serviceData &&
           this.props.serviceCode === ServiceCode.VehicleInfo &&
           Object.keys(this.state?.serviceData ?? {})
-            .sort((a, b) => (ServiceDataFields[this.props.serviceCode][a]?.order ?? 99) - (ServiceDataFields[this.props.serviceCode][b]?.order ?? 100))
+            .sort((a, b) => (ServiceDataFields[this.props.serviceCode][a]?.order ?? MaxItemSize) - (ServiceDataFields[this.props.serviceCode][b]?.order ?? MaxItemSize + 1))
             .map(fieldName => {
               if (this.state.isEditing) {
                 return (

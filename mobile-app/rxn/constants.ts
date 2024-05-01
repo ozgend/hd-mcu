@@ -1,3 +1,5 @@
+export const MaxItemSize = 9999;
+
 export const Seperator = {
   SerialCommand: '+',
   ServiceData: '=',
