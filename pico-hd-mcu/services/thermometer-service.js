@@ -3,7 +3,7 @@ const HC4051 = require('../lib/hc4051');
 const logger = require('../logger');
 const BaseService = require('../base-service');
 const { ThermometerData } = require('../../ts-schema/data.model');
-const { ServiceCode, Gpio, ServiceType, Broadcasting } = require('../constants');
+const { ServiceCode, Gpio, ServiceType, Broadcasting } = require('../../ts-schema/constants');
 
 const _muxChannels = [0, 1, 2, 3];
 let _readerPid = 0;

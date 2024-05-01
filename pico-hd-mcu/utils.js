@@ -1,4 +1,4 @@
-const { Hardware } = require('./constants');
+const { Hardware } = require('../ts-schema/constants');
 
 const scaler = (rangeFrom, rangeTo) => {
   const d = (rangeTo[1] - rangeTo[0]) / (rangeFrom[1] - rangeFrom[0]);

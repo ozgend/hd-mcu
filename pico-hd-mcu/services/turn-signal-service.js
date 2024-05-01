@@ -1,6 +1,6 @@
 const logger = require('../logger');
 const { Button } = require('button');
-const { Hardware, Gpio, ServiceCode, TurnSignalCommand, ServiceType, Broadcasting } = require('../constants');
+const { Hardware, Gpio, ServiceCode, TurnSignalCommand, ServiceType, Broadcasting } = require('../../ts-schema/constants');
 const BaseService = require('../base-service');
 
 const _action = {
