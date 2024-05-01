@@ -149,6 +149,8 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
             .sort((a, b) => (ServiceInfoFields[a]?.order ?? 99) - (ServiceInfoFields[b]?.order ?? 100))
             .map(fieldName => <InfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />)}
 
+        {<View style={styles.centerContainer}></View>}
+
         {this.state?.serviceData &&
           this.props.serviceCode !== ServiceCode.VehicleInfo &&
           Object.keys(this.state?.serviceData ?? {})

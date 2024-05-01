@@ -12,4 +12,4 @@ class App extends Component {
   }
 }
 
-export default codePush(App);
+export default App;

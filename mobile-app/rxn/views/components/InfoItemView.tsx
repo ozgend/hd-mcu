@@ -24,12 +24,12 @@ export class InfoItemView extends Component<InfoItemProps> {
       return null;
     }
 
-    const value = fieldInfo?.formatter ? fieldInfo.formatter(this.props.value) : this.props.value ?? 'N/A';
+    const formattedValue = fieldInfo?.formatter ? fieldInfo.formatter(this.props.value) : this.props.value ?? 'N/A';
 
     return (
       <View style={styles.infoItem} key={this.props.fieldName}>
         <Text style={styles.infoTitle}>{fieldInfo.title}</Text>
-        <Text style={styles.infoValue}>{value}</Text>
+        <Text style={styles.infoValue}>{formattedValue}</Text>
       </View>
     );
   }
