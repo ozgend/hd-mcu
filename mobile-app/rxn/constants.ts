@@ -51,3 +51,10 @@ export const TurnSignalCommands = {
   ALL: 'ALL',
   NONE: 'NONE',
 };
+
+export const EventType = {
+  CommandForModule: 'MODULE_COMMAND',
+  CommandForService: 'SERVICE_COMMAND',
+  DataFromService: 'SERVICE_DATA',
+  DataFromSerial: 'SERIAL_DATA',
+};

@@ -1,5 +1,3 @@
-import { IVehicleSensorData, IThermometerData, ISystemStatsData, ITsmData } from '../../../ts-schema/data.interface';
-
 export interface IDataProviderDevice {
   name: string;
   address: string;

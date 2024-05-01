@@ -1,8 +1,8 @@
 import { Alert } from 'react-native';
-import { IDataProvider, IDataProviderDevice } from './interfaces';
-import { Broadcasting, ServiceCode, ServiceCommand, ServiceStatus, ServiceType, TurnSignalCommands } from '../constants';
-import { IServiceStatusInfo, ISystemStatsData, IThermometerData, ITsmData, IVehicleInfoData, IVehicleSensorData } from '../../../ts-schema/data.interface';
 import { readFile, writeFile, DocumentDirectoryPath } from '@dr.pogodin/react-native-fs';
+import { IDataProvider, IDataProviderDevice } from './interfaces';
+import { IServiceStatusInfo, ISystemStatsData, IThermometerData, ITsmData, IVehicleInfoData, IVehicleSensorData } from '../../../ts-schema/data.interface';
+import { ServiceCommand, ServiceCode, Broadcasting, ServiceType, ServiceStatus, TurnSignalCommands } from '../constants';
 
 const simulatedDataResolveTimeMs = 150;
 const simulatedConnectionTimeMs = 250;

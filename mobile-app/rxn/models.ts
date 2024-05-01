@@ -1,5 +1,3 @@
-import { ISystemStatsData, IThermometerData, ITsmData, IVehicleInfoData, IVehicleSensorData } from '../../ts-schema/data.interface';
-
 export interface IField {
   order?: number;
   title: string;
