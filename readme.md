@@ -78,4 +78,4 @@
 
 ### mobile app ui
 
-![back](./doc/mobile-app.webm)
+![back](./doc/mobile-app.gif)
