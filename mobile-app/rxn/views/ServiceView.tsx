@@ -132,12 +132,7 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
             </MaterialCommunityIcons.Button>
           )}
 
-          <MaterialCommunityIcons
-            style={Object.assign({ display: !this.serviceAttributes.pollOnce ? 'flex' : 'none' }, styles.actionBarStatusIcon)}
-            size={styles.actionBarStatusIcon.fontSize}
-            color={this.state.isPolling ? '#4f4' : '#f44'}
-            name={'circle'}
-          />
+          {!this.serviceAttributes.pollOnce && <MaterialCommunityIcons style={styles.actionBarStatusIcon} size={styles.actionBarStatusIcon.fontSize} color={this.state.isPolling ? '#4f4' : '#f44'} name={'circle'} />}
 
           {!this.serviceAttributes.pollOnce && (
             <MaterialCommunityIcons.Button

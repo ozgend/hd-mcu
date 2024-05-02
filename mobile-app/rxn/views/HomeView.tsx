@@ -31,7 +31,6 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
   constructor(props: any) {
     super(props);
     this.state = { isProviderStreamStarted: false, isProviderInitialized: false, devices: [], connectedDevice: null, isDeviceConnected: false, isDeviceDiscovered: false, status: '', isBusy: false };
-
     this.props.provider.onProviderInitialized = () => this.onProviderInitialized();
     this.props.provider.onProviderStreamStarted = () => this.onProviderStreamStarted();
     this.props.provider.onProviderStreamStopped = () => this.onProviderStreamStopped();
@@ -46,12 +45,9 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
     console.debug('provider initialized');
     this.setState({ status: 'provider initialized' });
     this.setState({ isBusy: false });
-
     this.setState({ isProviderInitialized: true });
-
     this.setState({ status: 'scanning devices' });
     this.setState({ isBusy: true });
-
     this.props.provider.scanDevices();
   }
 
@@ -59,7 +55,6 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
     console.debug('provider stream started');
     this.setState({ status: 'provider stream started' });
     this.setState({ isBusy: false });
-
     this.setState({ isProviderStreamStarted: true });
   }
 
@@ -86,7 +81,6 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
     console.debug('discovered devices', devices);
     this.setState({ status: 'discovered devices' });
     this.setState({ isBusy: false });
-
     this.setState({ devices });
     this.setState({ isDeviceDiscovered: true });
   };
@@ -95,10 +89,8 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
     console.debug('device connected', device);
     this.setState({ status: 'device connected' });
     this.setState({ isBusy: false });
-
     this.setState({ connectedDevice: device });
     this.setState({ isDeviceConnected: true });
-
     this.startStream();
   };
 
@@ -106,7 +98,6 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
     console.debug('device disconnected');
     this.setState({ status: 'device disconnected' });
     this.setState({ isBusy: false });
-
     this.setState({ connectedDevice: null });
     this.setState({ isDeviceConnected: false });
   };
@@ -115,7 +106,6 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
     console.debug('starting stream');
     this.setState({ status: 'starting stream' });
     this.setState({ isBusy: true });
-
     this.props.provider.startStream();
   }
 
@@ -123,7 +113,6 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
     console.debug('selecting device', device);
     this.setState({ status: 'selecting device' });
     this.setState({ isBusy: true });
-
     this.props.provider.connectDevice(device);
   };
 
@@ -131,7 +120,6 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
     console.debug('initializing provider');
     this.setState({ status: 'initializing provider' });
     this.setState({ isBusy: true });
-
     this.props.provider.initialize();
   }
 
