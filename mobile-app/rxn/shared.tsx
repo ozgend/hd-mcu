@@ -34,6 +34,15 @@ export const styles = StyleSheet.create({
     textTransform: 'uppercase',
     verticalAlign: 'middle',
   },
+  scrollContainer: {
+    flex: 1,
+    padding: 4,
+    backgroundColor: '#222',
+    color: '#fa0',
+    textAlignVertical: 'center',
+    textTransform: 'uppercase',
+    verticalAlign: 'middle',
+  },
   actionBarView: {
     paddingTop: 4,
     paddingBottom: 4,
@@ -244,8 +253,6 @@ export const styles = StyleSheet.create({
     color: '#fa0',
   },
   infoItemVehicle: {
-    // paddingHorizontal: 12,
-    // paddingVertical: 2,
     padding: 12,
     flex: 1,
     flexDirection: 'row',
@@ -257,7 +264,7 @@ export const styles = StyleSheet.create({
   },
   infoTitleVehicle: {
     paddingHorizontal: 4,
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: '200',
     textTransform: 'uppercase',
     textAlign: 'left',
@@ -265,7 +272,7 @@ export const styles = StyleSheet.create({
     color: '#fa0',
   },
   infoValueVehicle: {
-    fontSize: 24,
+    fontSize: 22,
     textTransform: 'uppercase',
     textAlign: 'right',
     fontWeight: 'normal',
@@ -275,7 +282,7 @@ export const styles = StyleSheet.create({
     padding: 0,
   },
   infoValueVehicleEditable: {
-    fontSize: 24,
+    fontSize: 22,
     textTransform: 'uppercase',
     textAlign: 'right',
     fontWeight: 'normal',

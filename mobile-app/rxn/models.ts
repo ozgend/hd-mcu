@@ -1,3 +1,10 @@
+export interface IItemProperties {
+  serviceCode?: string;
+  fieldName: string;
+  value: string | number | boolean | null | undefined | any;
+  setServiceData?: (fieldName: string, value: string | number | boolean | null | undefined | any) => void;
+}
+
 export interface IField {
   order?: number;
   title: string;
@@ -7,6 +14,22 @@ export interface IField {
   available?: boolean;
   formatter?: (value: any) => string;
 }
+
+export interface IServiceAttributes {
+  title: string;
+  icon: string;
+  pollInterval?: number;
+  pollOnce?: boolean;
+  isEditable?: boolean;
+}
+
+export const ServiceProperty: { [key: string]: IServiceAttributes } = {
+  VHI: { title: 'Vehicle Info', icon: 'information', pollOnce: true, isEditable: true },
+  VHC: { title: 'Vehicle Sensor', icon: 'engine', pollInterval: 2000 },
+  THE: { title: 'Thermometer', icon: 'thermometer', pollInterval: 5000 },
+  SYS: { title: 'System', icon: 'chip', pollInterval: 5000 },
+  TSM: { title: 'Turn Signal', icon: 'arrow-left-right' },
+};
 
 export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
   VHI: {
@@ -31,7 +54,7 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
     batteryInfo: { title: 'BATTERY TYPE', type: 'string', order: 112 },
     batteryDate: { title: 'BATTERY DATE', type: 'date', order: 113 },
     inspectDate: { title: 'INSPECT DATE', type: 'date', order: 201 },
-    insuranceDate: { title: 'INSURANCE DATE', type: 'date', order: 202 },
+    insuranceDate: { title: 'INSUR. DATE', type: 'date', order: 202 },
     serviceDate: { title: 'SERVICE DATE', type: 'date', order: 203 },
     serviceKm: { title: 'SERVICE KM', unit: 'km', type: 'number', order: 204 },
   },
@@ -81,33 +104,51 @@ export const ServiceInfoFields: { [key: string]: IField } = {
   commands: { title: 'COMMANDS', type: 'array', order: 3 },
 };
 
-export const getDataField = (serviceCode: string, fieldName: string): IField | null => {
-  const fi = ServiceDataFields[serviceCode][fieldName];
-  if (!fi) {
-    return null;
-  }
-  fi.available = fi.available ?? true;
-  if (fi.formatter) {
-    return fi;
-  }
-  fi.formatter = getTypeFormatter(fi);
-  return fi;
+export const getFormattedValue = (fieldName: string, value: any, serviceCode?: string) => {
+  const fieldInfo = serviceCode ? getDataField(serviceCode, fieldName) : getInfoField(fieldName);
+  const formattedValue = fieldInfo?.formatter ? fieldInfo.formatter(value) : value ?? 'N/A';
+  return { formattedValue, fieldInfo };
 };
 
-export const getInfoField = (fieldName: string): IField | null => {
-  const fi = ServiceInfoFields[fieldName];
-  if (!fi) {
+// export const getFormattedDataValue = (serviceCode: string, fieldName: string, value: any) => {
+//   const fieldInfo = getDataField(serviceCode, fieldName);
+//   const formattedValue = fieldInfo?.formatter ? fieldInfo.formatter(value) : value ?? 'N/A';
+//   return { formattedValue, fieldInfo };
+// };
+
+// export const getFormattedServiceInfoValue = (fieldName: string, value: any) => {
+//   const fieldInfo = getInfoField(fieldName);
+//   const formattedValue = fieldInfo?.formatter ? fieldInfo.formatter(value) : value ?? 'N/A';
+//   return { formattedValue, fieldInfo };
+// };
+
+const getDataField = (serviceCode: string, fieldName: string): IField | null => {
+  const field = ServiceDataFields[serviceCode][fieldName];
+  if (!field) {
     return null;
   }
-  fi.available = fi.available ?? true;
-  if (fi.available === false) {
+  field.available = field.available ?? true;
+  if (field.formatter) {
+    return field;
+  }
+  field.formatter = getTypeFormatter(field);
+  return field;
+};
+
+const getInfoField = (fieldName: string): IField | null => {
+  const field = ServiceInfoFields[fieldName];
+  if (!field) {
     return null;
   }
-  if (fi.formatter) {
-    return fi;
+  field.available = field.available ?? true;
+  if (field.available === false) {
+    return null;
   }
-  fi.formatter = getTypeFormatter(fi);
-  return fi;
+  if (field.formatter) {
+    return field;
+  }
+  field.formatter = getTypeFormatter(field);
+  return field;
 };
 
 const getTypeFormatter = (fi: IField) => {
@@ -140,20 +181,4 @@ const getTypeFormatter = (fi: IField) => {
       break;
   }
   return formatter;
-};
-
-export interface IServiceAttributes {
-  title: string;
-  icon: string;
-  pollInterval?: number;
-  pollOnce?: boolean;
-  isEditable?: boolean;
-}
-
-export const ServiceProperty: { [key: string]: IServiceAttributes } = {
-  VHI: { title: 'Vehicle Info', icon: 'information', pollOnce: true, isEditable: true },
-  VHC: { title: 'Vehicle Sensor', icon: 'engine', pollInterval: 2000 },
-  THE: { title: 'Thermometer', icon: 'thermometer', pollInterval: 5000 },
-  SYS: { title: 'System', icon: 'chip', pollInterval: 5000 },
-  TSM: { title: 'Turn Signal', icon: 'arrow-left-right' },
 };

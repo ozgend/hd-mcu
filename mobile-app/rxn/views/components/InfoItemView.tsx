@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { styles } from '../../shared';
-import { getInfoField } from '../../models';
+import { IItemProperties, getFormattedValue } from '../../models';
 
-interface InfoItemProps {
-  fieldName: string;
-  value: string | number | boolean | null | undefined | any;
-}
-
-export class InfoItemView extends Component<InfoItemProps> {
+export class InfoItemView extends Component<IItemProperties> {
   constructor(props: any) {
     super(props);
   }
@@ -17,15 +12,10 @@ export class InfoItemView extends Component<InfoItemProps> {
     if (this.props.value === undefined || this.props.value === null) {
       return null;
     }
-
-    const fieldInfo = getInfoField(this.props.fieldName);
-
-    if (!fieldInfo) {
+    const { formattedValue, fieldInfo } = getFormattedValue(this.props.fieldName, this.props.value, this.props.serviceCode);
+    if (!fieldInfo?.available) {
       return null;
     }
-
-    const formattedValue = fieldInfo?.formatter ? fieldInfo.formatter(this.props.value) : this.props.value ?? 'N/A';
-
     return (
       <View style={styles.infoItem} key={this.props.fieldName}>
         <Text style={styles.infoTitle}>{fieldInfo.title}</Text>

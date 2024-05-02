@@ -107,7 +107,7 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
 
   render() {
     return (
-      <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.container}>
+      <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollContainer}>
         {this.state.isBusy && <Progress.Bar indeterminate={true} color={styles.container.color} borderRadius={0} unfilledColor={styles.container.backgroundColor} borderWidth={0} width={1000} />}
         {!this.state.isBusy && <Progress.Bar progress={1} color={styles.container.color} borderRadius={0} unfilledColor={styles.container.backgroundColor} borderWidth={0} width={1000} />}
 
@@ -185,6 +185,8 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
                 return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} />;
               }
             })}
+
+        <View style={styles.centerContainer}></View>
       </ScrollView>
     );
   }
