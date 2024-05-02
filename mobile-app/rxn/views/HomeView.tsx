@@ -8,7 +8,7 @@ import { styles, tabTheme, getIcon } from '../shared';
 import { IDataProvider, IDataProviderDevice, IDataProviderEvents } from '../services/interfaces';
 import { ServiceProperty } from '../models';
 import { ServiceView } from './ServiceView';
-import { ServiceCode } from '../constants';
+import { ServiceCode } from '../../../ts-schema/constants';
 
 interface IProps {
   provider: IDataProvider;

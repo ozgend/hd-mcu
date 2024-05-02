@@ -2,7 +2,7 @@ import { Alert } from 'react-native';
 import { readFile, writeFile, DocumentDirectoryPath } from '@dr.pogodin/react-native-fs';
 import { IDataProvider, IDataProviderDevice } from './interfaces';
 import { IServiceStatusInfo, ISystemStatsData, IThermometerData, ITsmData, IVehicleInfoData, IVehicleSensorData } from '../../../ts-schema/data.interface';
-import { ServiceCommand, ServiceCode, Broadcasting, ServiceType, ServiceStatus, TurnSignalCommands } from '../constants';
+import { ServiceCommand, ServiceCode, Broadcasting, ServiceType, ServiceStatus, TurnSignalCommands } from '../../../ts-schema/constants';
 
 const simulatedDataResolveTimeMs = 150;
 const simulatedConnectionTimeMs = 250;
@@ -11,11 +11,9 @@ const simulatedVehicleInfoFilePath: string = `${DocumentDirectoryPath}/vinf.json
 export class MockBluetoothSerialDataProvider implements IDataProvider {
   private serviceListeners: { [key: string]: any } = {};
   private connectedDevice: IDataProviderDevice | null = null;
-
   public isInitialized: boolean = false;
   public isDeviceConnected: boolean = false;
   public isStreamStarted: boolean = false;
-
   public onProviderInitialized: () => void = () => {};
   public onProviderHeartbeat: (data: any) => void = () => {};
   public onProviderStreamStatusChange: (state: boolean) => void = () => {};

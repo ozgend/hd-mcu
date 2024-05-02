@@ -1,0 +1,12 @@
+{
+  "name": "hd-mcu",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "build": "npm run typegen",
+    "typegen": "tsc ./ts-schema/*.ts"
+  }
+}

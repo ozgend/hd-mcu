@@ -7,7 +7,7 @@ import * as Progress from 'react-native-progress';
 import { IServiceAttributes, ServiceProperty, ServiceInfoFields, ServiceDataFields } from '../models';
 import { IServiceState, IServiceStatusInfo } from '../../../ts-schema/data.interface';
 import { styles } from '../shared';
-import { MaxItemSize, ServiceCode, ServiceCommand } from '../constants';
+import { MaxItemSize, ServiceCode, ServiceCommand } from '../../../ts-schema/constants';
 import { InfoItemView } from './components/InfoItemView';
 import { VehicleInfoItemView } from './components/VehicleInfoItemView';
 import { EditableInfoItemView } from './components/EditableInfoItemView';

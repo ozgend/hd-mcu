@@ -1,7 +1,7 @@
 import { Alert, PermissionsAndroid, Platform, ToastAndroid } from 'react-native';
 import { IDataProvider, IDataProviderDevice } from './interfaces';
 import RNBluetoothClassic, { BluetoothDevice, BluetoothDeviceEvent, BluetoothDeviceReadEvent, BluetoothEventSubscription } from 'react-native-bluetooth-classic';
-import { Seperator, ServiceCommand } from '../constants';
+import { Seperator, ServiceCommand } from '../../../ts-schema/constants';
 
 const macid = '00:22:09:01:8D:2B';
 
