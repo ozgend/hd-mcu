@@ -31,6 +31,14 @@
 
 ### software
 
+**mobile app**
+
+- react-native
+  - [x] android
+  - [ ] ios
+
+**mcu firmware**
+
 - node/js via [kalumajs](https://kalumajs.org/docs/getting-started)
 - FLASH: 2044/24 kb
 - SRAM: 264 total, 184/57 kb
@@ -38,10 +46,16 @@
 ### hardware
 
 - raspberry pi pico
+  - [pinout](https://pico.pinout.xyz/)
+  - [datasheet](https://datasheets.raspberrypi.com/pico/pico-datasheet.pdf)
 - hc-06 bluetooth module
+  - [datasheet](https://www.olimex.com/Products/Components/RF/BLUETOOTH-SERIAL-HC-06/resources/hc06.pdf)
 - cd4051 multiplexer
-- l298n h-bridge driver
+  - [datasheet](https://www.ti.com/lit/ds/symlink/cd4051b.pdf)
+- l298n h-bridge driver module
+  - [datasheet](https://www.st.com/resource/en/datasheet/l298.pdf)
 - max6675 thermocouple digitizer
+  - [datasheet](https://datasheets.maximintegrated.com/en/ds/MAX6675.pdf)
 - k-type thermocouple
 - 5805 voltage regulator
 - 33k resistor
@@ -61,3 +75,7 @@
 
 **blueprint**
 ![raw](./pcb/pico-hd-mcu-v2/pcb-blueprint.png)
+
+### mobile app ui
+
+![back](./doc/mobile-app.webm)
