@@ -21,6 +21,7 @@ export interface IServiceAttributes {
   pollInterval?: number;
   pollOnce?: boolean;
   isEditable?: boolean;
+  autoStart?: boolean;
 }
 
 export const ServiceProperty: { [key: string]: IServiceAttributes } = {

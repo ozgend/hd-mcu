@@ -55,6 +55,10 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
     if (this.serviceAttributes.pollOnce) {
       this.props.provider.requestBtServiceData(this.props.serviceCode);
     }
+
+    if (this.serviceAttributes.autoStart) {
+      this.toggleService();
+    }
   }
 
   async componentWillUnmount(): Promise<void> {
