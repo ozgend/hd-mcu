@@ -9,6 +9,8 @@
   "scripts": {
     "build": "npm run typegen && npm run bundle",
     "bundle": "kaluma bundle ./index.js",
+    "flash": "kaluma flash ./index.js -b -p",
+    "shell": "kaluma shell -p",
     "typegen": "tsc ../ts-schema/*.ts"
   }
 }
