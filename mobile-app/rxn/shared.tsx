@@ -268,7 +268,7 @@ export const styles = StyleSheet.create({
     fontWeight: '200',
     textTransform: 'uppercase',
     textAlign: 'left',
-    minWidth: 130,
+    minWidth: 140,
     color: '#fa0',
   },
   infoValueVehicle: {

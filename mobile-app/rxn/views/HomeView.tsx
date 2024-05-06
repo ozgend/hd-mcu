@@ -163,6 +163,7 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
         )}
         {!this.state.isDeviceConnected && (
           <View style={styles.centerContainer}>
+            <Text style={styles.heading}>denolk</Text>
             <Text style={styles.brand}>R2040 HD MCU</Text>
             <Text style={styles.heading}>bluetooth connection</Text>
             <Text style={styles.text}>please connect to the device</Text>
