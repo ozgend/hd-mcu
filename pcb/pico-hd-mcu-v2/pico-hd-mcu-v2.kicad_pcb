@@ -2389,7 +2389,7 @@
       )
     )
   )
-  (zone (net 0) (net_name "") (layer "F.SilkS") (tstamp f883c9c7-a56b-4b13-bcc0-c51b58c1d829) (hatch full 0.5)
+  (zone (net 0) (net_name "") (layers "F.SilkS" "F.Mask") (tstamp f883c9c7-a56b-4b13-bcc0-c51b58c1d829) (hatch full 0.5)
     (connect_pads (clearance 0))
     (min_thickness 0.25) (filled_areas_thickness no)
     (keepout (tracks not_allowed) (vias not_allowed) (pads not_allowed) (copperpour allowed) (footprints allowed))
@@ -2482,12 +2482,6 @@
       e1aadd19-1910-4882-8d75-ea433f87a25d
     )
   )
-  (group "" (id 73569784-be05-459f-99d8-a3d7fe245a61)
-    (members
-      e9074920-c385-4e11-8b54-b57f6581096c
-      f883c9c7-a56b-4b13-bcc0-c51b58c1d829
-    )
-  )
   (group "" (id 909fe39b-0ca8-43c0-b751-4689a41851c5)
     (members
       8d99ea5c-24d8-4220-b0bb-32d20859410d
@@ -2511,6 +2505,12 @@
     (members
       07e45856-90c0-4714-be8b-29338d4148fd
       95be507c-3c50-4ce1-ad4c-b12f28dcb1f3
+    )
+  )
+  (group "" (id 73569784-be05-459f-99d8-a3d7fe245a61)
+    (members
+      e9074920-c385-4e11-8b54-b57f6581096c
+      f883c9c7-a56b-4b13-bcc0-c51b58c1d829
     )
   )
 )
