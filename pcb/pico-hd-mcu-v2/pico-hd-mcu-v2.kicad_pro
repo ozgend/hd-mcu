@@ -34,7 +34,7 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 1.0,
+          "drill": 1.02,
           "height": 1.7,
           "width": 1.7
         },
@@ -55,9 +55,7 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [
-        "unconnected_items|51125000|69757500|97c4b4c5-8461-4f95-91c9-2276d2bab67b|2e890e2b-50d9-4f45-a9f0-db5f777e1f8c"
-      ],
+      "drc_exclusions": [],
       "meta": {
         "version": 2
       },
