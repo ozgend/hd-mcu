@@ -5,12 +5,13 @@
 ### features
 
 - [x] hardware serial
+  - [x] raw ft232 usb serial
 - [x] bluetooth serial
-  - [ ] mcu bluetooth ota updates
+  - [x] raw bluetooth serial (hc-06 @ 9600 bps)
   - [x] mobile app
-    - [x] hot reload
-    - [x] code-push ota updates
-- [x] polling from client instead of broadcasting
+- [ ] obd2/canbus
+  - [ ] available pids
+- [x] polling/broadcasting
   - [x] reduced power consumption
   - [x] reduced cpu clock usage
 - [x] turn signal flasher module
@@ -21,13 +22,13 @@
 - [x] supported sensor inputs
   - [x] multiplexed thermocouples
     - [x] up to 8 thermocouples
-  - [x] direct sensors
-    - [x] uptime counter
-    - [x] voltage sensor
-    - [x] temperature sensor
-    - [x] rpm sensor
-    - [x] speed sensor
-    - [x] aux \*2
+  - [x] direct sensor inputs
+    - [x] uptime counter (onboard)
+    - [x] voltage sensor (onboard)
+    - [x] temperature sensor (onboard)
+    - [x] rpm sensor (optional)
+    - [x] speed sensor (optional)
+    - [x] aux \*2 (optional)
 
 ### software
 
