@@ -7,7 +7,7 @@ import * as Progress from 'react-native-progress';
 import { IServiceAttributes, ServiceProperty, ServiceInfoFields, ServiceDataFields } from '../models';
 import { IServiceState, IServiceStatusInfo } from '../../../ts-schema/data.interface';
 import { styles } from '../shared';
-import { MaxItemSize, ServiceCode, ServiceCommand } from '../../../ts-schema/constants';
+import { Hardware, MaxItemSize, ServiceCode, ServiceCommand } from '../../../ts-schema/constants';
 import { InfoItemView } from './components/InfoItemView';
 import { VehicleInfoItemView } from './components/VehicleInfoItemView';
 import { EditableInfoItemView } from './components/EditableInfoItemView';
@@ -81,7 +81,7 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
       this.workerPid = setInterval(() => {
         this.setState({ isBusy: true });
         this.props.provider.requestBtServiceData(this.props.serviceCode);
-      }, this.serviceAttributes.pollInterval ?? 5000);
+      }, this.serviceAttributes.pollInterval ?? Hardware.SERVICE_POLL_INTERVAL);
     } else {
       clearInterval(this.workerPid);
       this.props.provider.sendBtServiceCommand(this.props.serviceCode, ServiceCommand.STOP);

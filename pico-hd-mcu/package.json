@@ -8,7 +8,9 @@
   "license": "ISC",
   "scripts": {
     "build": "npm run typegen && npm run bundle",
+    "build:min": "npm run typegen && npm run bundle:min",
     "bundle": "kaluma bundle ./index.js",
+    "bundle:min": "kaluma bundle ./index.js -m",
     "flash": "kaluma flash ./index.js -b -p",
     "shell": "kaluma shell -p",
     "typegen": "tsc ../ts-schema/*.ts"

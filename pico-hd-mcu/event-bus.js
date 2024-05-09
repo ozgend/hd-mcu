@@ -1,7 +1,7 @@
 const { EventEmitter } = require('events');
 const { UART } = require('uart');
 const logger = require('./logger');
-const { ServiceCode, EventType, Seperator, ServiceCommand } = require('../ts-schema/constants');
+const { ServiceCode, EventType, Seperator, ServiceCommand, Hardware } = require('../ts-schema/constants');
 
 const uartOptions = {
   baudrate: 9600,
@@ -12,7 +12,7 @@ const uartOptions = {
   bufferSize: 2048,
 };
 
-const textDecoder = new TextDecoder();
+// const textDecoder = new TextDecoder();
 const Serial = new UART(0, uartOptions);
 logger.info(ServiceCode.EventBus, 'uart ready', uartOptions.baudrate);
 
@@ -71,7 +71,7 @@ logger.info(ServiceCode.EventBus, 'eventBus ready');
 setInterval(() => {
   Serial.write('0_heartbeat\n');
   //logger.info(ServiceCode.EventBus, '0_heartbeat');
-}, 5000);
+}, Hardware.HEARTBEAT_PUSH_INTERVAL);
 
 const publishToSerial = (serviceCode, eventType, serviceData) => {
   eventBus.emit(EventType.DataFromService, serviceCode, eventType, serviceData);

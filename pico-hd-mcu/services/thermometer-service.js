@@ -3,16 +3,16 @@ const HC4051 = require('../lib/hc4051');
 const logger = require('../logger');
 const BaseService = require('../base-service');
 const { ThermometerData } = require('../../ts-schema/data.model');
-const { ServiceCode, Gpio, ServiceType, Broadcasting } = require('../../ts-schema/constants');
+const { ServiceCode, Gpio, ServiceType, Broadcasting, Hardware } = require('../../ts-schema/constants');
 
-const _muxChannels = [0, 1, 2, 3];
+const _muxChannels = Hardware.MUX_SENSOR_CONNECTED_ITEMS;
 let _readerPid = 0;
 let _muxChIndex = 0;
 
 class ThermometerService extends BaseService {
   constructor(eventBus) {
     super(eventBus, {
-      serviceCode: ServiceCode.Thermometers,
+      serviceCode: ServiceCode.Thermometer,
       serviceType: ServiceType.ON_DEMAND,
       broadcastMode: Broadcasting.OnDemandPolling,
     });
@@ -38,13 +38,13 @@ class ThermometerService extends BaseService {
       _readerPid = setInterval(() => {
         this.mux.enableChannelIndex(_muxChIndex);
         this.data[`ch_${_muxChannels[_muxChIndex]}`] = this.thermoSensor.readCelcius() ?? 0;
-        logger.debug(ServiceCode.Thermometers, 'interval.read', { ch: _muxChannels[_muxChIndex], cx: _muxChIndex, value: this.data[`ch_${_muxChannels[_muxChIndex]}`], values: this.data });
+        logger.debug(ServiceCode.Thermometer, 'interval.read', { ch: _muxChannels[_muxChIndex], cx: _muxChIndex, value: this.data[`ch_${_muxChannels[_muxChIndex]}`], values: this.data });
         _muxChIndex++;
         if (_muxChIndex >= _muxChannels.length) {
           _muxChIndex = 0;
         }
-      }, 1000);
-    }, 3000);
+      }, Hardware.MUX_SENSOR_READ_INTERVAL);
+    }, Hardware.MUX_SENSOR_READ_BATCH_TIMEOUT);
   }
 
   stop() {
