@@ -1,12 +1,38 @@
 import { Alert } from 'react-native';
-import { readFile, writeFile, DocumentDirectoryPath } from '@dr.pogodin/react-native-fs';
 import { IDataProvider, IDataProviderDevice } from './interfaces';
 import { IServiceStatusInfo, ISystemStatsData, IThermometerData, ITsmData, IVehicleInfoData, IVehicleSensorData } from '../../../ts-schema/data.interface';
 import { ServiceCommand, ServiceCode, Broadcasting, ServiceType, ServiceStatus, TurnSignalCommands } from '../../../ts-schema/constants';
+import { Storage } from '../storage';
 
 const simulatedDataResolveTimeMs = 150;
 const simulatedConnectionTimeMs = 250;
-const simulatedVehicleInfoFilePath: string = `${DocumentDirectoryPath}/vinf.json`;
+const simulatedVehicleInfoConfigKey: string = `mock.vinf.json`;
+const simulatedVehicleInfoData = {
+  model: 'XL883N',
+  vin: '1HD1LC31XFC400000',
+  year: 2000,
+  make: 'Harley-Davidson',
+  owner: 'den',
+  plate: 'HD-1234',
+  regId: '1234567890',
+  oilDate: 1714591100000,
+  oilKm: 59000,
+  oilIntervalKm: 3000,
+  tireFrontInfo: 'AA 90',
+  tireRearInfo: 'BB 150',
+  tireFrontDate: 0,
+  tireRearDate: 0,
+  tireFrontKm: 0,
+  tireRearKm: 0,
+  beltInfo: '1 1/8 128T',
+  beltDate: 0,
+  batteryInfo: '12V 20Ah',
+  batteryDate: 0,
+  inspectDate: 0,
+  insuranceDate: 0,
+  serviceDate: 0,
+  serviceKm: 0,
+} as IVehicleInfoData;
 
 export class MockBluetoothSerialDataProvider implements IDataProvider {
   private serviceListeners: { [key: string]: any } = {};
@@ -110,7 +136,7 @@ export class MockBluetoothSerialDataProvider implements IDataProvider {
     console.log('sendCommand', serviceCode, serviceCommand, servicePayload);
     if (serviceCode === ServiceCode.VehicleInfo) {
       if (serviceCommand === ServiceCommand.SET) {
-        await writeFile(simulatedVehicleInfoFilePath, JSON.stringify(servicePayload));
+        Storage.set(simulatedVehicleInfoConfigKey, JSON.stringify(servicePayload));
       } else if (serviceCommand === ServiceCommand.DATA) {
         const payload = await mockDataSource.VHI();
         this.getEventListener(serviceCode, serviceCommand)(payload);
@@ -174,40 +200,14 @@ const mockStatusSource = (serviceCode: string): IServiceStatusInfo => {
 
 const mockDataSource: { [key: string]: () => any } = {
   VHI: async () => {
-    let data: IVehicleInfoData;
+    let data: IVehicleInfoData | null = null;
     try {
-      const raw = await readFile(simulatedVehicleInfoFilePath, 'utf8');
-      data = JSON.parse(raw);
+      const raw = Storage.getString(simulatedVehicleInfoConfigKey);
+      data = raw ? JSON.parse(raw) : simulatedVehicleInfoData;
     } catch {
-      data = {
-        model: 'XL883N',
-        vin: '1HD1LC31XFC400000',
-        year: 2000,
-        make: 'Harley-Davidson',
-        owner: 'den',
-        plate: 'HD-1234',
-        regId: '1234567890',
-        oilDate: 1714591100000,
-        oilKm: 59000,
-        oilIntervalKm: 3000,
-        tireFrontInfo: 'AA 90',
-        tireRearInfo: 'BB 150',
-        tireFrontDate: 0,
-        tireRearDate: 0,
-        tireFrontKm: 0,
-        tireRearKm: 0,
-        beltInfo: '1 1/8 128T',
-        beltDate: 0,
-        batteryInfo: '12V 20Ah',
-        batteryDate: 0,
-        inspectDate: 0,
-        insuranceDate: 0,
-        serviceDate: 0,
-        serviceKm: 0,
-      } as IVehicleInfoData;
-      await writeFile(simulatedVehicleInfoFilePath, JSON.stringify(data));
+      Storage.set(simulatedVehicleInfoConfigKey, JSON.stringify(simulatedVehicleInfoData));
     }
-    return data;
+    return data ?? simulatedVehicleInfoData;
   },
 
   VHC: () => {

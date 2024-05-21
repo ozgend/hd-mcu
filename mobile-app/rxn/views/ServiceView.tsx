@@ -6,13 +6,15 @@ import { DataItemView } from './components/DataItemView';
 import * as Progress from 'react-native-progress';
 import { IServiceAttributes, ServiceProperty, ServiceInfoFields, ServiceDataFields } from '../models';
 import { IServiceState, IServiceStatusInfo } from '../../../ts-schema/data.interface';
-import { styles } from '../shared';
 import { Hardware, MaxItemSize, ServiceCode, ServiceCommand } from '../../../ts-schema/constants';
 import { InfoItemView } from './components/InfoItemView';
 import { VehicleInfoItemView } from './components/VehicleInfoItemView';
 import { EditableInfoItemView } from './components/EditableInfoItemView';
+import { getStyleSheet } from '../themes';
+import { IAppConfig } from '../config';
+import { IAppConfigViewProps } from './AppConfigView';
 
-export interface IServicerViewProps<IProvider> {
+export interface IServicerViewProps<IProvider> extends IAppConfigViewProps {
   provider: IProvider;
   serviceCode: string;
 }
@@ -27,9 +29,12 @@ export interface IServiceViewState<TSensorData> {
 }
 
 export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IServiceViewState<IServiceState>> {
+  commonStyle: any;
+
   constructor(props: any) {
     super(props);
     this.state = { isPolling: false, serviceData: {}, serviceInfo: {}, isBusy: true, willDisplayServiceInfo: false };
+    this.commonStyle = getStyleSheet(this.props.appConfig.themeName);
   }
 
   workerPid: any;
@@ -111,13 +116,13 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
 
   render() {
     return (
-      <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollContainer}>
-        {this.state.isBusy && <Progress.Bar indeterminate={true} color={styles.container.color} borderRadius={0} unfilledColor={styles.container.backgroundColor} borderWidth={0} width={1000} />}
-        {!this.state.isBusy && <Progress.Bar progress={1} color={styles.container.color} borderRadius={0} unfilledColor={styles.container.backgroundColor} borderWidth={0} width={1000} />}
+      <ScrollView contentInsetAdjustmentBehavior="automatic" style={this.commonStyle.scrollContainer}>
+        {this.state.isBusy && <Progress.Bar indeterminate={true} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
+        {!this.state.isBusy && <Progress.Bar progress={1} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
 
-        <View style={styles.actionBarView}>
+        <View style={this.commonStyle.actionBarView}>
           <Text
-            style={styles.actionBarHeader}
+            style={this.commonStyle.actionBarHeader}
             onPress={() => {
               this.setState({ willDisplayServiceInfo: !this.state.willDisplayServiceInfo });
             }}>
@@ -126,39 +131,39 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
 
           {this.serviceAttributes.isEditable && (
             <MaterialCommunityIcons.Button
-              backgroundColor={styles.actionBarButton.backgroundColor}
-              size={styles.actionBarButton.fontSize}
+              backgroundColor={this.commonStyle.actionBarButton.backgroundColor}
+              size={this.commonStyle.actionBarButton.fontSize}
               name={this.state.isEditing ? 'stop-circle' : 'play-circle'}
-              style={this.state.isEditing ? styles.actionBarButtonRunning : styles.actionBarButton}
-              color={this.state.isEditing ? styles.actionBarButtonRunning.color : styles.actionBarButton.color}
+              style={this.state.isEditing ? this.commonStyle.actionBarButtonRunning : this.commonStyle.actionBarButton}
+              color={this.state.isEditing ? this.commonStyle.actionBarButtonRunning.color : this.commonStyle.actionBarButton.color}
               onPress={() => this.toggleEdit()}>
               {this.state.isEditing ? 'SAVE' : 'EDIT'}
             </MaterialCommunityIcons.Button>
           )}
 
-          {!this.serviceAttributes.pollOnce && <MaterialCommunityIcons style={styles.actionBarStatusIcon} size={styles.actionBarStatusIcon.fontSize} color={this.state.isPolling ? '#4f4' : '#f44'} name={'circle'} />}
+          {!this.serviceAttributes.pollOnce && <MaterialCommunityIcons style={this.commonStyle.actionBarStatusIcon} size={this.commonStyle.actionBarStatusIcon.fontSize} color={this.state.isPolling ? '#4f4' : '#f44'} name={'circle'} />}
 
           {!this.serviceAttributes.pollOnce && (
             <MaterialCommunityIcons.Button
-              backgroundColor={styles.actionBarButton.backgroundColor}
-              size={styles.actionBarButton.fontSize}
+              backgroundColor={this.commonStyle.actionBarButton.backgroundColor}
+              size={this.commonStyle.actionBarButton.fontSize}
               name={this.state.isPolling ? 'stop-circle' : 'play-circle'}
-              style={this.state.isPolling ? styles.actionBarButtonRunning : styles.actionBarButton}
-              color={this.state.isPolling ? styles.actionBarButtonRunning.color : styles.actionBarButton.color}
+              style={this.state.isPolling ? this.commonStyle.actionBarButtonRunning : this.commonStyle.actionBarButton}
+              color={this.state.isPolling ? this.commonStyle.actionBarButtonRunning.color : this.commonStyle.actionBarButton.color}
               onPress={() => this.toggleService()}>
               {this.state.isPolling ? 'STOP' : 'START'}
             </MaterialCommunityIcons.Button>
           )}
         </View>
 
-        <View style={styles.centerContainer}>
+        <View style={this.commonStyle.centerContainer}>
           {this.state?.serviceInfo &&
             this.state.willDisplayServiceInfo &&
             Object.keys(this.state?.serviceInfo ?? {})
               .sort((a, b) => (ServiceInfoFields[a]?.order ?? MaxItemSize) - (ServiceInfoFields[b]?.order ?? MaxItemSize + 1))
-              .map(fieldName => <InfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />)}
+              .map(fieldName => <InfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} appConfig={this.props.appConfig} />)}
           {this.state.willDisplayServiceInfo && (
-            <Text style={styles.infoTitle}>
+            <Text style={this.commonStyle.infoTitle}>
               {`[${this.props.serviceCode}]`} {this.state.serviceInfo?.status ?? 'in progress...'}
             </Text>
           )}
@@ -168,7 +173,7 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
           this.props.serviceCode !== ServiceCode.VehicleInfo &&
           Object.keys(this.state?.serviceData ?? {})
             .sort((a, b) => (ServiceDataFields[this.props.serviceCode][a]?.order ?? MaxItemSize) - (ServiceDataFields[this.props.serviceCode][b]?.order ?? MaxItemSize + 1))
-            .map(fieldName => <DataItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} />)}
+            .map(fieldName => <DataItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} appConfig={this.props.appConfig} />)}
 
         {this.state?.serviceData &&
           this.props.serviceCode === ServiceCode.VehicleInfo &&
@@ -183,14 +188,36 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
                     value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]}
                     setServiceData={(fieldName, value) => this.setServiceData(fieldName, value)}
                     serviceCode={this.props.serviceCode}
+                    appConfig={this.props.appConfig}
                   />
                 );
               } else {
-                return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} />;
+                return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} appConfig={this.props.appConfig} />;
               }
             })}
 
-        <View style={styles.centerContainer}></View>
+        {this.state?.serviceData &&
+          this.props.serviceCode === 'CFG' &&
+          Object.keys(this.state?.serviceData ?? {})
+            .sort((a, b) => (ServiceDataFields[this.props.serviceCode][a]?.order ?? MaxItemSize) - (ServiceDataFields[this.props.serviceCode][b]?.order ?? MaxItemSize + 1))
+            .map(fieldName => {
+              if (this.state.isEditing) {
+                return (
+                  <EditableInfoItemView
+                    key={fieldName}
+                    fieldName={fieldName}
+                    value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]}
+                    setServiceData={(fieldName, value) => this.setServiceData(fieldName, value)}
+                    serviceCode={this.props.serviceCode}
+                    appConfig={this.props.appConfig}
+                  />
+                );
+              } else {
+                return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} appConfig={this.props.appConfig} />;
+              }
+            })}
+
+        <View style={this.commonStyle.centerContainer}></View>
       </ScrollView>
     );
   }

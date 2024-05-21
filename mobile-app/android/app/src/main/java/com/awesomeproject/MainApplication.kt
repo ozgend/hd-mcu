@@ -21,6 +21,7 @@ class MainApplication : Application(), ReactApplication {
               // Packages that cannot be autolinked yet can be added manually here, for example:
               // add(MyReactNativePackage())
               // add(RNBluetoothClassicPackage.DEFAULT_BUILDER.build())
+              // add(RestartPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"

@@ -1,17 +1,22 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
-import { styles } from '../../shared';
 import { IItemProperties, getFormattedValue } from '../../models';
 import DatePicker from 'react-native-date-picker';
+import { getStyleSheet } from '../../themes';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface IInfoItemState {
   dateModalOpen?: boolean;
   selectedDate?: Date;
+  availableValues?: string[] | number[] | boolean[];
 }
 
 export class EditableInfoItemView extends Component<IItemProperties, IInfoItemState> {
+  commonStyle: any;
+
   constructor(props: any) {
     super(props);
+    this.commonStyle = getStyleSheet(this.props.appConfig?.themeName);
     this.state = { dateModalOpen: false, selectedDate: new Date() };
   }
   render() {
@@ -20,16 +25,16 @@ export class EditableInfoItemView extends Component<IItemProperties, IInfoItemSt
       return null;
     }
     return (
-      <View style={styles.infoItemVehicle} key={this.props.fieldName}>
-        <Text style={styles.infoTitleVehicle}>{fieldInfo.title}</Text>
+      <View style={this.commonStyle.infoItemVehicle} key={this.props.fieldName}>
+        <Text style={this.commonStyle.infoTitleVehicle}>{fieldInfo.title}</Text>
 
         {fieldInfo.type === 'date' && (
-          <View style={styles.infoValueVehicleEditable}>
+          <View style={this.commonStyle.infoValueVehicleEditable}>
             <Pressable
               onPress={() => {
                 this.setState({ dateModalOpen: true, selectedDate: new Date(this.props.value) });
               }}>
-              <Text style={styles.infoValueVehicleEditable}>{formattedValue}</Text>
+              <Text style={this.commonStyle.infoValueVehicleEditable}>{formattedValue}</Text>
             </Pressable>
             <DatePicker
               modal
@@ -49,9 +54,32 @@ export class EditableInfoItemView extends Component<IItemProperties, IInfoItemSt
           </View>
         )}
 
-        {fieldInfo.type !== 'date' && (
+        {fieldInfo.type === 'array' && (
+          <View key={this.props.fieldName} style={{ width: '100%' }}>
+            {this.props.availableValues?.map((item: any, index: number) => {
+              return (
+                <MaterialCommunityIcons.Button
+                  key={this.props.fieldName + index}
+                  backgroundColor={this.commonStyle.actionBarButton.backgroundColor}
+                  size={this.commonStyle.actionBarButton.fontSize}
+                  name={this.props.value === item ? 'check-circle' : 'circle-outline'}
+                  style={[this.props.value === item ? this.commonStyle.actionBarButtonRunning : this.commonStyle.actionBarButton, { marginVertical: 5, width: 120 }]}
+                  color={this.props.value === item ? this.commonStyle.actionBarButtonRunning.color : this.commonStyle.actionBarButton.color}
+                  onPress={() => {
+                    if (this.props.setServiceData) {
+                      this.props.setServiceData(this.props.fieldName, item);
+                    }
+                  }}>
+                  {item.toString().toUpperCase()}
+                </MaterialCommunityIcons.Button>
+              );
+            })}
+          </View>
+        )}
+
+        {fieldInfo.type !== 'date' && fieldInfo.type !== 'array' && (
           <TextInput
-            style={styles.infoValueVehicleEditable}
+            style={this.commonStyle.infoValueVehicleEditable}
             editable={true}
             onFocus={() => {
               if (fieldInfo.type === 'date') {
