@@ -87,7 +87,7 @@ export class AppConfigView extends Component<IAppConfigViewProps, IAppConfigView
         <View style={this.commonStyle.centerContainer}>
           {/* <Text style={this.commonStyle.infoTitle}></Text>
           <Text style={this.commonStyle.infoTitle}>restart to apply changes</Text>
-          <Text style={this.commonStyle.infoTitle}></Text>
+          <Text style={this.commonStyle.infoTitle}></Text> */}
           <MaterialCommunityIcons.Button
             backgroundColor={this.commonStyle.actionBarButton.backgroundColor}
             size={this.commonStyle.actionBarButton.fontSize}
@@ -96,7 +96,7 @@ export class AppConfigView extends Component<IAppConfigViewProps, IAppConfigView
             color={this.commonStyle.actionBarButtonRunning.color}
             onPress={() => this.restartApp()}>
             {'RESTART'}
-          </MaterialCommunityIcons.Button> */}
+          </MaterialCommunityIcons.Button>
         </View>
       </ScrollView>
     );

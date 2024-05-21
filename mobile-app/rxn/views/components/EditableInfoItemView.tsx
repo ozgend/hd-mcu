@@ -59,7 +59,7 @@ export class EditableInfoItemView extends Component<IItemProperties, IInfoItemSt
         )}
 
         {fieldInfo.type === 'array' && (
-          <View key={this.props.fieldName} style={{ width: '50%', flexDirection: 'column', flexWrap: 'wrap' }}>
+          <View key={this.props.fieldName} style={{ width: '100%', flexDirection: 'row', flexWrap: 'wrap' }}>
             {this.props.availableValues?.map((item: any, index: number) => {
               return (
                 // <Pressable
@@ -79,7 +79,7 @@ export class EditableInfoItemView extends Component<IItemProperties, IInfoItemSt
                   backgroundColor={this.commonStyle.actionBarButton.backgroundColor}
                   size={this.commonStyle.actionBarButton.fontSize}
                   name={this.props.value === item ? 'check-circle' : 'circle-outline'}
-                  style={[this.props.value === item ? this.commonStyle.actionBarButtonRunning : this.commonStyle.actionBarButton, { marginVertical: 5, width: 120 }]}
+                  style={[this.props.value === item ? this.commonStyle.actionBarButtonRunning : this.commonStyle.actionBarButton, { margin: 6, width: 110, padding: 6 }]}
                   color={this.props.value === item ? this.commonStyle.actionBarButtonRunning.color : this.commonStyle.actionBarButton.color}
                   onPress={() => {
                     if (this.props.setServiceData) {

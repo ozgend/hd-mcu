@@ -1,17 +1,19 @@
 import { Storage } from './storage';
 
-const DefaultAppConfig: IAppConfig = { ownerName: 'do', appTitle: 'XL MCU', themeName: 'default' };
+const DefaultAppConfig: IAppConfig = { ownerName: 'do', appTitle: 'XL MCU', themeName: 'default', dataProvider: 'mock' };
 
 export interface IAppConfig {
+  themeName: string;
+  dataProvider: string;
   ownerName: string;
   appTitle: string;
-  themeName: string;
 }
 
 export enum AppConfigField {
+  ThemeName = 'themeName',
+  DataProvider = 'dataProvider',
   OwnerName = 'ownerName',
   AppTitle = 'appTitle',
-  ThemeName = 'themeName',
 }
 
 export const getAppConfig = (): IAppConfig => {

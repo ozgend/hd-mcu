@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Progress from 'react-native-progress';
-import { IDataProvider, IDataProviderDevice, IDataProviderEvents } from '../services/interfaces';
+import { DataProviderType, IDataProvider, IDataProviderDevice, IDataProviderEvents } from '../services/interfaces';
 import { ServiceProperty } from '../models';
 import { ServiceView } from './ServiceView';
 import { ServiceCode } from '../../../ts-schema/constants';
@@ -25,6 +25,7 @@ interface IState {
   isDeviceConnected: boolean;
   devices: IDataProviderDevice[];
   connectedDevice: IDataProviderDevice | null;
+  willDisplayAppConfig: boolean;
 }
 
 const Tab = createBottomTabNavigator();
@@ -44,6 +45,7 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
       isDeviceDiscovered: false,
       status: '',
       isBusy: false,
+      willDisplayAppConfig: false,
     };
     this.props.provider.onProviderInitialized = () => this.onProviderInitialized();
     this.props.provider.onProviderStreamStarted = () => this.onProviderStreamStarted();
@@ -147,7 +149,6 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
       <NavigationContainer theme={this.tabStyle}>
         {!this.state.isDeviceConnected && this.state.isBusy && <Progress.Bar indeterminate={true} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
         {!this.state.isDeviceConnected && !this.state.isBusy && <Progress.Bar progress={1} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
-
         {this.state.isDeviceConnected && (
           <Tab.Navigator>
             <Tab.Screen
@@ -196,18 +197,47 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
           <View style={this.commonStyle.centerContainer}>
             <Text style={this.commonStyle.heading}>{appConfig.ownerName}</Text>
             <Text style={this.commonStyle.brand}>{appConfig.appTitle}</Text>
-            <Text style={this.commonStyle.heading}>bluetooth connection</Text>
+            <Text style={this.commonStyle.heading}>{appConfig.dataProvider === DataProviderType.Bluetooth ? 'bluetooth' : 'mock'} connection</Text>
             <Text style={this.commonStyle.text}>please connect to the device</Text>
-            <Text style={this.commonStyle.text}> </Text>
-            <MaterialCommunityIcons.Button name="bluetooth" style={this.commonStyle.button} color={this.commonStyle.button.color} onPress={() => this.initializeProvider()}>
-              START
-            </MaterialCommunityIcons.Button>
+
+            <View style={[this.commonStyle.centerContainer, { margin: 0, marginTop: 10, padding: 0, flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end' }]}>
+              <MaterialCommunityIcons.Button
+                backgroundColor={this.commonStyle.actionBarButton.backgroundColor}
+                size={this.commonStyle.actionBarButton.fontSize}
+                name="cog"
+                style={[this.commonStyle.actionBarButtonRunning, { width: 110, padding: 6 }]}
+                color={this.commonStyle.actionBarButtonRunning.color}
+                onPress={() => this.setState({ willDisplayAppConfig: !this.state.willDisplayAppConfig })}>
+                CONFIG
+              </MaterialCommunityIcons.Button>
+
+              {!this.state.willDisplayAppConfig && (
+                <MaterialCommunityIcons.Button
+                  backgroundColor={this.commonStyle.actionBarButton.backgroundColor}
+                  size={this.commonStyle.actionBarButton.fontSize}
+                  name="bluetooth"
+                  style={[this.commonStyle.actionBarButtonRunning, { marginLeft: 30, width: 110, padding: 6 }]}
+                  color={this.commonStyle.actionBarButtonRunning.color}
+                  onPress={() => this.initializeProvider()}>
+                  START
+                </MaterialCommunityIcons.Button>
+              )}
+            </View>
             <Text style={this.commonStyle.text}> </Text>
             {this.state.isBusy && !this.state.isDeviceConnected && <Text style={this.commonStyle.textSmall}>{this.state.status}</Text>}
             {!this.state.isBusy && !this.state.isDeviceConnected && <Text style={this.commonStyle.textSmall}> </Text>}
           </View>
         )}
-        {!this.state.isDeviceConnected && (
+
+        {this.state.willDisplayAppConfig && (
+          <AppConfigView
+            onAppConfigChange={() => {
+              this.forceUpdate();
+            }}
+          />
+        )}
+
+        {!this.state.isDeviceConnected && !this.state.willDisplayAppConfig && (
           <View style={this.commonStyle.container}>
             {this.state.isDeviceDiscovered && <Text style={this.commonStyle.statusText}>connect to device</Text>}
             <FlatList

@@ -1,4 +1,4 @@
-import { IAppConfig } from './config';
+import { DataProviderType } from './services/interfaces';
 import { AppThemeNames } from './themes';
 
 export interface IItemProperties {
@@ -100,9 +100,10 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
     ch_7: { title: 'AUX GENERIC', unit: '°C', type: 'number', order: 8 },
   },
   CFG: {
-    themeName: { title: 'THEME', type: 'array', order: 1, availableValues: Object.keys(AppThemeNames) },
-    ownerName: { title: 'OWNER', type: 'string', order: 2 },
-    appTitle: { title: 'APP TITLE', type: 'string', order: 3 },
+    themeName: { title: 'THEME', type: 'array', order: 10, availableValues: Object.values(AppThemeNames) },
+    dataProvider: { title: 'DATA', type: 'array', order: 11, availableValues: Object.values(DataProviderType) },
+    ownerName: { title: 'OWNER', type: 'string', order: 20 },
+    appTitle: { title: 'APP TITLE', type: 'string', order: 21 },
   },
 };
 

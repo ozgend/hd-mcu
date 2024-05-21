@@ -1,4 +1,7 @@
-import { IAppConfig } from '../config';
+export enum DataProviderType {
+  Mock = 'mock',
+  Bluetooth = 'bt',
+}
 
 export interface IDataProviderDevice {
   name: string;

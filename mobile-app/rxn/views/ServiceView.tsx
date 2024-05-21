@@ -196,26 +196,6 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
               }
             })}
 
-        {this.state?.serviceData &&
-          this.props.serviceCode === 'CFG' &&
-          Object.keys(this.state?.serviceData ?? {})
-            .sort((a, b) => (ServiceDataFields[this.props.serviceCode][a]?.order ?? MaxItemSize) - (ServiceDataFields[this.props.serviceCode][b]?.order ?? MaxItemSize + 1))
-            .map(fieldName => {
-              if (this.state.isEditing) {
-                return (
-                  <EditableInfoItemView
-                    key={fieldName}
-                    fieldName={fieldName}
-                    value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]}
-                    setServiceData={(fieldName, value) => this.setServiceData(fieldName, value)}
-                    serviceCode={this.props.serviceCode}
-                  />
-                );
-              } else {
-                return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} />;
-              }
-            })}
-
         <View style={this.commonStyle.centerContainer}></View>
       </ScrollView>
     );

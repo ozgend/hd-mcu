@@ -10,11 +10,11 @@ interface IThemeColor {
   border: string;
 }
 
-export const AppThemeNames = {
-  default: 'default',
-  black: 'black',
-  white: 'white',
-};
+export enum AppThemeNames {
+  Default = 'default',
+  Black = 'black',
+  White = 'white',
+}
 
 const themeColors: { [key: string]: IThemeColor } = {
   default: {
@@ -40,15 +40,19 @@ const themeColors: { [key: string]: IThemeColor } = {
   },
 };
 
+export const getIcon = (name: string, color: string): React.ReactNode => {
+  return <MaterialCommunityIcons name={name} size={26} color={color} />;
+};
+
 const getThemeColor = (themeName?: string): IThemeColor => {
-  return themeColors[themeName ?? AppThemeNames.default];
+  return themeColors[themeName ?? AppThemeNames.Default];
 };
 
 export const getTabTheme = (themeName?: string) => {
   const themeColor = getThemeColor(themeName);
 
   return {
-    dark: themeName !== AppThemeNames.white,
+    dark: themeName !== AppThemeNames.White,
     colors: {
       primary: themeColor.foreground,
       background: themeColor.background,
@@ -338,9 +342,4 @@ export const getStyleSheet = (themeName?: string) => {
       padding: 0,
     },
   });
-};
-
-export const getIcon = (name: string, color: string): React.ReactNode => {
-  console.log('++ getIcon', name, color);
-  return <MaterialCommunityIcons name={name} size={26} color={color} />;
 };
