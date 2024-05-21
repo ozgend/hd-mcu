@@ -1,7 +1,6 @@
 import { Storage } from './storage';
 
-const appConfigPath: string = `app.config.json`;
-export const DefaultAppConfig: IAppConfig = { ownerName: 'do', appTitle: 'XL MCU', themeName: 'default' };
+const DefaultAppConfig: IAppConfig = { ownerName: 'do', appTitle: 'XL MCU', themeName: 'default' };
 
 export interface IAppConfig {
   ownerName: string;
@@ -9,12 +8,17 @@ export interface IAppConfig {
   themeName: string;
 }
 
-export const readAppConfig = (): IAppConfig => {
+export enum AppConfigField {
+  OwnerName = 'ownerName',
+  AppTitle = 'appTitle',
+  ThemeName = 'themeName',
+}
+
+export const getAppConfig = (): IAppConfig => {
   let appConfig: { [key: string]: string } = {};
   try {
     for (const key in DefaultAppConfig) {
-      appConfig[key] = (Storage.getString(`appConfig.${key}`) ?? DefaultAppConfig[key as keyof IAppConfig]).toLowerCase();
-      console.log(`++ readAppConfig: ${key}="${appConfig[key]}"`);
+      appConfig[key] = getAppConfigField(key).toLowerCase();
     }
     return appConfig as unknown as IAppConfig;
   } catch (error) {
@@ -23,21 +27,32 @@ export const readAppConfig = (): IAppConfig => {
   }
 };
 
-export const writeAppConfigField = (fieldName: string, value: any) => {
+export const setAppConfig = (appConfig: IAppConfig) => {
+  try {
+    for (const key in appConfig) {
+      setAppConfigField(key, appConfig[key as keyof IAppConfig]);
+    }
+  } catch (error) {
+    console.error('++ writeAppConfig error', error);
+  }
+};
+
+export const getAppConfigField = (fieldName: string): string => {
+  try {
+    const value = Storage.getString(`appConfig.${fieldName}`) ?? DefaultAppConfig[fieldName as keyof IAppConfig];
+    console.log(`++ getAppConfigField: ${fieldName}="${value}"`);
+    return value;
+  } catch (error) {
+    console.error('++ readAppConfigField error', error);
+    return DefaultAppConfig[fieldName as keyof IAppConfig];
+  }
+};
+
+export const setAppConfigField = (fieldName: string, value: string) => {
   try {
     Storage.set(`appConfig.${fieldName}`, value.toString().toLowerCase());
     console.log(`++ writeAppConfigField: ${fieldName}="${value}"`);
   } catch (error) {
     console.error('++ writeAppConfigField error', error);
-  }
-};
-
-export const writeAppConfig = (appConfig: IAppConfig) => {
-  try {
-    for (const key in appConfig) {
-      writeAppConfigField(key, appConfig[key as keyof IAppConfig]);
-    }
-  } catch (error) {
-    console.error('++ writeAppConfig error', error);
   }
 };

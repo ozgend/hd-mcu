@@ -2,7 +2,6 @@ import { IAppConfig } from './config';
 import { AppThemeNames } from './themes';
 
 export interface IItemProperties {
-  appConfig: IAppConfig;
   serviceCode?: string;
   fieldName: string;
   value: string | number | boolean | null | undefined | any;

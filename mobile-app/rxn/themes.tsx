@@ -3,8 +3,10 @@ import { StyleSheet } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface IThemeColor {
-  background: string;
   foreground: string;
+  background: string;
+  backgroundEditable: string;
+  foregroundEditable: string;
   border: string;
 }
 
@@ -16,19 +18,25 @@ export const AppThemeNames = {
 
 const themeColors: { [key: string]: IThemeColor } = {
   default: {
-    background: '#222',
-    foreground: '#fa0',
     border: '#444',
+    foreground: '#fa0',
+    backgroundEditable: '#fa0',
+    background: '#222',
+    foregroundEditable: '#222',
   },
   black: {
-    background: '#010101',
-    foreground: '#f3f3f3',
     border: '#222',
+    foreground: '#fff',
+    foregroundEditable: '#111',
+    background: '#111',
+    backgroundEditable: '#aaa',
   },
   white: {
-    background: '#f3f3f3',
-    foreground: '#010101',
     border: '#888',
+    foreground: '#000',
+    foregroundEditable: '#000',
+    background: '#f3f3f3',
+    backgroundEditable: '#ddd',
   },
 };
 
@@ -54,8 +62,6 @@ export const getTabTheme = (themeName?: string) => {
 
 export const getStyleSheet = (themeName?: string) => {
   const themeColor = getThemeColor(themeName);
-
-  console.log('++ getStyleSheet:', themeName);
 
   return StyleSheet.create({
     progressView: {
@@ -326,8 +332,8 @@ export const getStyleSheet = (themeName?: string) => {
       textAlign: 'right',
       fontWeight: 'normal',
       flexGrow: 1,
-      backgroundColor: themeColor.foreground,
-      color: themeColor.background,
+      backgroundColor: themeColor.backgroundEditable,
+      color: themeColor.foregroundEditable,
       margin: 0,
       padding: 0,
     },
@@ -335,6 +341,5 @@ export const getStyleSheet = (themeName?: string) => {
 };
 
 export const getIcon = (name: string, color: string): React.ReactNode => {
-  console.log('++ getIcon:', name, color);
   return <MaterialCommunityIcons name={name} size={26} color={color} />;
 };

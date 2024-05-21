@@ -11,10 +11,9 @@ import { InfoItemView } from './components/InfoItemView';
 import { VehicleInfoItemView } from './components/VehicleInfoItemView';
 import { EditableInfoItemView } from './components/EditableInfoItemView';
 import { getStyleSheet } from '../themes';
-import { IAppConfig } from '../config';
-import { IAppConfigViewProps } from './AppConfigView';
+import { AppConfigField, getAppConfigField } from '../config';
 
-export interface IServicerViewProps<IProvider> extends IAppConfigViewProps {
+export interface IServicerViewProps<IProvider> {
   provider: IProvider;
   serviceCode: string;
 }
@@ -34,7 +33,6 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
   constructor(props: any) {
     super(props);
     this.state = { isPolling: false, serviceData: {}, serviceInfo: {}, isBusy: true, willDisplayServiceInfo: false };
-    this.commonStyle = getStyleSheet(this.props.appConfig.themeName);
   }
 
   workerPid: any;
@@ -115,6 +113,9 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
   }
 
   render() {
+    const themeName = getAppConfigField(AppConfigField.ThemeName);
+    this.commonStyle = getStyleSheet(themeName);
+
     return (
       <ScrollView contentInsetAdjustmentBehavior="automatic" style={this.commonStyle.scrollContainer}>
         {this.state.isBusy && <Progress.Bar indeterminate={true} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
@@ -161,7 +162,7 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
             this.state.willDisplayServiceInfo &&
             Object.keys(this.state?.serviceInfo ?? {})
               .sort((a, b) => (ServiceInfoFields[a]?.order ?? MaxItemSize) - (ServiceInfoFields[b]?.order ?? MaxItemSize + 1))
-              .map(fieldName => <InfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} appConfig={this.props.appConfig} />)}
+              .map(fieldName => <InfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceInfo[fieldName as keyof typeof this.state.serviceInfo]} />)}
           {this.state.willDisplayServiceInfo && (
             <Text style={this.commonStyle.infoTitle}>
               {`[${this.props.serviceCode}]`} {this.state.serviceInfo?.status ?? 'in progress...'}
@@ -173,7 +174,7 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
           this.props.serviceCode !== ServiceCode.VehicleInfo &&
           Object.keys(this.state?.serviceData ?? {})
             .sort((a, b) => (ServiceDataFields[this.props.serviceCode][a]?.order ?? MaxItemSize) - (ServiceDataFields[this.props.serviceCode][b]?.order ?? MaxItemSize + 1))
-            .map(fieldName => <DataItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} appConfig={this.props.appConfig} />)}
+            .map(fieldName => <DataItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} />)}
 
         {this.state?.serviceData &&
           this.props.serviceCode === ServiceCode.VehicleInfo &&
@@ -188,11 +189,10 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
                     value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]}
                     setServiceData={(fieldName, value) => this.setServiceData(fieldName, value)}
                     serviceCode={this.props.serviceCode}
-                    appConfig={this.props.appConfig}
                   />
                 );
               } else {
-                return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} appConfig={this.props.appConfig} />;
+                return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} />;
               }
             })}
 
@@ -209,11 +209,10 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
                     value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]}
                     setServiceData={(fieldName, value) => this.setServiceData(fieldName, value)}
                     serviceCode={this.props.serviceCode}
-                    appConfig={this.props.appConfig}
                   />
                 );
               } else {
-                return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} appConfig={this.props.appConfig} />;
+                return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} />;
               }
             })}
 

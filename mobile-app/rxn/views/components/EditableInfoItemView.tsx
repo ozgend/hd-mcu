@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, Pressable } from 'react-native';
+import { View, Text, TextInput, Pressable, Button } from 'react-native';
 import { IItemProperties, getFormattedValue } from '../../models';
 import DatePicker from 'react-native-date-picker';
 import { getStyleSheet } from '../../themes';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getAppConfigField, AppConfigField } from '../../config';
 
 interface IInfoItemState {
   dateModalOpen?: boolean;
@@ -16,10 +17,13 @@ export class EditableInfoItemView extends Component<IItemProperties, IInfoItemSt
 
   constructor(props: any) {
     super(props);
-    this.commonStyle = getStyleSheet(this.props.appConfig?.themeName);
     this.state = { dateModalOpen: false, selectedDate: new Date() };
   }
+
   render() {
+    const themeName = getAppConfigField(AppConfigField.ThemeName);
+    this.commonStyle = getStyleSheet(themeName);
+
     const { formattedValue, fieldInfo } = getFormattedValue(this.props.fieldName, this.props.value, this.props.serviceCode);
     if (!fieldInfo?.available) {
       return null;
@@ -55,9 +59,21 @@ export class EditableInfoItemView extends Component<IItemProperties, IInfoItemSt
         )}
 
         {fieldInfo.type === 'array' && (
-          <View key={this.props.fieldName} style={{ width: '100%' }}>
+          <View key={this.props.fieldName} style={{ width: '50%', flexDirection: 'column', flexWrap: 'wrap' }}>
             {this.props.availableValues?.map((item: any, index: number) => {
               return (
+                // <Pressable
+                //   key={this.props.fieldName + index}
+                //   onPress={() => {
+                //     if (this.props.setServiceData) {
+                //       this.props.setServiceData(this.props.fieldName, item);
+                //     }
+                //   }}>
+                //   <Text style={[this.props.value === item ? this.commonStyle.actionBarButtonRunning : this.commonStyle.actionBarButton, { margin: 5, width: 120, paddingHorizontal: 5 }]}>
+                //     {this.props.value === item ? '[x] ' : ''}
+                //     {item.toString().toUpperCase()}
+                //   </Text>
+                // </Pressable>
                 <MaterialCommunityIcons.Button
                   key={this.props.fieldName + index}
                   backgroundColor={this.commonStyle.actionBarButton.backgroundColor}

@@ -1,20 +1,18 @@
 import React, { Component } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import * as Progress from 'react-native-progress';
 import RNRestart from 'react-native-restart';
-import { IDataProvider } from '../services/interfaces';
 import { IServiceAttributes, ServiceProperty, ServiceDataFields } from '../models';
-import { IServiceState } from '../../../ts-schema/data.interface';
 import { MaxItemSize } from '../../../ts-schema/constants';
 import { VehicleInfoItemView } from './components/VehicleInfoItemView';
 import { EditableInfoItemView } from './components/EditableInfoItemView';
 import { getStyleSheet } from '../themes';
-import { IAppConfig, writeAppConfig, writeAppConfigField } from '../config';
+import { IAppConfig, getAppConfig, setAppConfig, setAppConfigField } from '../config';
 
 export interface IAppConfigViewProps {
-  appConfig: IAppConfig;
-  appConfigStateChanger?: (appConfig: IAppConfig) => void;
-  appConfigReloader?: () => void;
+  // appConfig: IAppConfig;
+  // onAppConfigChange?: (appConfig: IAppConfig) => void;
 }
 
 export interface IAppConfigViewState {
@@ -26,36 +24,15 @@ export class AppConfigView extends Component<IAppConfigViewProps, IAppConfigView
   commonStyle: any;
   serviceCode: string = 'CFG';
   serviceAttributes: IServiceAttributes = ServiceProperty[this.serviceCode];
-  editedAppConfig: IAppConfig = { ...this.props.appConfig };
 
   constructor(props: any) {
     super(props);
-    this.state = { appConfig: this.props.appConfig, isEditing: true };
-    this.commonStyle = getStyleSheet(this.props.appConfig.themeName);
-  }
-
-  async componentDidMount(): Promise<void> {
-    console.debug(`${this.serviceCode} mounted`);
-  }
-
-  async componentWillUnmount(): Promise<void> {
-    console.debug(`${this.serviceCode} unmounting`);
-    await writeAppConfig(this.state.appConfig);
-  }
-
-  async saveAppConfig(): Promise<void> {
-    await writeAppConfig(this.editedAppConfig);
-    this.props.appConfigStateChanger?.(this.editedAppConfig);
+    this.state = { isEditing: true, appConfig: getAppConfig() };
   }
 
   async setAppConfigField(fieldName: string, value: any): Promise<void> {
-    const appConfig = { ...this.editedAppConfig, [fieldName]: value };
-    this.setState({ appConfig });
-    this.editedAppConfig = appConfig;
-    console.log(`setAppConfigField: ${fieldName}=[${value}]`);
-    console.log('setAppConfig', JSON.stringify(appConfig, null, 2));
-    await writeAppConfigField(fieldName, value);
-    this.props.appConfigStateChanger?.(this.editedAppConfig);
+    this.setState({ appConfig: { ...this.state.appConfig, [fieldName]: value } });
+    setAppConfigField(fieldName, value);
   }
 
   async restartApp(): Promise<void> {
@@ -63,12 +40,16 @@ export class AppConfigView extends Component<IAppConfigViewProps, IAppConfigView
   }
 
   render() {
+    this.commonStyle = getStyleSheet(this.state.appConfig.themeName);
+
     return (
       <ScrollView contentInsetAdjustmentBehavior="automatic" style={this.commonStyle.scrollContainer}>
+        <Progress.Bar progress={1} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />
+
         <View style={this.commonStyle.actionBarView}>
           <Text style={this.commonStyle.actionBarHeader}>{this.serviceAttributes.title}</Text>
 
-          {this.serviceAttributes.isEditable && (
+          {/* {this.serviceAttributes.isEditable && (
             <MaterialCommunityIcons.Button
               backgroundColor={this.commonStyle.actionBarButton.backgroundColor}
               size={this.commonStyle.actionBarButton.fontSize}
@@ -78,10 +59,10 @@ export class AppConfigView extends Component<IAppConfigViewProps, IAppConfigView
               onPress={() => this.saveAppConfig()}>
               {'SAVE'}
             </MaterialCommunityIcons.Button>
-          )}
+          )} */}
         </View>
 
-        {Object.keys(this.state?.appConfig ?? {})
+        {Object.keys(this.state.appConfig ?? {})
           .sort((a, b) => (ServiceDataFields[this.serviceCode][a]?.order ?? MaxItemSize) - (ServiceDataFields[this.serviceCode][b]?.order ?? MaxItemSize + 1))
           .map(fieldName => {
             if (this.state.isEditing) {
@@ -89,19 +70,17 @@ export class AppConfigView extends Component<IAppConfigViewProps, IAppConfigView
                 <EditableInfoItemView
                   key={fieldName}
                   fieldName={fieldName}
-                  value={this.editedAppConfig[fieldName as keyof typeof this.editedAppConfig]}
+                  value={this.state.appConfig[fieldName as keyof typeof this.state.appConfig]}
                   setServiceData={(fieldName, value) => this.setAppConfigField(fieldName, value)}
                   serviceCode={this.serviceCode}
                   availableValues={ServiceDataFields[this.serviceCode][fieldName]?.availableValues}
-                  appConfig={this.state.appConfig}
                 />
               );
             } else {
-              return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.editedAppConfig[fieldName as keyof typeof this.editedAppConfig]} serviceCode={this.serviceCode} appConfig={this.state.appConfig} />;
+              return <VehicleInfoItemView key={fieldName} fieldName={fieldName} value={this.state.appConfig[fieldName as keyof typeof this.state.appConfig]} serviceCode={this.serviceCode} />;
             }
           })}
 
-        {/* {JSON.stringify(this.props.appConfig) !== JSON.stringify(this.editedAppConfig) && ( */}
         <View style={this.commonStyle.centerContainer}>
           <Text style={this.commonStyle.infoTitle}></Text>
           <Text style={this.commonStyle.infoTitle}>restart to apply changes</Text>
@@ -116,7 +95,6 @@ export class AppConfigView extends Component<IAppConfigViewProps, IAppConfigView
             {'RESTART'}
           </MaterialCommunityIcons.Button>
         </View>
-        {/* )} */}
       </ScrollView>
     );
   }
