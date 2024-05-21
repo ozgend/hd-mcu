@@ -341,5 +341,6 @@ export const getStyleSheet = (themeName?: string) => {
 };
 
 export const getIcon = (name: string, color: string): React.ReactNode => {
+  console.log('++ getIcon', name, color);
   return <MaterialCommunityIcons name={name} size={26} color={color} />;
 };

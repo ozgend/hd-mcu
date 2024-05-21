@@ -179,7 +179,17 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
               children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.TurnSignalModule} />}
             />
 
-            <Tab.Screen name="CFG" options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty['CFG'].icon, this.tabStyle.colors.primary) }} children={() => <AppConfigView />} />
+            <Tab.Screen
+              name="CFG"
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty['CFG'].icon, this.tabStyle.colors.primary) }}
+              children={() => (
+                <AppConfigView
+                  onAppConfigChange={() => {
+                    this.forceUpdate();
+                  }}
+                />
+              )}
+            />
           </Tab.Navigator>
         )}
         {!this.state.isDeviceConnected && (

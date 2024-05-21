@@ -12,7 +12,7 @@ import { IAppConfig, getAppConfig, setAppConfig, setAppConfigField } from '../co
 
 export interface IAppConfigViewProps {
   // appConfig: IAppConfig;
-  // onAppConfigChange?: (appConfig: IAppConfig) => void;
+  onAppConfigChange?: () => void;
 }
 
 export interface IAppConfigViewState {
@@ -33,6 +33,9 @@ export class AppConfigView extends Component<IAppConfigViewProps, IAppConfigView
   async setAppConfigField(fieldName: string, value: any): Promise<void> {
     this.setState({ appConfig: { ...this.state.appConfig, [fieldName]: value } });
     setAppConfigField(fieldName, value);
+    if (this.props.onAppConfigChange) {
+      this.props.onAppConfigChange();
+    }
   }
 
   async restartApp(): Promise<void> {
@@ -82,7 +85,7 @@ export class AppConfigView extends Component<IAppConfigViewProps, IAppConfigView
           })}
 
         <View style={this.commonStyle.centerContainer}>
-          <Text style={this.commonStyle.infoTitle}></Text>
+          {/* <Text style={this.commonStyle.infoTitle}></Text>
           <Text style={this.commonStyle.infoTitle}>restart to apply changes</Text>
           <Text style={this.commonStyle.infoTitle}></Text>
           <MaterialCommunityIcons.Button
@@ -93,7 +96,7 @@ export class AppConfigView extends Component<IAppConfigViewProps, IAppConfigView
             color={this.commonStyle.actionBarButtonRunning.color}
             onPress={() => this.restartApp()}>
             {'RESTART'}
-          </MaterialCommunityIcons.Button>
+          </MaterialCommunityIcons.Button> */}
         </View>
       </ScrollView>
     );
