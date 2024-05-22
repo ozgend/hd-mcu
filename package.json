@@ -10,6 +10,7 @@
     "build:min": "npm run typegen && npm run build:mcu:min && npm run build:app",
     "build:app": "npm --prefix mobile-app run build",
     "start:app": "npm --prefix mobile-app run start",
+    "bundle:app": "npm --prefix mobile-app run bundle",
     "build:mcu": "npm --prefix pico-hd-mcu run build",
     "build:mcu:min": "npm --prefix pico-hd-mcu run build:min",
     "shell:mcu": "npm --prefix pico-hd-mcu run shell",
