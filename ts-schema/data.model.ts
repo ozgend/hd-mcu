@@ -85,7 +85,7 @@ export class SystemStatsData implements ISystemStatsData {
   heapTotal?: number;
   heapUsed?: number;
   heapPeak?: number;
-  rtc?: number;
+  uptime?: number;
 }
 
 export class TsmData implements ITsmData {

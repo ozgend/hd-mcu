@@ -1,12 +1,15 @@
 import { Storage } from './storage';
 
-const DefaultAppConfig: IAppConfig = { ownerName: 'do', appTitle: 'XL MCU', themeName: 'default', dataProvider: 'mock' };
+const DefaultAppConfig: IAppConfig = { ownerName: 'do', appTitle: 'XL MCU', themeName: 'default', dataProvider: 'mock', pollMsVHC: 2000, pollMsTHE: 5000, pollMsSYS: 5000 };
 
 export interface IAppConfig {
   themeName: string;
   dataProvider: string;
   ownerName: string;
   appTitle: string;
+  pollMsVHC: number;
+  pollMsTHE: number;
+  pollMsSYS: number;
 }
 
 export enum AppConfigField {
@@ -14,13 +17,16 @@ export enum AppConfigField {
   DataProvider = 'dataProvider',
   OwnerName = 'ownerName',
   AppTitle = 'appTitle',
+  PollMsVHC = 'pollMsVHC',
+  PollMsTHE = 'pollMsTHE',
+  PollMsSYS = 'pollMsSYS',
 }
 
 export const getAppConfig = (): IAppConfig => {
   let appConfig: { [key: string]: string } = {};
   try {
     for (const key in DefaultAppConfig) {
-      appConfig[key] = getAppConfigField(key).toLowerCase();
+      appConfig[key] = getAppConfigField(key);
     }
     return appConfig as unknown as IAppConfig;
   } catch (error) {
@@ -41,19 +47,19 @@ export const setAppConfig = (appConfig: IAppConfig) => {
 
 export const getAppConfigField = (fieldName: string): string => {
   try {
-    const value = Storage.getString(`appConfig.${fieldName}`) ?? DefaultAppConfig[fieldName as keyof IAppConfig];
-    console.log(`++ getAppConfigField: ${fieldName}="${value}"`);
+    const value = (Storage.getString(`appConfig.${fieldName}`) ?? (DefaultAppConfig[fieldName as keyof IAppConfig] as string)).toLowerCase();
+    // console.log(`++ getAppConfigField: ${fieldName}="${value}"`);
     return value;
   } catch (error) {
     console.error('++ readAppConfigField error', error);
-    return DefaultAppConfig[fieldName as keyof IAppConfig];
+    return DefaultAppConfig[fieldName as keyof IAppConfig] as string;
   }
 };
 
-export const setAppConfigField = (fieldName: string, value: string) => {
+export const setAppConfigField = (fieldName: string, value: any) => {
   try {
-    Storage.set(`appConfig.${fieldName}`, value.toString().toLowerCase());
-    console.log(`++ writeAppConfigField: ${fieldName}="${value}"`);
+    Storage.set(`appConfig.${fieldName}`, value?.toString().toLowerCase());
+    // console.log(`++ writeAppConfigField: ${fieldName}="${value}"`);
   } catch (error) {
     console.error('++ writeAppConfigField error', error);
   }

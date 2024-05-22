@@ -36,9 +36,9 @@ export class EditableInfoItemView extends Component<IItemProperties, IInfoItemSt
           <View style={this.commonStyle.infoValueVehicleEditable}>
             <Pressable
               onPress={() => {
-                this.setState({ dateModalOpen: true, selectedDate: new Date(this.props.value) });
+                this.setState({ dateModalOpen: true, selectedDate: this.props.value > 0 ? new Date(this.props.value) : new Date() });
               }}>
-              <Text style={this.commonStyle.infoValueVehicleEditable}>{formattedValue}</Text>
+              <Text style={this.commonStyle.infoValueVehicleEditable}>{this.props.value > 0 ? formattedValue : '----'}</Text>
             </Pressable>
             <DatePicker
               modal

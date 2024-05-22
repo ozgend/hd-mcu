@@ -15,8 +15,10 @@ class App extends Component {
     let dataProvider: IDataProvider;
 
     if (dataProviderType === DataProviderType.Bluetooth) {
+      console.log('Using BluetoothSerialDataProvider');
       dataProvider = new BluetoothSerialDataProvider();
     } else {
+      console.log('Using MockBluetoothSerialDataProvider');
       dataProvider = new MockBluetoothSerialDataProvider();
     }
 

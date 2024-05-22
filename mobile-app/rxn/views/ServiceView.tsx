@@ -3,7 +3,6 @@ import { ScrollView, Text, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { IDataProvider } from '../services/interfaces';
 import { DataItemView } from './components/DataItemView';
-import * as Progress from 'react-native-progress';
 import { IServiceAttributes, ServiceProperty, ServiceInfoFields, ServiceDataFields } from '../models';
 import { IServiceState, IServiceStatusInfo } from '../../../ts-schema/data.interface';
 import { Hardware, MaxItemSize, ServiceCode, ServiceCommand } from '../../../ts-schema/constants';
@@ -16,13 +15,13 @@ import { AppConfigField, getAppConfigField } from '../config';
 export interface IServicerViewProps<IProvider> {
   provider: IProvider;
   serviceCode: string;
+  toggleBusy: (isBusy: boolean, serviceCode: string, action: string) => void;
 }
 
 export interface IServiceViewState<TSensorData> {
   serviceData: TSensorData;
   serviceInfo: IServiceStatusInfo | any;
   isPolling: boolean;
-  isBusy: boolean;
   isEditing?: boolean;
   willDisplayServiceInfo?: boolean;
 }
@@ -32,7 +31,7 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
 
   constructor(props: any) {
     super(props);
-    this.state = { isPolling: false, serviceData: {}, serviceInfo: {}, isBusy: true, willDisplayServiceInfo: false };
+    this.state = { isPolling: false, serviceData: {}, serviceInfo: {}, willDisplayServiceInfo: true };
   }
 
   workerPid: any;
@@ -41,18 +40,23 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
 
   async componentDidMount(): Promise<void> {
     console.debug(`${this.props.serviceCode} mounted`);
-    this.setState({ isBusy: true });
-
-    this.props.provider.addServiceEventListener(this.props.serviceCode, ServiceCommand.DATA, (serviceData: any) => {
-      this.setState({ isBusy: false });
-      this.setState({ serviceData });
-    });
 
     this.props.provider.addServiceEventListener(this.props.serviceCode, ServiceCommand.INFO, (serviceInfo: IServiceStatusInfo) => {
-      this.setState({ isBusy: false });
+      if (!this.state.isPolling) {
+        this.props.toggleBusy(false, this.props.serviceCode, 'onServiceInfo');
+      }
       this.setState({ serviceInfo });
     });
 
+    this.props.provider.addServiceEventListener(this.props.serviceCode, ServiceCommand.DATA, (serviceData: any) => {
+      this.setState({ serviceData });
+    });
+
+    this.props.provider.addServiceEventListener(this.props.serviceCode, ServiceCommand.SET, (serviceData: any) => {
+      this.props.toggleBusy(false, this.props.serviceCode, 'onServiceSet');
+    });
+
+    this.props.toggleBusy(true, this.props.serviceCode, 'requestBtServiceInfo');
     this.props.provider.requestBtServiceInfo(this.props.serviceCode);
 
     if (this.serviceAttributes.pollOnce) {
@@ -67,22 +71,24 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
   async componentWillUnmount(): Promise<void> {
     clearInterval(this.workerPid);
     console.debug(`${this.props.serviceCode} unmounting`);
-    this.setState({ isBusy: true });
+    this.props.toggleBusy(false, this.props.serviceCode, 'componentWillUnmount');
     this.props.provider.removeServiceEventListener(this.props.serviceCode);
     await this.props.provider.sendBtServiceCommand(this.props.serviceCode, ServiceCommand.STOP);
   }
 
   toggleService(): void {
+    this.setState({ willDisplayServiceInfo: false });
+
     if (this.serviceAttributes.pollOnce) {
       return;
     }
 
     console.debug(`${this.props.serviceCode} polling ${!this.state.isPolling ? 'start' : 'stop'}`);
-    this.setState({ isBusy: true });
-    this.props.provider.requestBtServiceInfo(this.props.serviceCode);
+
+    this.props.toggleBusy(!this.state.isPolling, this.props.serviceCode, 'requestBtServiceData');
+
     if (!this.state.isPolling) {
       this.workerPid = setInterval(() => {
-        this.setState({ isBusy: true });
         this.props.provider.requestBtServiceData(this.props.serviceCode);
       }, this.serviceAttributes.pollInterval ?? Hardware.SERVICE_POLL_INTERVAL);
     } else {
@@ -91,21 +97,18 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
     }
 
     this.setState({ isPolling: !this.state.isPolling });
+    this.props.provider.requestBtServiceInfo(this.props.serviceCode);
   }
 
   toggleEdit(): void {
     const toState = !this.state.isEditing;
     this.setState({ isEditing: !this.state.isEditing });
     if (!toState) {
+      this.props.toggleBusy(true, this.props.serviceCode, 'sendBtServiceCommand');
       this.setState({ serviceData: Object.assign({}, this.state.serviceData, this.editedServiceData) });
       this.props.provider.sendBtServiceCommand(this.props.serviceCode, ServiceCommand.SET, this.state.serviceData);
     }
     console.log(this.state.serviceData);
-  }
-
-  requestServiceData(): void {
-    this.setState({ isBusy: true });
-    this.props.provider.requestBtServiceData(this.props.serviceCode);
   }
 
   setServiceData(fieldName: string, value: any): void {
@@ -118,9 +121,6 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
 
     return (
       <ScrollView contentInsetAdjustmentBehavior="automatic" style={this.commonStyle.scrollContainer}>
-        {this.state.isBusy && <Progress.Bar indeterminate={true} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
-        {!this.state.isBusy && <Progress.Bar progress={1} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
-
         <View style={this.commonStyle.actionBarView}>
           <Text
             style={this.commonStyle.actionBarHeader}

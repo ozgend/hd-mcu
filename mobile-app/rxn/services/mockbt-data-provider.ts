@@ -3,6 +3,8 @@ import { IDataProvider, IDataProviderDevice } from './interfaces';
 import { IServiceStatusInfo, ISystemStatsData, IThermometerData, ITsmData, IVehicleInfoData, IVehicleSensorData } from '../../../ts-schema/data.interface';
 import { ServiceCommand, ServiceCode, Broadcasting, ServiceType, ServiceStatus, TurnSignalCommands } from '../../../ts-schema/constants';
 import { Storage } from '../storage';
+import { SchemaVersion } from '../../../ts-schema/schema.version';
+import { AppConfigField, getAppConfigField } from '../config';
 
 const simulatedDataResolveTimeMs = 150;
 const simulatedConnectionTimeMs = 250;
@@ -134,16 +136,17 @@ export class MockBluetoothSerialDataProvider implements IDataProvider {
 
   public async sendBtServiceCommand(serviceCode: string, serviceCommand: string, servicePayload?: any): Promise<void> {
     console.log('sendCommand', serviceCode, serviceCommand, servicePayload);
+    let payload: any = null;
     if (serviceCode === ServiceCode.VehicleInfo) {
       if (serviceCommand === ServiceCommand.SET) {
         Storage.set(simulatedVehicleInfoConfigKey, JSON.stringify(servicePayload));
       } else if (serviceCommand === ServiceCommand.DATA) {
-        const payload = await mockDataSource.VHI();
+        payload = mockDataSource.VHI();
         this.getEventListener(serviceCode, serviceCommand)(payload);
       } else if (serviceCommand === ServiceCommand.INFO) {
-        const payload = mockStatusSource(serviceCode);
-        this.getEventListener(serviceCode, serviceCommand)(payload);
+        payload = mockStatusSource(serviceCode);
       }
+      this.getEventListener(serviceCode, serviceCommand)(payload);
       return;
     }
     return new Promise(resolve => {
@@ -195,11 +198,12 @@ const mockStatusSource = (serviceCode: string): IServiceStatusInfo => {
     idleTimeout: 0,
     updateInterval: 0,
     commands: serviceCode === ServiceCode.TurnSignalModule ? [...Object.values(ServiceCommand), ...Object.values(TurnSignalCommands)] : Object.values(ServiceCommand),
+    schemaVersion: SchemaVersion,
   } as IServiceStatusInfo;
 };
 
 const mockDataSource: { [key: string]: () => any } = {
-  VHI: async () => {
+  VHI: () => {
     let data: IVehicleInfoData | null = null;
     try {
       const raw = Storage.getString(simulatedVehicleInfoConfigKey);
@@ -220,6 +224,7 @@ const mockDataSource: { [key: string]: () => any } = {
       tireRear: 36.5 + Math.random() * 0.5,
       tempFront: 20 + Math.random() * 3,
       tempRear: 20 + Math.random() * 3,
+      uptime: Date.now() - initialTime,
     } as IVehicleSensorData;
   },
 
@@ -251,7 +256,6 @@ const mockDataSource: { [key: string]: () => any } = {
       arch: 'armv6',
       platform: 'rpi',
       name: 'hd-mcu',
-      rtc: Date.now() - initialTime,
       uid: '1234567890',
       version: '0.0.1',
     } as ISystemStatsData;

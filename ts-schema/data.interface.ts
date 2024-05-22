@@ -9,6 +9,7 @@ export interface IServiceStatusInfo {
   broadcastMode: string;
   status: string;
   isRunning: boolean;
+  schemaVersion: string;
 }
 
 export interface IVehicleInfoData {
@@ -65,7 +66,7 @@ export interface ISystemStatsData extends IServiceState {
   heapTotal?: number;
   heapUsed?: number;
   heapPeak?: number;
-  rtc?: number;
+  uptime?: number;
 }
 
 export interface ITsmData extends IServiceState {
