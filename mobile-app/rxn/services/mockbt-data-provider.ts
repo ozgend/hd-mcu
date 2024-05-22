@@ -3,6 +3,8 @@ import { IDataProvider, IDataProviderDevice } from './interfaces';
 import { IServiceStatusInfo, ISystemStatsData, IThermometerData, ITsmData, IVehicleInfoData, IVehicleSensorData } from '../../../ts-schema/data.interface';
 import { ServiceCommand, ServiceCode, Broadcasting, ServiceType, ServiceStatus, TurnSignalCommands } from '../../../ts-schema/constants';
 import { Storage } from '../storage';
+import { SchemaVersion } from '../../../ts-schema/schema.version';
+import { AppConfigField, getAppConfigField } from '../config';
 
 const simulatedDataResolveTimeMs = 150;
 const simulatedConnectionTimeMs = 250;
@@ -196,6 +198,7 @@ const mockStatusSource = (serviceCode: string): IServiceStatusInfo => {
     idleTimeout: 0,
     updateInterval: 0,
     commands: serviceCode === ServiceCode.TurnSignalModule ? [...Object.values(ServiceCommand), ...Object.values(TurnSignalCommands)] : Object.values(ServiceCommand),
+    schemaVersion: SchemaVersion,
   } as IServiceStatusInfo;
 };
 
@@ -221,6 +224,7 @@ const mockDataSource: { [key: string]: () => any } = {
       tireRear: 36.5 + Math.random() * 0.5,
       tempFront: 20 + Math.random() * 3,
       tempRear: 20 + Math.random() * 3,
+      uptime: Date.now() - initialTime,
     } as IVehicleSensorData;
   },
 
@@ -252,7 +256,6 @@ const mockDataSource: { [key: string]: () => any } = {
       arch: 'armv6',
       platform: 'rpi',
       name: 'hd-mcu',
-      rtc: Date.now() - initialTime,
       uid: '1234567890',
       version: '0.0.1',
     } as ISystemStatsData;

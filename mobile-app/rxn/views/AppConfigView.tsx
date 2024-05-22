@@ -5,6 +5,7 @@ import * as Progress from 'react-native-progress';
 import RNRestart from 'react-native-restart';
 import { IServiceAttributes, ServiceProperty, ServiceDataFields } from '../models';
 import { MaxItemSize } from '../../../ts-schema/constants';
+import { SchemaVersion } from '../../../ts-schema/schema.version';
 import { VehicleInfoItemView } from './components/VehicleInfoItemView';
 import { EditableInfoItemView } from './components/EditableInfoItemView';
 import { getStyleSheet } from '../themes';
@@ -51,18 +52,11 @@ export class AppConfigView extends Component<IAppConfigViewProps, IAppConfigView
 
         <View style={this.commonStyle.actionBarView}>
           <Text style={this.commonStyle.actionBarHeader}>{this.serviceAttributes.title}</Text>
+        </View>
 
-          {/* {this.serviceAttributes.isEditable && (
-            <MaterialCommunityIcons.Button
-              backgroundColor={this.commonStyle.actionBarButton.backgroundColor}
-              size={this.commonStyle.actionBarButton.fontSize}
-              name="content-save"
-              style={this.commonStyle.actionBarButtonRunning}
-              color={this.commonStyle.actionBarButtonRunning.color}
-              onPress={() => this.saveAppConfig()}>
-              {'SAVE'}
-            </MaterialCommunityIcons.Button>
-          )} */}
+        <View style={this.commonStyle.infoItemVehicle}>
+          <Text style={this.commonStyle.infoTitleVehicle}>schema version:</Text>
+          <Text style={this.commonStyle.infoTitleVehicle}>{SchemaVersion}</Text>
         </View>
 
         {Object.keys(this.state.appConfig ?? {})

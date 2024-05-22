@@ -1,3 +1,4 @@
+import { AppConfigField, getAppConfigField } from './config';
 import { DataProviderType } from './services/interfaces';
 import { AppThemeNames } from './themes';
 
@@ -31,9 +32,9 @@ export interface IServiceAttributes {
 
 export const ServiceProperty: { [key: string]: IServiceAttributes } = {
   VHI: { title: 'Vehicle Info', icon: 'information', pollOnce: true, isEditable: true },
-  VHC: { title: 'Vehicle Sensor', icon: 'engine', pollInterval: 2000 },
-  THE: { title: 'Thermometer', icon: 'thermometer', pollInterval: 5000 },
-  SYS: { title: 'System', icon: 'chip', pollInterval: 5000 },
+  VHC: { title: 'Vehicle Sensor', icon: 'engine', pollInterval: parseInt(getAppConfigField(AppConfigField.PollMsVHC) ?? 2000) },
+  THE: { title: 'Thermometer', icon: 'thermometer', pollInterval: parseInt(getAppConfigField(AppConfigField.PollMsTHE) ?? 5000) },
+  SYS: { title: 'System', icon: 'chip', pollInterval: parseInt(getAppConfigField(AppConfigField.PollMsSYS) ?? 5000) },
   TSM: { title: 'Turn Signal', icon: 'arrow-left-right' },
   CFG: { title: 'App Config', icon: 'cog', pollOnce: true, isEditable: true },
 };
@@ -66,14 +67,15 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
     serviceKm: { title: 'SERVICE KM', unit: 'km', type: 'number', order: 204 },
   },
   VHC: {
-    temp: { title: 'MCU TEMP', unit: '°C', type: 'number', precision: 1, order: 1 },
-    batt: { title: 'BATTERY', unit: 'V', type: 'number', precision: 2, order: 2 },
-    rpm: { title: 'RPM', unit: 'rev', type: 'number', order: 3 },
-    speed: { title: 'SPEED', unit: 'km/h', type: 'number', order: 4 },
-    tireFront: { title: 'FRONT TIRE PS', unit: 'psi', type: 'number', precision: 1, order: 5 },
-    tempFront: { title: 'FRONT TIRE TMP', unit: '°C', type: 'number', precision: 1, order: 6 },
-    tireRear: { title: 'REAR TIRE PS', unit: 'psi', type: 'number', precision: 1, order: 7 },
-    tempRear: { title: 'REAR TEMP TMP', unit: '°C', type: 'number', precision: 1, order: 8 },
+    temp: { title: 'MCU TEMP', unit: '°C', type: 'number', precision: 1, order: 10 },
+    batt: { title: 'BATTERY', unit: 'V', type: 'number', precision: 2, order: 11 },
+    rpm: { title: 'RPM', unit: 'rev', type: 'number', order: 12 },
+    speed: { title: 'SPEED', unit: 'km/h', type: 'number', order: 13 },
+    uptime: { title: 'UPTIME', type: 'time', order: 14 },
+    tireFront: { title: 'FRONT TIRE PS', unit: 'psi', type: 'number', precision: 1, order: 20 },
+    tempFront: { title: 'FRONT TIRE TMP', unit: '°C', type: 'number', precision: 1, order: 21 },
+    tireRear: { title: 'REAR TIRE PS', unit: 'psi', type: 'number', precision: 1, order: 22 },
+    tempRear: { title: 'REAR TEMP TMP', unit: '°C', type: 'number', precision: 1, order: 23 },
   },
   SYS: {
     arch: { title: 'ARCH', type: 'string', order: 1 },
@@ -84,7 +86,6 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
     heapTotal: { title: 'MEM TOTAL', unit: 'b', type: 'number', order: 6 },
     heapUsed: { title: 'MEM USED', unit: 'b', type: 'number', order: 7 },
     heapPeak: { title: 'MEM PEAK', unit: 'b', type: 'number', order: 8 },
-    uptime: { title: 'UPTIME', type: 'time', order: 9 },
   },
   TSM: {
     state: { title: 'TSM', type: 'string', formatter: (value: any) => `L: ${value.left}, R: ${value.right}` },
@@ -104,17 +105,21 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
     dataProvider: { title: 'DATA', type: 'array', order: 11, availableValues: Object.values(DataProviderType) },
     ownerName: { title: 'OWNER', type: 'string', order: 20 },
     appTitle: { title: 'APP TITLE', type: 'string', order: 21 },
+    pollMsVHC: { title: 'POLL MS VHC', unit: 'ms', type: 'number', order: 30 },
+    pollMsTHE: { title: 'POLL MS THE', unit: 'ms', type: 'number', order: 31 },
+    pollMsSYS: { title: 'POLL MS SYS', unit: 'ms', type: 'number', order: 32 },
   },
 };
 
 export const ServiceInfoFields: { [key: string]: IField } = {
-  serviceCode: { title: 'SERVICE', type: 'string', order: 0 },
-  serviceType: { title: 'TYPE', type: 'string', order: 1 },
-  updateInterval: { title: 'UPDATE-TO', unit: 'ms', type: 'number', available: false },
-  idleTimeout: { title: 'IDLE-TO', unit: 'ms', type: 'number', available: false },
-  broadcastMode: { title: 'BROADCAST', type: 'string', available: false },
-  status: { title: 'STATUS', type: 'string', order: 2 },
-  commands: { title: 'COMMANDS', type: 'array', order: 3 },
+  serviceCode: { title: 'SERVICE', type: 'string', order: 10 },
+  serviceType: { title: 'TYPE', type: 'string', order: 11 },
+  status: { title: 'STATUS', type: 'string', order: 12 },
+  schemaVersion: { title: 'SCHEMA', type: 'string', order: 13 },
+  updateInterval: { title: 'UPDATE INT', unit: 'ms', type: 'number', order: 21 },
+  idleTimeout: { title: 'IDLE TIME', unit: 'ms', type: 'number', order: 22, available: false },
+  broadcastMode: { title: 'BROADCAST', type: 'string', order: 23 },
+  commands: { title: 'COMMANDS', type: 'array', order: 30 },
 };
 
 export const getFormattedValue = (fieldName: string, value: any, serviceCode?: string) => {
@@ -122,18 +127,6 @@ export const getFormattedValue = (fieldName: string, value: any, serviceCode?: s
   const formattedValue = fieldInfo?.formatter ? fieldInfo.formatter(value) : value ?? 'N/A';
   return { formattedValue, fieldInfo };
 };
-
-// export const getFormattedDataValue = (serviceCode: string, fieldName: string, value: any) => {
-//   const fieldInfo = getDataField(serviceCode, fieldName);
-//   const formattedValue = fieldInfo?.formatter ? fieldInfo.formatter(value) : value ?? 'N/A';
-//   return { formattedValue, fieldInfo };
-// };
-
-// export const getFormattedServiceInfoValue = (fieldName: string, value: any) => {
-//   const fieldInfo = getInfoField(fieldName);
-//   const formattedValue = fieldInfo?.formatter ? fieldInfo.formatter(value) : value ?? 'N/A';
-//   return { formattedValue, fieldInfo };
-// };
 
 const getDataField = (serviceCode: string, fieldName: string): IField | null => {
   const field = ServiceDataFields[serviceCode][fieldName];
@@ -168,7 +161,10 @@ const getTypeFormatter = (fi: IField) => {
   let formatter: (value: any) => string;
   switch (fi.type) {
     case 'number':
-      formatter = (value: number) => (value?.toFixed ? value.toFixed(fi.precision ?? 0) : 'N/A');
+      formatter = (value: number | string) => {
+        typeof value === 'string' && (value = parseFloat(value));
+        return value?.toFixed ? value.toFixed(fi.precision ?? 0) : 'N/A';
+      };
       break;
     case 'date':
       formatter = (value: number | string) => {
@@ -181,7 +177,7 @@ const getTypeFormatter = (fi: IField) => {
     case 'time':
       formatter = (value: number | string) => {
         try {
-          value = new Date(value).toISOString().split('T')[1];
+          value = new Date(value).toISOString().split('T')[1].split('.')[0];
         } catch {}
         return value?.toString();
       };

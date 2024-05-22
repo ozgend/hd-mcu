@@ -8,12 +8,13 @@
   "scripts": {
     "build": "npm run typegen && npm run build:mcu && npm run build:app",
     "build:min": "npm run typegen && npm run build:mcu:min && npm run build:app",
-    "typegen": "tsc ./ts-schema/*.ts",
     "build:app": "npm --prefix mobile-app run build",
     "start:app": "npm --prefix mobile-app run start",
     "build:mcu": "npm --prefix pico-hd-mcu run build",
     "build:mcu:min": "npm --prefix pico-hd-mcu run build:min",
     "shell:mcu": "npm --prefix pico-hd-mcu run shell",
-    "flash:mcu": "npm --prefix pico-hd-mcu run flash"
+    "flash:mcu": "npm --prefix pico-hd-mcu run flash",
+    "set-schema-version": "sh -c \"echo 'export const SchemaVersion = \\\"$(date +%Y-%m-%dT%H:%M:%S)\\\";' > ./ts-schema/schema.version.ts\"",
+    "typegen": "npm run set-schema-version && tsc ./ts-schema/*.ts"
   }
 }
