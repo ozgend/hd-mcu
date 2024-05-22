@@ -1,3 +1,8 @@
+export enum DataProviderType {
+  Mock = 'mock',
+  Bluetooth = 'bt',
+}
+
 export interface IDataProviderDevice {
   name: string;
   address: string;
@@ -25,6 +30,9 @@ export interface IDataProvider extends IDataProviderEvents {
   connectDevice(device: IDataProviderDevice): Promise<boolean>;
   startStream(): boolean;
   stopStream(): boolean;
+
+  // app config actions
+  // setAppConfig(appConfig: IAppConfig): Promise<void>;
 
   // serial connection actions
   addServiceEventListener(serviceCode: string, serviceCommand: string, callback: (data: any) => void): void;

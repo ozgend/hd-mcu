@@ -1,3 +1,5 @@
+const { ADC } = require('adc');
+const rp2 = require('rp2');
 const { factorAdcValue } = require('../utils');
 const BaseService = require('../base-service');
 const { VehicleSensorData } = require('../../ts-schema/data.model');
@@ -13,12 +15,18 @@ class VehicleSensorService extends BaseService {
     this.data = new VehicleSensorData();
   }
 
+  setup() {
+    super.setup();
+
+    this.temperaturePin = new ADC(rp2.TEMPERATURE_ADC);
+  }
+
   publishData() {
     this.data.uptime = millis();
 
-    const rawTemp = analogRead(Gpio.VEHICLE_SENSOR_TEMP);
-    this.data.raw_temp = rawTemp;
-    this.data.temp = 27 - (factorAdcValue(rawTemp) - 0.706) / 0.001721;
+    this.data.raw_temp = this.temperaturePin.read();
+    this.data.raw_temp_volts = this.data.raw_temp * 3.3;
+    this.data.temp = 27 - (this.data.raw_temp_volts - 0.706) / 0.001721;
 
     const rawBatt = analogRead(Gpio.VEHICLE_SENSOR_BATT);
     this.data.raw_batt = rawBatt;

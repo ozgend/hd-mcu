@@ -1,6 +1,6 @@
 const logger = require('../logger');
 const { Button } = require('button');
-const { Hardware, Gpio, ServiceCode, TurnSignalCommand, ServiceType, Broadcasting } = require('../../ts-schema/constants');
+const { Hardware, Gpio, ServiceCode, TurnSignalCommands, ServiceType, Broadcasting } = require('../../ts-schema/constants');
 const BaseService = require('../base-service');
 
 const _action = {
@@ -130,9 +130,8 @@ class TurnSignalService extends BaseService {
       serviceCode: ServiceCode.TurnSignalModule,
       serviceType: ServiceType.ON_DEMAND,
       broadcastMode: Broadcasting.OnDemandPolling,
-      commands: Object.values(TurnSignalCommand),
+      commands: Object.values(TurnSignalCommands),
     });
-    // logger.debug(ServiceCode.TurnSignalModule, 'constructor', Object.values(TurnSignalCommand));
   }
 
   setup() {
@@ -168,19 +167,19 @@ class TurnSignalService extends BaseService {
   handleCommand(command) {
     super.handleCommand(command);
     switch (command) {
-      case TurnSignalCommand.DIAG:
+      case TurnSignalCommands.DIAG:
         _diagnostic();
         break;
-      case TurnSignalCommand.NONE:
+      case TurnSignalCommands.NONE:
         _setFlasher(false, false);
         break;
-      case TurnSignalCommand.ALL:
+      case TurnSignalCommands.ALL:
         _setFlasher(true, true);
         break;
-      case TurnSignalCommand.LEFT:
+      case TurnSignalCommands.LEFT:
         _setFlasher(true, false);
         break;
-      case TurnSignalCommand.RIGHT:
+      case TurnSignalCommands.RIGHT:
         _setFlasher(false, true);
         break;
       default:

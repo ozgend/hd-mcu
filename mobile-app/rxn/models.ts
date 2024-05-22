@@ -1,8 +1,12 @@
+import { DataProviderType } from './services/interfaces';
+import { AppThemeNames } from './themes';
+
 export interface IItemProperties {
   serviceCode?: string;
   fieldName: string;
   value: string | number | boolean | null | undefined | any;
   setServiceData?: (fieldName: string, value: string | number | boolean | null | undefined | any) => void;
+  availableValues?: string[] | number[] | boolean[];
 }
 
 export interface IField {
@@ -13,6 +17,7 @@ export interface IField {
   precision?: number;
   available?: boolean;
   formatter?: (value: any) => string;
+  availableValues?: string[] | number[] | boolean[];
 }
 
 export interface IServiceAttributes {
@@ -30,6 +35,7 @@ export const ServiceProperty: { [key: string]: IServiceAttributes } = {
   THE: { title: 'Thermometer', icon: 'thermometer', pollInterval: 5000 },
   SYS: { title: 'System', icon: 'chip', pollInterval: 5000 },
   TSM: { title: 'Turn Signal', icon: 'arrow-left-right' },
+  CFG: { title: 'App Config', icon: 'cog', pollOnce: true, isEditable: true },
 };
 
 export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
@@ -92,6 +98,12 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
     ch_5: { title: 'REGULATOR', unit: '°C', type: 'number', order: 6 },
     ch_6: { title: 'CARB INTAKE', unit: '°C', type: 'number', order: 7 },
     ch_7: { title: 'AUX GENERIC', unit: '°C', type: 'number', order: 8 },
+  },
+  CFG: {
+    themeName: { title: 'THEME', type: 'array', order: 10, availableValues: Object.values(AppThemeNames) },
+    dataProvider: { title: 'DATA', type: 'array', order: 11, availableValues: Object.values(DataProviderType) },
+    ownerName: { title: 'OWNER', type: 'string', order: 20 },
+    appTitle: { title: 'APP TITLE', type: 'string', order: 21 },
   },
 };
 

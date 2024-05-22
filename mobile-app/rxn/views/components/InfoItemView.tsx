@@ -1,14 +1,20 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { styles } from '../../shared';
 import { IItemProperties, getFormattedValue } from '../../models';
+import { getStyleSheet } from '../../themes';
+import { getAppConfigField, AppConfigField } from '../../config';
 
 export class InfoItemView extends Component<IItemProperties> {
+  commonStyle: any;
+
   constructor(props: any) {
     super(props);
   }
 
   render() {
+    const themeName = getAppConfigField(AppConfigField.ThemeName);
+    this.commonStyle = getStyleSheet(themeName);
+
     if (this.props.value === undefined || this.props.value === null) {
       return null;
     }
@@ -17,9 +23,9 @@ export class InfoItemView extends Component<IItemProperties> {
       return null;
     }
     return (
-      <View style={styles.infoItem} key={this.props.fieldName}>
-        <Text style={styles.infoTitle}>{fieldInfo.title}</Text>
-        <Text style={styles.infoValue}>{formattedValue}</Text>
+      <View style={this.commonStyle.infoItem} key={this.props.fieldName}>
+        <Text style={this.commonStyle.infoTitle}>{fieldInfo.title}</Text>
+        <Text style={this.commonStyle.infoValue}>{formattedValue}</Text>
       </View>
     );
   }

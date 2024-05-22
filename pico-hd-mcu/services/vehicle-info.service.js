@@ -6,7 +6,7 @@ const { VehicleInfoData } = require('../../ts-schema/data.model');
 
 const textDecoder = new TextDecoder();
 const textEncoder = new TextEncoder();
-const vehicleInfoFile = 'vehicle-info.json';
+const vehicleInfoFile = 'data.vehicle-info.json';
 
 class VehicleInfoService extends BaseService {
   constructor(eventBus) {
