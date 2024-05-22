@@ -134,16 +134,17 @@ export class MockBluetoothSerialDataProvider implements IDataProvider {
 
   public async sendBtServiceCommand(serviceCode: string, serviceCommand: string, servicePayload?: any): Promise<void> {
     console.log('sendCommand', serviceCode, serviceCommand, servicePayload);
+    let payload: any = null;
     if (serviceCode === ServiceCode.VehicleInfo) {
       if (serviceCommand === ServiceCommand.SET) {
         Storage.set(simulatedVehicleInfoConfigKey, JSON.stringify(servicePayload));
       } else if (serviceCommand === ServiceCommand.DATA) {
-        const payload = await mockDataSource.VHI();
+        payload = mockDataSource.VHI();
         this.getEventListener(serviceCode, serviceCommand)(payload);
       } else if (serviceCommand === ServiceCommand.INFO) {
-        const payload = mockStatusSource(serviceCode);
-        this.getEventListener(serviceCode, serviceCommand)(payload);
+        payload = mockStatusSource(serviceCode);
       }
+      this.getEventListener(serviceCode, serviceCommand)(payload);
       return;
     }
     return new Promise(resolve => {
@@ -199,7 +200,7 @@ const mockStatusSource = (serviceCode: string): IServiceStatusInfo => {
 };
 
 const mockDataSource: { [key: string]: () => any } = {
-  VHI: async () => {
+  VHI: () => {
     let data: IVehicleInfoData | null = null;
     try {
       const raw = Storage.getString(simulatedVehicleInfoConfigKey);

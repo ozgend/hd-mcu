@@ -55,7 +55,6 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
     this.props.provider.onProviderDeviceDiscovered = (devices: IDataProviderDevice[]) => this.onProviderDeviceDiscovered(devices);
     this.props.provider.onProviderDeviceConnected = (device: IDataProviderDevice) => this.onProviderDeviceConnected(device);
     this.props.provider.onProviderDeviceDisconnected = () => this.onProviderDeviceDisconnected();
-    console.debug('HomeView constructor');
   }
 
   onProviderInitialized() {
@@ -64,21 +63,21 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
     this.setState({ isBusy: false });
     this.setState({ isProviderInitialized: true });
     this.setState({ status: 'scanning devices' });
-    this.setState({ isBusy: true });
+    this.toggleBusy(false, 'Home', 'onProviderInitialized');
     this.props.provider.scanDevices();
   }
 
   onProviderStreamStarted() {
     console.debug('provider stream started');
     this.setState({ status: 'provider stream started' });
-    this.setState({ isBusy: false });
+    this.toggleBusy(false, 'Home', 'onProviderStreamStarted');
     this.setState({ isProviderStreamStarted: true });
   }
 
   onProviderStreamStopped() {
     console.debug('provider stream stopped');
     this.setState({ status: 'provider stream stopped' });
-    this.setState({ isBusy: false });
+    this.toggleBusy(false, 'Home', 'onProviderStreamStopped');
     this.setState({ isProviderStreamStarted: false });
     this.setState({ isDeviceDiscovered: false });
     this.setState({ isDeviceConnected: false });
@@ -97,7 +96,7 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
   onProviderDeviceDiscovered: (devices: IDataProviderDevice[]) => void = (devices: IDataProviderDevice[]) => {
     console.debug('discovered devices', devices);
     this.setState({ status: 'discovered devices' });
-    this.setState({ isBusy: false });
+    this.toggleBusy(false, 'Home', 'onProviderDeviceDiscovered');
     this.setState({ devices });
     this.setState({ isDeviceDiscovered: true });
   };
@@ -105,7 +104,7 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
   onProviderDeviceConnected: (device: IDataProviderDevice) => void = (device: IDataProviderDevice) => {
     console.debug('device connected', device);
     this.setState({ status: 'device connected' });
-    this.setState({ isBusy: false });
+    this.toggleBusy(false, 'Home', 'onProviderDeviceConnected');
     this.setState({ connectedDevice: device });
     this.setState({ isDeviceConnected: true });
     this.startStream();
@@ -114,7 +113,7 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
   onProviderDeviceDisconnected: () => void = () => {
     console.debug('device disconnected');
     this.setState({ status: 'device disconnected' });
-    this.setState({ isBusy: false });
+    this.toggleBusy(false, 'Home', 'onProviderDeviceDisconnected');
     this.setState({ connectedDevice: null });
     this.setState({ isDeviceConnected: false });
   };
@@ -122,22 +121,27 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
   startStream() {
     console.debug('starting stream');
     this.setState({ status: 'starting stream' });
-    this.setState({ isBusy: true });
+    this.toggleBusy(true, 'Home', 'startStream');
     this.props.provider.startStream();
   }
 
   selectDevice: (device: IDataProviderDevice) => void = (device: IDataProviderDevice) => {
     console.debug('selecting device', device);
     this.setState({ status: 'selecting device' });
-    this.setState({ isBusy: true });
+    this.toggleBusy(true, 'Home', 'selectDevice');
     this.props.provider.connectDevice(device);
   };
 
   initializeProvider() {
     console.debug('initializing provider');
     this.setState({ status: 'initializing provider' });
-    this.setState({ isBusy: true });
+    this.toggleBusy(true, 'Home', 'initializeProvider');
     this.props.provider.initialize();
+  }
+
+  toggleBusy(isBusy: boolean, svc: string, src: string): void {
+    this.setState({ isBusy });
+    console.debug(`[${svc}] isBusy:[${isBusy}] src:[${src}]`);
   }
 
   render() {
@@ -147,37 +151,39 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
 
     return (
       <NavigationContainer theme={this.tabStyle}>
-        {!this.state.isDeviceConnected && this.state.isBusy && <Progress.Bar indeterminate={true} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
-        {!this.state.isDeviceConnected && !this.state.isBusy && <Progress.Bar progress={1} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
+        {this.state.isBusy && (
+          <Progress.Bar indeterminate={true} indeterminateAnimationDuration={500} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />
+        )}
+        {!this.state.isBusy && <Progress.Bar progress={1} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
         {this.state.isDeviceConnected && (
           <Tab.Navigator>
             <Tab.Screen
               name={ServiceCode.VehicleInfo}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.VehicleInfo].icon, this.tabStyle.colors.primary) }}
-              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleInfo} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleInfo} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
             />
             <Tab.Screen
               name={ServiceCode.VehicleSensor}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.VehicleSensor].icon, this.tabStyle.colors.primary) }}
-              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleSensor} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleSensor} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
             />
 
             <Tab.Screen
               name={ServiceCode.Thermometer}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.Thermometer].icon, this.tabStyle.colors.primary) }}
-              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.Thermometer} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.Thermometer} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
             />
 
             <Tab.Screen
               name={ServiceCode.SystemStats}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.SystemStats].icon, this.tabStyle.colors.primary) }}
-              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.SystemStats} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.SystemStats} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
             />
 
             <Tab.Screen
               name={ServiceCode.TurnSignalModule}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.TurnSignalModule].icon, this.tabStyle.colors.primary) }}
-              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.TurnSignalModule} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.TurnSignalModule} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
             />
 
             <Tab.Screen

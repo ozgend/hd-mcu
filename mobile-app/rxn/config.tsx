@@ -42,7 +42,7 @@ export const setAppConfig = (appConfig: IAppConfig) => {
 export const getAppConfigField = (fieldName: string): string => {
   try {
     const value = Storage.getString(`appConfig.${fieldName}`) ?? DefaultAppConfig[fieldName as keyof IAppConfig];
-    console.log(`++ getAppConfigField: ${fieldName}="${value}"`);
+    // console.log(`++ getAppConfigField: ${fieldName}="${value}"`);
     return value;
   } catch (error) {
     console.error('++ readAppConfigField error', error);
@@ -53,7 +53,7 @@ export const getAppConfigField = (fieldName: string): string => {
 export const setAppConfigField = (fieldName: string, value: string) => {
   try {
     Storage.set(`appConfig.${fieldName}`, value.toString().toLowerCase());
-    console.log(`++ writeAppConfigField: ${fieldName}="${value}"`);
+    // console.log(`++ writeAppConfigField: ${fieldName}="${value}"`);
   } catch (error) {
     console.error('++ writeAppConfigField error', error);
   }
