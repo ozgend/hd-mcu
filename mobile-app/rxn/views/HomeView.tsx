@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, NavigationState } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Progress from 'react-native-progress';
@@ -26,6 +26,7 @@ interface IState {
   devices: IDataProviderDevice[];
   connectedDevice: IDataProviderDevice | null;
   willDisplayAppConfig: boolean;
+  activeServiceTabName: string;
 }
 
 const Tab = createBottomTabNavigator();
@@ -46,7 +47,9 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
       status: '',
       isBusy: false,
       willDisplayAppConfig: false,
+      activeServiceTabName: ServiceCode.VehicleSensor,
     };
+
     this.props.provider.onProviderInitialized = () => this.onProviderInitialized();
     this.props.provider.onProviderStreamStarted = () => this.onProviderStreamStarted();
     this.props.provider.onProviderStreamStopped = () => this.onProviderStreamStopped();
@@ -140,8 +143,13 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
   }
 
   toggleBusy(isBusy: boolean, svc: string, src: string): void {
+    // console.debug(`[${svc}] isBusy:[${isBusy}] src:[${src}]`);
     this.setState({ isBusy });
-    console.debug(`[${svc}] isBusy:[${isBusy}] src:[${src}]`);
+  }
+
+  getTabIcon(serviceCode: string, tabStyle: any) {
+    let iconColor = serviceCode === this.state.activeServiceTabName ? tabStyle.colors.primary : tabStyle.colors.blur;
+    return getIcon(ServiceProperty[serviceCode].icon, iconColor);
   }
 
   render() {
@@ -150,45 +158,56 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
     this.tabStyle = getTabTheme(appConfig.themeName);
 
     return (
-      <NavigationContainer theme={this.tabStyle}>
+      <NavigationContainer
+        theme={this.tabStyle}
+        onStateChange={state => {
+          console.log(`NavigationContainer.key: ${state?.routes[state?.index]?.name}`);
+          this.setState({ activeServiceTabName: state?.routes[state?.index]?.name || '' });
+        }}>
         {this.state.isBusy && (
           <Progress.Bar indeterminate={true} indeterminateAnimationDuration={500} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />
         )}
         {!this.state.isBusy && <Progress.Bar progress={1} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
         {this.state.isDeviceConnected && (
-          <Tab.Navigator>
-            <Tab.Screen
-              name={ServiceCode.VehicleInfo}
-              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.VehicleInfo].icon, this.tabStyle.colors.primary) }}
-              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleInfo} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
-            />
+          <Tab.Navigator
+            initialRouteName={ServiceCode.VehicleSensor}
+            screenOptions={({ route }) => ({
+              tabBarInactiveTintColor: this.tabStyle.colors.blur,
+              tabBarActiveTintColor: this.tabStyle.colors.primary,
+            })}>
             <Tab.Screen
               name={ServiceCode.VehicleSensor}
-              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.VehicleSensor].icon, this.tabStyle.colors.primary) }}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon(ServiceCode.VehicleSensor, this.tabStyle) }}
               children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleSensor} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
             />
 
             <Tab.Screen
               name={ServiceCode.Thermometer}
-              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.Thermometer].icon, this.tabStyle.colors.primary) }}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon(ServiceCode.Thermometer, this.tabStyle) }}
               children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.Thermometer} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
             />
 
             <Tab.Screen
               name={ServiceCode.SystemStats}
-              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.SystemStats].icon, this.tabStyle.colors.primary) }}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon(ServiceCode.SystemStats, this.tabStyle) }}
               children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.SystemStats} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
             />
 
             <Tab.Screen
               name={ServiceCode.TurnSignalModule}
-              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty[ServiceCode.TurnSignalModule].icon, this.tabStyle.colors.primary) }}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon(ServiceCode.TurnSignalModule, this.tabStyle) }}
               children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.TurnSignalModule} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
             />
 
             <Tab.Screen
+              name={ServiceCode.VehicleInfo}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon(ServiceCode.VehicleInfo, this.tabStyle) }}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleInfo} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
+            />
+
+            <Tab.Screen
               name="CFG"
-              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => getIcon(ServiceProperty['CFG'].icon, this.tabStyle.colors.primary) }}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon('CFG', this.tabStyle) }}
               children={() => (
                 <AppConfigView
                   onAppConfigChange={() => {

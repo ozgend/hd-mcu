@@ -8,6 +8,7 @@ interface IThemeColor {
   backgroundEditable: string;
   foregroundEditable: string;
   border: string;
+  blur: string;
 }
 
 export enum AppThemeNames {
@@ -23,6 +24,7 @@ const themeColors: { [key: string]: IThemeColor } = {
     backgroundEditable: '#fa0',
     background: '#222',
     foregroundEditable: '#222',
+    blur: '#a46d00',
   },
   black: {
     border: '#222',
@@ -30,6 +32,7 @@ const themeColors: { [key: string]: IThemeColor } = {
     foregroundEditable: '#111',
     background: '#111',
     backgroundEditable: '#aaa',
+    blur: '#777',
   },
   white: {
     border: '#888',
@@ -37,10 +40,12 @@ const themeColors: { [key: string]: IThemeColor } = {
     foregroundEditable: '#000',
     background: '#f3f3f3',
     backgroundEditable: '#ddd',
+    blur: '#888',
   },
 };
 
 export const getIcon = (name: string, color: string): React.ReactNode => {
+  // console.log(`getIcon: ${name} ${color}`);
   return <MaterialCommunityIcons name={name} size={26} color={color} />;
 };
 
@@ -55,6 +60,7 @@ export const getTabTheme = (themeName?: string) => {
     dark: themeName !== AppThemeNames.White,
     colors: {
       primary: themeColor.foreground,
+      blur: themeColor.blur,
       background: themeColor.background,
       card: themeColor.background,
       text: themeColor.foreground,
