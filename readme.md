@@ -2,6 +2,8 @@
 
 ## bluetooth supported mcu for harley davidson with raspberry pi pico
 
+![icon](./doc/icon_round.png)
+
 ### features
 
 - [x] hardware serial
@@ -34,13 +36,23 @@
 
 **mobile app**
 
+- platform
+
+  - `react 18.2.0`
+  - `react-native: 0.73.2`
+
 - react-native
   - [x] android
   - [ ] ios
 
 **mcu firmware**
 
-- node/js via [kalumajs](https://kalumajs.org/docs/getting-started)
+- platform
+
+  - `nodejs: 18`
+  - `kaluma-cli: 1.4.0`
+  - [`kalumajs: 1.1.0-beta.4`](https://kalumajs.org/docs/getting-started)
+
 - FLASH: 2044/24 kb
 - SRAM: 264 total, 184/57 kb
 
