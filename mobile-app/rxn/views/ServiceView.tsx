@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Button, Pressable, ScrollView, Text, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { IDataProvider } from '../services/interfaces';
 import { DataItemView } from './components/DataItemView';
 import { IServiceAttributes, ServiceProperty, ServiceInfoFields, ServiceDataFields } from '../models';
 import { IServiceState, IServiceStatusInfo } from '../../../ts-schema/data.interface';
-import { Hardware, MaxItemSize, ServiceCode, ServiceCommand } from '../../../ts-schema/constants';
+import { Hardware, MaxItemSize, ServiceCode, ServiceCommand, TurnSignalCommands } from '../../../ts-schema/constants';
 import { InfoItemView } from './components/InfoItemView';
 import { VehicleInfoItemView } from './components/VehicleInfoItemView';
 import { EditableInfoItemView } from './components/EditableInfoItemView';
 import { getStyleSheet } from '../themes';
 import { AppConfigField, getAppConfigField } from '../config';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { TurnSignalServiceView } from './TurnSignalServiceView';
 
 export interface IServicerViewProps<IProvider> {
   provider: IProvider;
@@ -175,6 +177,8 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
           Object.keys(this.state?.serviceData ?? {})
             .sort((a, b) => (ServiceDataFields[this.props.serviceCode][a]?.order ?? MaxItemSize) - (ServiceDataFields[this.props.serviceCode][b]?.order ?? MaxItemSize + 1))
             .map(fieldName => <DataItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} />)}
+
+        {this.state?.serviceData && this.props.serviceCode == ServiceCode.TurnSignalModule && <TurnSignalServiceView provider={this.props.provider} />}
 
         {this.state?.serviceData &&
           this.props.serviceCode === ServiceCode.VehicleInfo &&
