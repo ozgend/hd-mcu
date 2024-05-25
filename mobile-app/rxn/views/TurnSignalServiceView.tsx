@@ -46,7 +46,7 @@ export class TurnSignalServiceView extends Component<IProps> {
         </Pressable>
 
         <Pressable
-          style={{ width: '20%', margin: '2%' }}
+          style={this.pressableStyle}
           onPress={() => {
             this.sendCommand(TurnSignalCommands.NONE);
           }}>
@@ -54,7 +54,7 @@ export class TurnSignalServiceView extends Component<IProps> {
         </Pressable>
 
         <Pressable
-          style={{ width: '20%', margin: '2%' }}
+          style={this.pressableStyle}
           onPress={() => {
             this.sendCommand(TurnSignalCommands.RIGHT);
           }}>

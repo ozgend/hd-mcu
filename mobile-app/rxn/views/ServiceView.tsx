@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
-import { Button, Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { IDataProvider } from '../services/interfaces';
 import { DataItemView } from './components/DataItemView';
 import { IServiceAttributes, ServiceProperty, ServiceInfoFields, ServiceDataFields } from '../models';
 import { IServiceState, IServiceStatusInfo } from '../../../ts-schema/data.interface';
-import { Hardware, MaxItemSize, ServiceCode, ServiceCommand, TurnSignalCommands } from '../../../ts-schema/constants';
+import { Hardware, MaxItemSize, ServiceCode, ServiceCommand } from '../../../ts-schema/constants';
 import { InfoItemView } from './components/InfoItemView';
 import { VehicleInfoItemView } from './components/VehicleInfoItemView';
 import { EditableInfoItemView } from './components/EditableInfoItemView';
 import { getStyleSheet } from '../themes';
 import { AppConfigField, getAppConfigField } from '../config';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TurnSignalServiceView } from './TurnSignalServiceView';
 
 export interface IServicerViewProps<IProvider> {
@@ -26,19 +25,22 @@ export interface IServiceViewState<TSensorData> {
   isPolling: boolean;
   isEditing?: boolean;
   willDisplayServiceInfo?: boolean;
+  heartbeatValue: number;
 }
 
 export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IServiceViewState<IServiceState>> {
   commonStyle: any;
-
-  constructor(props: any) {
-    super(props);
-    this.state = { isPolling: false, serviceData: {}, serviceInfo: {}, willDisplayServiceInfo: true };
-  }
-
   workerPid: any;
   serviceAttributes: IServiceAttributes = ServiceProperty[this.props.serviceCode];
   editedServiceData: any = {};
+  heartbeatFadePid: any;
+  heartbeatGlowPid: any;
+
+  constructor(props: any) {
+    super(props);
+    this.state = { isPolling: false, serviceData: {}, serviceInfo: {}, willDisplayServiceInfo: true, heartbeatValue: 1.0 };
+    this.resetHeartbeat();
+  }
 
   async componentDidMount(): Promise<void> {
     console.debug(`${this.props.serviceCode} mounted`);
@@ -113,6 +115,34 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
     console.log(this.state.serviceData);
   }
 
+  fadeHeartbeat(): void {
+    this.heartbeatFadePid = setInterval(() => {
+      this.setState({ heartbeatValue: this.state.heartbeatValue - 0.1 });
+      if (this.state.heartbeatValue <= 0) {
+        clearInterval(this.heartbeatFadePid);
+        this.setState({ heartbeatValue: 0.0 });
+      }
+    }, 50);
+  }
+
+  glowHeartbeat(): void {
+    this.heartbeatGlowPid = setInterval(() => {
+      this.setState({ heartbeatValue: this.state.heartbeatValue + 0.1 });
+      if (this.state.heartbeatValue >= 1) {
+        clearInterval(this.heartbeatGlowPid);
+        this.setState({ heartbeatValue: 1.0 });
+      }
+    }, 50);
+    setTimeout(() => {
+      this.fadeHeartbeat();
+    }, 3000);
+  }
+
+  resetHeartbeat(): void {
+    this.setState({ heartbeatValue: 1.0 });
+    this.fadeHeartbeat();
+  }
+
   setServiceData(fieldName: string, value: any): void {
     this.setState({ serviceData: { ...this.state.serviceData, [fieldName]: value } });
   }
@@ -144,6 +174,7 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
             </MaterialCommunityIcons.Button>
           )}
 
+          <MaterialCommunityIcons style={[this.commonStyle.actionBarStatusIcon, { opacity: this.state.heartbeatValue }]} size={this.commonStyle.actionBarStatusIcon.fontSize} color={'#4f4'} name={'bluetooth-transfer'} />
           {!this.serviceAttributes.pollOnce && <MaterialCommunityIcons style={this.commonStyle.actionBarStatusIcon} size={this.commonStyle.actionBarStatusIcon.fontSize} color={this.state.isPolling ? '#4f4' : '#f44'} name={'circle'} />}
 
           {!this.serviceAttributes.pollOnce && (

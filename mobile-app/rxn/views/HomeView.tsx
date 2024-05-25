@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationContainer, NavigationState } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -34,9 +34,11 @@ const Tab = createBottomTabNavigator();
 class HomeView extends Component<IProps, IState> implements IDataProviderEvents {
   commonStyle: any;
   tabStyle: any;
+  refServiceView: RefObject<ServiceView>;
 
   constructor(props: any) {
     super(props);
+    this.refServiceView = createRef();
     this.state = {
       isProviderStreamStarted: false,
       isProviderInitialized: false,
@@ -89,6 +91,7 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
 
   onProviderHeartbeat: (hasHeartbeat: boolean) => void = (hasHeartbeat: boolean) => {
     console.debug('provider heartbeat', hasHeartbeat);
+    this.refServiceView.current?.glowHeartbeat();
   };
 
   onProviderStreamStatusChange: (state: boolean) => void = (state: boolean) => {
@@ -164,10 +167,12 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
           console.log(`NavigationContainer.key: ${state?.routes[state?.index]?.name}`);
           this.setState({ activeServiceTabName: state?.routes[state?.index]?.name || '' });
         }}>
-        {this.state.isBusy && (
-          <Progress.Bar indeterminate={true} indeterminateAnimationDuration={500} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />
-        )}
-        {!this.state.isBusy && <Progress.Bar progress={1} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
+        <View>
+          {this.state.isBusy && (
+            <Progress.Bar indeterminate={true} indeterminateAnimationDuration={500} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />
+          )}
+          {!this.state.isBusy && <Progress.Bar progress={1} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />}
+        </View>
         {this.state.isDeviceConnected && (
           <Tab.Navigator
             initialRouteName={ServiceCode.VehicleSensor}
@@ -178,31 +183,31 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
             <Tab.Screen
               name={ServiceCode.VehicleSensor}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon(ServiceCode.VehicleSensor, this.tabStyle) }}
-              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleSensor} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleSensor} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} ref={this.refServiceView} />}
             />
 
             <Tab.Screen
               name={ServiceCode.Thermometer}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon(ServiceCode.Thermometer, this.tabStyle) }}
-              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.Thermometer} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.Thermometer} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} ref={this.refServiceView} />}
             />
 
             <Tab.Screen
               name={ServiceCode.SystemStats}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon(ServiceCode.SystemStats, this.tabStyle) }}
-              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.SystemStats} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.SystemStats} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} ref={this.refServiceView} />}
             />
 
             <Tab.Screen
               name={ServiceCode.TurnSignalModule}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon(ServiceCode.TurnSignalModule, this.tabStyle) }}
-              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.TurnSignalModule} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.TurnSignalModule} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} ref={this.refServiceView} />}
             />
 
             <Tab.Screen
               name={ServiceCode.VehicleInfo}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon(ServiceCode.VehicleInfo, this.tabStyle) }}
-              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleInfo} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} />}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.VehicleInfo} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} ref={this.refServiceView} />}
             />
 
             <Tab.Screen

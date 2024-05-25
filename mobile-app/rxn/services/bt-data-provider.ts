@@ -132,6 +132,7 @@ export class BluetoothSerialDataProvider implements IDataProvider {
       console.debug('onDataReceived', event.data);
 
       if (event.data.includes('0_heartbeat')) {
+        this.onProviderHeartbeat(true);
         this.isStreamStarted = true;
         return;
       }
