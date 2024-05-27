@@ -39,11 +39,11 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
   constructor(props: any) {
     super(props);
     this.state = { isPolling: false, serviceData: {}, serviceInfo: {}, willDisplayServiceInfo: true, heartbeatValue: 1.0 };
-    this.resetHeartbeat();
   }
 
   async componentDidMount(): Promise<void> {
     console.debug(`${this.props.serviceCode} mounted`);
+    this.resetHeartbeat();
 
     this.props.provider.addServiceEventListener(this.props.serviceCode, ServiceCommand.INFO, (serviceInfo: IServiceStatusInfo) => {
       if (!this.state.isPolling) {
@@ -74,6 +74,8 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
 
   async componentWillUnmount(): Promise<void> {
     clearInterval(this.workerPid);
+    clearInterval(this.heartbeatFadePid);
+    clearInterval(this.heartbeatGlowPid);
     console.debug(`${this.props.serviceCode} unmounting`);
     this.props.toggleBusy(false, this.props.serviceCode, 'componentWillUnmount');
     this.props.provider.removeServiceEventListener(this.props.serviceCode);
