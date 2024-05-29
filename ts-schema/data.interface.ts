@@ -45,6 +45,7 @@ export interface IVehicleSensorData extends IServiceState {
   batt?: number;
   rpm?: number;
   speed?: number;
+  uptime?: number;
   tireFront?: number;
   tempFront?: number;
   tireRear?: number;
@@ -71,7 +72,6 @@ export interface ISystemStatsData extends IServiceState {
   heapTotal?: number;
   heapUsed?: number;
   heapPeak?: number;
-  uptime?: number;
 }
 
 export interface ITsmData extends IServiceState {

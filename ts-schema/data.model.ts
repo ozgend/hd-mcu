@@ -60,6 +60,7 @@ export class VehicleSensorData implements IVehicleSensorData {
   batt?: number;
   rpm?: number;
   speed?: number;
+  uptime?: number;
   tireFront?: number;
   tempFront?: number;
   tireRear?: number;
@@ -107,7 +108,6 @@ export class SystemStatsData implements ISystemStatsData {
   heapTotal?: number;
   heapUsed?: number;
   heapPeak?: number;
-  uptime?: number;
   constructor() {
     this.arch = "";
     this.platform = "";
@@ -117,7 +117,6 @@ export class SystemStatsData implements ISystemStatsData {
     this.heapTotal = 0;
     this.heapUsed = 0;
     this.heapPeak = 0;
-    this.uptime = 0;
   }
 }
 
