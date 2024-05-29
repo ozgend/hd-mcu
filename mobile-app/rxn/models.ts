@@ -68,7 +68,7 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
   },
   VHC: {
     temp: { title: 'MCU TEMP', unit: '°C', type: 'number', precision: 1, order: 10 },
-    vref: { title: 'MCU VREF', unit: 'V', type: 'number', precision: 1, order: 11 },
+    vref: { title: 'MCU VREF', unit: 'V', type: 'number', precision: 3, order: 11 },
     batt: { title: 'BATTERY', unit: 'V', type: 'number', precision: 2, order: 12 },
     rpm: { title: 'RPM', unit: 'rev', type: 'number', order: 13 },
     speed: { title: 'SPEED', unit: 'km/h', type: 'number', order: 14 },
