@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TsmControlData = exports.TsmData = exports.SystemStatsData = exports.ThermometerData = exports.VehicleSensorData = exports.VehicleInfoData = void 0;
+exports.MuxSettings = exports.TsmSettings = exports.TsmControlData = exports.TsmData = exports.SystemStatsData = exports.ThermometerData = exports.VehicleSensorData = exports.VehicleInfoData = void 0;
 var VehicleInfoData = /** @class */ (function () {
     function VehicleInfoData() {
         this.model = "";
@@ -61,3 +61,15 @@ var TsmControlData = /** @class */ (function () {
     return TsmControlData;
 }());
 exports.TsmControlData = TsmControlData;
+var TsmSettings = /** @class */ (function () {
+    function TsmSettings() {
+    }
+    return TsmSettings;
+}());
+exports.TsmSettings = TsmSettings;
+var MuxSettings = /** @class */ (function () {
+    function MuxSettings() {
+    }
+    return MuxSettings;
+}());
+exports.MuxSettings = MuxSettings;

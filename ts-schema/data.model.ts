@@ -1,4 +1,4 @@
-import { ISystemStatsData, IThermometerData, ITsmControlData, ITsmData, IVehicleInfoData, IVehicleSensorData } from "./data.interface";
+import { IMuxSettings, ISystemStatsData, IThermometerData, ITsmControlData, ITsmData, ITsmSettings, IVehicleInfoData, IVehicleSensorData } from "./data.interface";
 
 export class VehicleInfoData implements IVehicleInfoData {
   model: string;
@@ -96,4 +96,18 @@ export class TsmData implements ITsmData {
 export class TsmControlData implements ITsmControlData {
   left: boolean;
   right: boolean;
+}
+
+export class TsmSettings implements ITsmSettings {
+  btnDebounce: number;
+  blinkRate: number;
+  blinkTimeout: number;
+  diagRate: number;
+  diagCount: number;
+}
+
+export class MuxSettings implements IMuxSettings {
+  sensorItems: number[];
+  readInterval: number;
+  readBatchTimeout: number;
 }

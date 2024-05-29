@@ -47,20 +47,22 @@ export const setAppConfig = (appConfig: IAppConfig) => {
 
 export const getAppConfigField = (fieldName: string): string => {
   try {
-    const value = (Storage.getString(`appConfig.${fieldName}`) ?? (DefaultAppConfig[fieldName as keyof IAppConfig] as string)).toLowerCase();
+    const value = (Storage.getString(`appConfig.${fieldName}`) ?? (DefaultAppConfig[fieldName as keyof IAppConfig] as string)).toLocaleLowerCase();
     // console.log(`++ getAppConfigField: ${fieldName}="${value}"`);
     return value;
   } catch (error) {
-    console.error('++ readAppConfigField error', error);
+    console.error(`++ getAppConfigField: error [${fieldName}]`);
+    console.error(error);
     return DefaultAppConfig[fieldName as keyof IAppConfig] as string;
   }
 };
 
 export const setAppConfigField = (fieldName: string, value: any) => {
   try {
-    Storage.set(`appConfig.${fieldName}`, value?.toString().toLowerCase());
+    Storage.set(`appConfig.${fieldName}`, value?.toString().toLocaleLowerCase());
     // console.log(`++ writeAppConfigField: ${fieldName}="${value}"`);
   } catch (error) {
-    console.error('++ writeAppConfigField error', error);
+    console.error(`++ writeAppConfigField: error [${fieldName}]`);
+    console.error(error);
   }
 };

@@ -78,3 +78,17 @@ export interface ITsmControlData {
   left: boolean;
   right: boolean;
 }
+
+export interface ITsmSettings {
+  btnDebounce: number;
+  blinkRate: number;
+  blinkTimeout: number;
+  diagRate: number;
+  diagCount: number;
+}
+
+export interface IMuxSettings {
+  sensorItems: number[];
+  readInterval: number;
+  readBatchTimeout: number;
+}

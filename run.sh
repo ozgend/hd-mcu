@@ -3,8 +3,8 @@
 action=$1
 picoTtyPath=$2
 
-actionMap=("build-mobile" "start-mobile" "bundle-mobile" "build-mcu" "start-mcu" "flash-mcu" "shell-mcu" "typegen")
-actionArgs=("" "" "" "" "" "[tty-path]" "[tty-path]" "")
+actionMap=("typegen" "build-mobile" "start-mobile" "bundle-mobile" "build-mcu" "flash-mcu" "shell-mcu", "start-mcu")
+actionArgs=("" "" "" "" "" "[tty-path]" "[tty-path]" "[tty-path]")
 
 if [ -z "$action" ]; then
   echo "No action provided"
@@ -49,6 +49,12 @@ flashMcuFirmware() {
 shellMcuFirmware() {
   echo "Connecting to MCU firmware..."
   npm run shell:mcu -- -p $picoTtyPath
+}
+
+startMcuFirmware() {
+  buildMcuFirmware
+  flashMcuFirmware
+  shellMcuFirmware
 }
 
 if [ "$action" == "build-mobile" ]; then

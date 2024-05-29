@@ -11,6 +11,7 @@ import { VehicleInfoItemView } from './components/VehicleInfoItemView';
 import { EditableInfoItemView } from './components/EditableInfoItemView';
 import { getStyleSheet } from '../themes';
 import { AppConfigField, getAppConfigField } from '../config';
+import { TurnSignalServiceView } from './TurnSignalServiceView';
 
 export interface IServicerViewProps<IProvider> {
   provider: IProvider;
@@ -24,22 +25,25 @@ export interface IServiceViewState<TSensorData> {
   isPolling: boolean;
   isEditing?: boolean;
   willDisplayServiceInfo?: boolean;
+  heartbeatValue: number;
 }
 
 export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IServiceViewState<IServiceState>> {
   commonStyle: any;
-
-  constructor(props: any) {
-    super(props);
-    this.state = { isPolling: false, serviceData: {}, serviceInfo: {}, willDisplayServiceInfo: true };
-  }
-
   workerPid: any;
   serviceAttributes: IServiceAttributes = ServiceProperty[this.props.serviceCode];
   editedServiceData: any = {};
+  heartbeatFadePid: any;
+  heartbeatGlowPid: any;
+
+  constructor(props: any) {
+    super(props);
+    this.state = { isPolling: false, serviceData: {}, serviceInfo: {}, willDisplayServiceInfo: true, heartbeatValue: 1.0 };
+  }
 
   async componentDidMount(): Promise<void> {
     console.debug(`${this.props.serviceCode} mounted`);
+    this.resetHeartbeat();
 
     this.props.provider.addServiceEventListener(this.props.serviceCode, ServiceCommand.INFO, (serviceInfo: IServiceStatusInfo) => {
       if (!this.state.isPolling) {
@@ -70,6 +74,8 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
 
   async componentWillUnmount(): Promise<void> {
     clearInterval(this.workerPid);
+    clearInterval(this.heartbeatFadePid);
+    clearInterval(this.heartbeatGlowPid);
     console.debug(`${this.props.serviceCode} unmounting`);
     this.props.toggleBusy(false, this.props.serviceCode, 'componentWillUnmount');
     this.props.provider.removeServiceEventListener(this.props.serviceCode);
@@ -111,6 +117,34 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
     console.log(this.state.serviceData);
   }
 
+  fadeHeartbeat(): void {
+    this.heartbeatFadePid = setInterval(() => {
+      this.setState({ heartbeatValue: this.state.heartbeatValue - 0.1 });
+      if (this.state.heartbeatValue <= 0) {
+        clearInterval(this.heartbeatFadePid);
+        this.setState({ heartbeatValue: 0.0 });
+      }
+    }, 50);
+  }
+
+  glowHeartbeat(): void {
+    this.heartbeatGlowPid = setInterval(() => {
+      this.setState({ heartbeatValue: this.state.heartbeatValue + 0.1 });
+      if (this.state.heartbeatValue >= 1) {
+        clearInterval(this.heartbeatGlowPid);
+        this.setState({ heartbeatValue: 1.0 });
+      }
+    }, 50);
+    setTimeout(() => {
+      this.fadeHeartbeat();
+    }, 3000);
+  }
+
+  resetHeartbeat(): void {
+    this.setState({ heartbeatValue: 1.0 });
+    this.fadeHeartbeat();
+  }
+
   setServiceData(fieldName: string, value: any): void {
     this.setState({ serviceData: { ...this.state.serviceData, [fieldName]: value } });
   }
@@ -142,6 +176,7 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
             </MaterialCommunityIcons.Button>
           )}
 
+          <MaterialCommunityIcons style={[this.commonStyle.actionBarStatusIcon, { opacity: this.state.heartbeatValue }]} size={this.commonStyle.actionBarStatusIcon.fontSize} color={'#4f4'} name={'bluetooth-transfer'} />
           {!this.serviceAttributes.pollOnce && <MaterialCommunityIcons style={this.commonStyle.actionBarStatusIcon} size={this.commonStyle.actionBarStatusIcon.fontSize} color={this.state.isPolling ? '#4f4' : '#f44'} name={'circle'} />}
 
           {!this.serviceAttributes.pollOnce && (
@@ -175,6 +210,8 @@ export class ServiceView extends Component<IServicerViewProps<IDataProvider>, IS
           Object.keys(this.state?.serviceData ?? {})
             .sort((a, b) => (ServiceDataFields[this.props.serviceCode][a]?.order ?? MaxItemSize) - (ServiceDataFields[this.props.serviceCode][b]?.order ?? MaxItemSize + 1))
             .map(fieldName => <DataItemView key={fieldName} fieldName={fieldName} value={this.state.serviceData[fieldName as keyof typeof this.state.serviceData]} serviceCode={this.props.serviceCode} />)}
+
+        {this.state?.serviceData && this.props.serviceCode == ServiceCode.TurnSignalModule && <TurnSignalServiceView provider={this.props.provider} />}
 
         {this.state?.serviceData &&
           this.props.serviceCode === ServiceCode.VehicleInfo &&

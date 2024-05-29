@@ -6,7 +6,7 @@ const LEVELS = {
 
 const LEVEL_NAMES = ['DEBUG', 'INFO', 'ERROR'];
 
-const LOG_LEVEL = LEVELS.DEBUG;
+const LOG_LEVEL = LEVELS.INFO;
 
 const debug = (code, message, data) => {
   _log(LEVELS.DEBUG, code, message, data);
@@ -26,6 +26,5 @@ const _log = (level, code, message, data) => {
     console.log(`${LEVEL_NAMES[level]} | [${code}] ${message}`);
   }
 }
-
 
 module.exports = { info, error, debug };

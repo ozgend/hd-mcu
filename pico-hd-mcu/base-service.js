@@ -12,7 +12,7 @@ class BaseService {
       broadcastMode: broadcastMode ?? Broadcasting.OnDemandPolling,
       commands: (commands && commands.length > 0) ? [...Object.values(ServiceCommand), ...commands] : Object.values(ServiceCommand),
     };
-    // logger.debug(this.options.serviceCode, 'options', this.options);
+
     this.eventBus = eventBus ?? { emit: () => { } };
     this.status = ServiceStatus.Initialized;
     this.broadcastPid = null;
@@ -20,10 +20,7 @@ class BaseService {
     this.data = {};
 
     this.eventBus.on(EventType.CommandForService, (code, command, raw) => {
-      // logger.debug(this.options.serviceCode, 'nnnnnnnnnnnnnnnnnnnnnn', this.options.serviceCode, code, command, data);
-      // logger.debug(this.options.serviceCode, EventType.CommandForService, this.options.serviceCode, code, command, data);
       if (code === this.options.serviceCode) {
-        // logger.debug(this.options.serviceCode, 'eeeeeeeeeeeeeeeeeeeeee', this.options.serviceCode, code, command, raw);
         this.handleCommand(command, raw);
       }
     });

@@ -48,8 +48,6 @@ export class AppConfigView extends Component<IAppConfigViewProps, IAppConfigView
 
     return (
       <ScrollView contentInsetAdjustmentBehavior="automatic" style={this.commonStyle.scrollContainer}>
-        <Progress.Bar progress={1} color={this.commonStyle.container.color} borderRadius={0} unfilledColor={this.commonStyle.container.backgroundColor} borderWidth={0} width={1000} />
-
         <View style={this.commonStyle.actionBarView}>
           <Text style={this.commonStyle.actionBarHeader}>{this.serviceAttributes.title}</Text>
         </View>
