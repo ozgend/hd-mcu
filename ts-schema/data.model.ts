@@ -56,6 +56,7 @@ export class VehicleInfoData implements IVehicleInfoData {
 
 export class VehicleSensorData implements IVehicleSensorData {
   temp?: number;
+  vref?: number;
   batt?: number;
   rpm?: number;
   speed?: number;
@@ -63,6 +64,17 @@ export class VehicleSensorData implements IVehicleSensorData {
   tempFront?: number;
   tireRear?: number;
   tempRear?: number;
+  constructor() {
+    this.temp = 0;
+    this.vref = 0;
+    this.batt = 0;
+    this.rpm = 0;
+    this.speed = 0;
+    this.tireFront = 0;
+    this.tempFront = 0;
+    this.tireRear = 0;
+    this.tempRear = 0;
+  }
 }
 
 export class ThermometerData implements IThermometerData {
@@ -74,6 +86,16 @@ export class ThermometerData implements IThermometerData {
   ch_5?: number;
   ch_6?: number;
   ch_7?: number;
+  constructor() {
+    this.ch_0 = 0;
+    this.ch_1 = 0;
+    this.ch_2 = 0;
+    this.ch_3 = 0;
+    this.ch_4 = 0;
+    this.ch_5 = 0;
+    this.ch_6 = 0;
+    this.ch_7 = 0;
+  }
 }
 
 export class SystemStatsData implements ISystemStatsData {
@@ -86,16 +108,35 @@ export class SystemStatsData implements ISystemStatsData {
   heapUsed?: number;
   heapPeak?: number;
   uptime?: number;
+  constructor() {
+    this.arch = "";
+    this.platform = "";
+    this.version = "";
+    this.name = "";
+    this.uid = "";
+    this.heapTotal = 0;
+    this.heapUsed = 0;
+    this.heapPeak = 0;
+    this.uptime = 0;
+  }
 }
 
 export class TsmData implements ITsmData {
   state?: ITsmControlData;
   action?: ITsmControlData;
+  constructor() {
+    this.state = new TsmControlData();
+    this.action = new TsmControlData();
+  }
 }
 
 export class TsmControlData implements ITsmControlData {
   left: boolean;
   right: boolean;
+  constructor() {
+    this.left = false;
+    this.right = false;
+  }
 }
 
 export class TsmSettings implements ITsmSettings {
@@ -104,10 +145,22 @@ export class TsmSettings implements ITsmSettings {
   blinkTimeout: number;
   diagRate: number;
   diagCount: number;
+  constructor() {
+    this.btnDebounce = 0;
+    this.blinkRate = 0;
+    this.blinkTimeout = 0;
+    this.diagRate = 0;
+    this.diagCount = 0;
+  }
 }
 
 export class MuxSettings implements IMuxSettings {
   sensorItems: number[];
   readInterval: number;
   readBatchTimeout: number;
+  constructor() {
+    this.sensorItems = [];
+    this.readInterval = 0;
+    this.readBatchTimeout = 0;
+  }
 }

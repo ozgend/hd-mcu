@@ -93,6 +93,7 @@ export const Hardware = {
 export const Gpio = {
   // functionality: GP pin,   // name - notes/wiring
   VEHICLE_SENSOR_TEMP: 30, // GP30 - ADC4 - virtual
+  VEHICLE_SENSOR_VREF: 4, // GP29 - ADC3
   VEHICLE_SENSOR_SPEED: 28, // GP28 - ADC2
   VEHICLE_SENSOR_RPM: 27, // GP27 - ADC1
   VEHICLE_SENSOR_BATT: 26, // GP26 - ADC0

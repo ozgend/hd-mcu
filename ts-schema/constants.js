@@ -85,6 +85,7 @@ exports.Hardware = {
 exports.Gpio = {
     // functionality: GP pin,   // name - notes/wiring
     VEHICLE_SENSOR_TEMP: 30,
+    VEHICLE_SENSOR_VREF: 4,
     VEHICLE_SENSOR_SPEED: 28,
     VEHICLE_SENSOR_RPM: 27,
     VEHICLE_SENSOR_BATT: 26,

@@ -41,9 +41,14 @@ export interface IVehicleInfoData {
 
 export interface IVehicleSensorData extends IServiceState {
   temp?: number;
+  vref?: number;
   batt?: number;
   rpm?: number;
   speed?: number;
+  tireFront?: number;
+  tempFront?: number;
+  tireRear?: number;
+  tempRear?: number;
 }
 
 export interface IThermometerData extends IServiceState {
