@@ -39,7 +39,7 @@ class BaseService {
         this.publishInformation();
         break;
       case ServiceCommand.DATA:
-        this.start();
+        // this.start();
         this.publishData();
         break;
       case ServiceCommand.SET:
@@ -61,11 +61,11 @@ class BaseService {
   }
 
   start() {
-    logger.info(this.options.serviceCode, 'starting');
     if (this.isStarted()) {
-      logger.error(this.options.serviceCode, 'already running');
+      logger.info(this.options.serviceCode, 'already running');
       return;
     }
+    logger.info(this.options.serviceCode, 'starting');
     this.isRunning = true;
     if (this.options.broadcastMode === Broadcasting.ContinuousStream) {
       this.broadcastPid = setInterval(() => {
@@ -83,11 +83,11 @@ class BaseService {
   }
 
   stop() {
-    logger.info(this.options.serviceCode, 'stopping');
     if (!this.isRunning) {
-      logger.error(this.options.serviceCode, 'already stopped');
+      logger.info(this.options.serviceCode, 'already stopped');
       return;
     }
+    logger.info(this.options.serviceCode, 'stopping');
     if (this.broadcastPid) {
       clearInterval(this.broadcastPid);
     }

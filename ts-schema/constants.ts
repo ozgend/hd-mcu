@@ -67,7 +67,7 @@ export const Hardware = {
   MUX_SENSOR_READ_BATCH_TIMEOUT: 3000,
   TURN_SIGNAL_BTN_DEBOUNCE: 200,
   TURN_SIGNAL_BLINK_RATE: 400,
-  TURN_SIGNAL_BLINK_TIMEOUT: 15000,
+  TURN_SIGNAL_BLINK_TIMEOUT: 30000,
   TURN_SIGNAL_DIAG_RATE: 100,
   TURN_SIGNAL_DIAG_COUNT: 3,
   // TURN_SIGNAL_INTERRUPT_WAIT: 100,
@@ -92,8 +92,9 @@ export const Hardware = {
 // https://electrocredible.com/raspberry-pi-pico-w-pinout-guide-diagrams/
 export const Gpio = {
   // functionality: GP pin,   // name - notes/wiring
+  ONBOARD_LED: 25, // GP25 - LED
   VEHICLE_SENSOR_TEMP: 30, // GP30 - ADC4 - virtual
-  VEHICLE_SENSOR_VREF: 4, // GP29 - ADC3
+  VEHICLE_SENSOR_VREF: 29, // GP29 - ADC3
   VEHICLE_SENSOR_SPEED: 28, // GP28 - ADC2
   VEHICLE_SENSOR_RPM: 27, // GP27 - ADC1
   VEHICLE_SENSOR_BATT: 26, // GP26 - ADC0
