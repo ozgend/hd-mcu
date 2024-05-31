@@ -2,6 +2,7 @@
 
 action=$1
 picoTtyPath=$2
+needTty=$3
 
 actionMap=("typegen" "build-mobile" "start-mobile" "bundle-mobile" "build-mcu" "flash-mcu" "shell-mcu", "start-mcu")
 actionArgs=("" "" "" "" "" "[tty-path]" "[tty-path]" "[tty-path]")
@@ -54,7 +55,9 @@ shellMcuFirmware() {
 startMcuFirmware() {
   buildMcuFirmware
   flashMcuFirmware
-  shellMcuFirmware
+  if [ "$needTty" == "tty" ]; then
+    shellMcuFirmware
+  fi
 }
 
 if [ "$action" == "build-mobile" ]; then

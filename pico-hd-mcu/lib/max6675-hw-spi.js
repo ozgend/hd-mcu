@@ -66,10 +66,14 @@ class MAX6675 {
   }
 
   readRaw() {
-    this.spiCs.low();
-    let val = this.readRaw2();
-    this.spiCs.high();
-    return val;
+    if (this.spiCs) {
+      this.spiCs.low();
+      let val = this.readRaw2();
+      this.spiCs.high();
+      return val;
+    }
+    console.error('SPICS is not initialized')
+    return 0;
   }
 
   readRaw1() {

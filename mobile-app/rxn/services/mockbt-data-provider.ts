@@ -217,6 +217,7 @@ const mockDataSource: { [key: string]: () => any } = {
   VHC: () => {
     return {
       batt: 12.5 + Math.random() * 0.5,
+      vref: 4.9 + Math.random() * 0.2,
       rpm: Math.random() * 100 + 1200,
       speed: 0,
       temp: 40 - Math.random() * 3,
