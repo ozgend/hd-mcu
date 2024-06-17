@@ -47,7 +47,8 @@ export const setAppConfig = (appConfig: IAppConfig) => {
 
 export const getAppConfigField = (fieldName: string): string => {
   try {
-    const value = (Storage.getString(`appConfig.${fieldName}`) ?? (DefaultAppConfig[fieldName as keyof IAppConfig] as string)).toLocaleLowerCase();
+    let value = Storage.getString(`appConfig.${fieldName}`) ?? (DefaultAppConfig[fieldName as keyof IAppConfig] as string);
+    value = value?.toString()?.toLocaleLowerCase();
     // console.log(`++ getAppConfigField: ${fieldName}="${value}"`);
     return value;
   } catch (error) {
