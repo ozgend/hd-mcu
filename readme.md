@@ -111,6 +111,12 @@ _it would be good to monitor oil temperature as well as both cylinder combustion
   - k-type thermocouple (maximum of 8)
 - use raiser module for up to 6x thermocouples
 
+**tpms listener _(optional)_**
+
+- 433mhz receiver module
+  - [datasheet](./doc/rf433.pdf)
+- any 433mhz tpms caps for tires
+
 ### pcb
 
 **front**
