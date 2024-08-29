@@ -9,7 +9,7 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
 - built-in battery voltage sensor
 - built-in rpm reader
 - built-in temperature sensor via rpi-pico
-- aux inputs for ignition and voes signals _(may require custom ignition module ie. ultime 2000)_
+- aux inputs for ignition and voes signals _(may require custom ignition module ie. [ultima/dyna 2000i](./doc/ud2000i.pdf))_
 - vehicle information with editable fields for maintenance records
 - external 6x thermocpouler raiser for max6670
 - supports up to 8x thermocpouler sensors for various purposes
