@@ -16,7 +16,7 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
 
 ![icon](./doc/icon_round.png)
 
-### features
+### supported features
 
 - [x] hardware serial
   - [x] raw ft232 usb serial
@@ -43,6 +43,9 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
     - [x] rpm sensor (optional)
     - [x] speed sensor (optional)
     - [x] aux \*2 (optional, ignition, voes ...etc)
+  - [ ] tpms
+    - [ ] 433mhz receiver implementation
+    - [ ] tpms decoder / man-i or man-ii (tbd)
 
 ### software
 
@@ -118,3 +121,44 @@ _it would be good to monitor oil temperature as well as both cylinder combustion
 
 **blueprint**
 ![raw](./pcb/pico-hd-mcu-v2/pcb-blueprint.png)
+
+### setup & building & installing
+
+- initialization
+
+  ```bash
+  git clone
+  npm run install
+  ```
+
+- cook everything
+
+  ```bash
+  npm run build
+  ```
+
+- create mcu firmware
+
+  ```bash
+  npm build:mcu
+  ```
+
+- flash firmware to pico
+
+  ```bash
+  npm run flash:mcu -- /dev/tty.usbmodem2XXX
+  ```
+
+- create mobile app
+
+  - _create local build_
+
+    ```bash
+    npm run build:app
+    ```
+
+  - _create distributable bundle .apk_
+
+    ```bash
+    nom run bundle:app
+    ```
