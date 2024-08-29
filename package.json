@@ -6,6 +6,9 @@
   "author": "",
   "license": "ISC",
   "scripts": {
+    "install": "npm run install:mcu && nom run install:app",
+    "install:mcu": "npm --prefix pico-hd-mcu i",
+    "install:app": "npm --prefix mobile-app i",
     "build": "npm run typegen && npm run build:mcu && npm run build:app",
     "build:min": "npm run typegen && npm run build:mcu:min && npm run build:app",
     "build:app": "npm --prefix mobile-app run build",
