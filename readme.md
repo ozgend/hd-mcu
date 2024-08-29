@@ -1,6 +1,18 @@
 # hd-mcu
 
-## bluetooth supported mcu for harley davidson with raspberry pi pico
+## bluetooth supported mcu for harley davidson 99-03 with raspberry pi pico
+
+this is not a ecu but a diy -and for fun- project for a monitoring hardware via an mcu since there is no [can-bus](https://en.wikipedia.org/wiki/CAN_bus) support for 99-03 models. it replaces the default turn signal module (tsm) to provide monitoring features for battery voltage, rpm, voes, ignition, and external thermo sensors via bluetooth to the mobile application. it does not involve a reverse engineering for the original hd-tsm module.
+
+- programmable idle timeout for turn signal
+- pcb provides signal switching via h-bridge module or mosfet + oc
+- built-in battery voltage sensor
+- built-in rpm reader
+- built-in temperature sensor via rpi-pico
+- aux inputs for ignition and voes signals _(may require custom ignition module ie. ultime 2000)_
+- vehicle information with editable fields for maintenance records
+- external 6x thermocpouler raiser for max6670
+- supports up to 8x thermocpouler sensors for various purposes
 
 ![icon](./doc/icon_round.png)
 
@@ -11,7 +23,7 @@
 - [x] bluetooth serial
   - [x] raw bluetooth serial (hc-06 @ 9600 bps)
   - [x] mobile app
-- [ ] obd2/canbus
+- [ ] obd2/canbus - _for 2004+ models_
   - [ ] available pids
 - [x] polling/broadcasting
   - [x] reduced power consumption
@@ -30,7 +42,7 @@
     - [x] temperature sensor (onboard)
     - [x] rpm sensor (optional)
     - [x] speed sensor (optional)
-    - [x] aux \*2 (optional)
+    - [x] aux \*2 (optional, ignition, voes ...etc)
 
 ### software
 
@@ -45,6 +57,10 @@
   - [x] android
   - [ ] ios
 
+### mobile app ui
+
+![back](./doc/mobile-app.gif)
+
 **mcu firmware**
 
 - platform
@@ -58,18 +74,21 @@
 
 ### hardware
 
+**main tsm assembly**
+
+- 12v-5v buck converter / switching regulator
+  - [lm2596 datasheet](./doc/lm2596.pdf)
 - raspberry pi pico
   - [pinout](https://pico.pinout.xyz/)
-  - [datasheet](https://datasheets.raspberrypi.com/pico/pico-datasheet.pdf)
+  - [datasheet](./doc/pico-datasheet.pdf)
 - hc-06 bluetooth module
-  - [datasheet](https://www.olimex.com/Products/Components/RF/BLUETOOTH-SERIAL-HC-06/resources/hc06.pdf)
-- cd4051 multiplexer
-  - [datasheet](https://www.ti.com/lit/ds/symlink/cd4051b.pdf)
-- l298n h-bridge driver module
-  - [datasheet](https://www.st.com/resource/en/datasheet/l298.pdf)
-- max6675 thermocouple digitizer
-  - [datasheet](https://datasheets.maximintegrated.com/en/ds/MAX6675.pdf)
-- k-type thermocouple
+  - [datasheet](./doc/hc06.pdf)
+- tsm - _(option-1)_ - with mosfet extension board
+  - _pick this if your rectifier is 3 pin and charge flux is 12v-15v_
+  - [IRF4905 datasheet](./doc/IRF4905.pdf)
+- tsm - _(option-2)_ - l298n h-bridge driver module
+  - [datasheet](./doc/l298.pdf)
+- 5v super capacitor
 - 5805 voltage regulator
 - 33k resistor
 - 10k resistor
@@ -77,6 +96,17 @@
 - 4.7k resistor
 - 1k resistor
 - 1n4001 diode
+
+**thermocouple sensors _(optional)_**
+
+_it would be good to monitor oil temperature as well as both cylinder combustion and exhausts output temperature. (x5)_
+
+- cd4051 multiplexer
+  - [datasheet](./doc/cd4051b.pdf)
+- max6675 thermocouple digitizer
+  - [datasheet](./doc/MAX6675.pdf)
+  - k-type thermocouple (maximum of 8)
+- use raiser module for up to 6x thermocouples
 
 ### pcb
 
@@ -88,7 +118,3 @@
 
 **blueprint**
 ![raw](./pcb/pico-hd-mcu-v2/pcb-blueprint.png)
-
-### mobile app ui
-
-![back](./doc/mobile-app.gif)
