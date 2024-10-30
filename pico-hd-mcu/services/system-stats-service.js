@@ -12,14 +12,13 @@ class SystemStatsService extends BaseService {
     this.data = new SystemStatsData();
   }
 
-  start() {
-    super.start();
+  setup() {
+    super.setup();
     this.data.arch = process.arch;
     this.data.platform = process.platform;
     this.data.version = process.version;
     this.data.name = board.name;
     this.data.uid = board.uid;
-    super.publishData();
   }
 
   publishData() {
