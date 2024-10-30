@@ -38,19 +38,21 @@ class VehicleSensorService extends BaseService {
     this.data.batt = (this.data.raw_batt * Hardware.ADC_REF_MAX_VOLTAGE) * (Hardware.BATTERY_VOLTAGE_R1 + Hardware.BATTERY_VOLTAGE_R2) / Hardware.BATTERY_VOLTAGE_R2;
 
     // todo: implement with harley davidson rpm sensor output voltage reference
-    const rawRpm = analogRead(Gpio.VEHICLE_SENSOR_RPM);
-    this.data.raw_rpm = rawRpm;
-    this.data.rpm = rawRpm;
+    // const rawRpm = analogRead(Gpio.VEHICLE_SENSOR_RPM);
+    // this.data.raw_rpm = rawRpm;
+    // this.data.rpm = rawRpm;
+    this.data.rpm = -1;
 
     // todo: implement with harley davidson speed sensor output voltage reference
-    const rawSpeed = analogRead(Gpio.VEHICLE_SENSOR_SPEED);
-    this.data.raw_speed = rawSpeed;
-    this.data.speed = rawSpeed;
+    // const rawSpeed = analogRead(Gpio.VEHICLE_SENSOR_SPEED);
+    // this.data.raw_speed = rawSpeed;
+    // this.data.speed = rawSpeed;
+    this.data.speed = -1;
 
-    this.data.tireFront = 0;
-    this.data.tireRear = 0;
-    this.data.tempFront = 0;
-    this.data.tempRear = 0;
+    this.data.tireFront = -1;
+    this.data.tireRear = -1;
+    this.data.tempFront = -1;
+    this.data.tempRear = -1;
 
     super.publishData();
   }
