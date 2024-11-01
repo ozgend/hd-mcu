@@ -172,6 +172,7 @@ class TurnSignalService extends BaseService {
         case TurnSignalCommands.NONE:
           _action.left = false;
           _action.right = false;
+          break;
         default:
           _action.left = false;
           _action.right = false;
