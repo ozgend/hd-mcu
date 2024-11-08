@@ -162,3 +162,57 @@ _it would be good to monitor oil temperature as well as both cylinder combustion
     ```bash
     nom run bundle:app
     ```
+
+## usb serial interface
+
+- usb: `115200 bps`
+- bt: `9600 bps`
+
+### service interaction
+
+- query only: `[SVC]+[CMD]\n`
+- set svc data: `[SVC]+[CMD]=[DATA]\n`
+
+**service list:**
+| service | description |
+| ------- | ----------- |
+| `SYS` | mcu information system |
+| `THE` | thermocouple sensor module |
+| `TSM` | turn signal module |
+| `VHC` | vehicle healthcheck module |
+| `VHI` | vehicle information system |
+
+**command list**
+| command | description |
+| ------- | ----------- |
+| `INFO` | get information from service|
+| `DATA` | get data from service |
+| `SET` | send data to service |
+| `START` | start monitoring |
+| `STOP` | stop monitoring |
+
+**`TSM` extended command set**
+| command | description |
+| ------- | ----------- |
+| `LEFT` | left turn signal |
+| `RIGHT` | right turn signal |
+| `ALL` | hazard signal |
+| `NONE` | turn signal off |
+
+### module interaction
+
+- query only: `[MOD]+[CMD]\n`
+
+**module list:**
+| name | description |
+| ------- | ----------- |
+| `M0` | main mcu module |
+
+**command list**
+| command | description |
+| ------- | ----------- |
+| `DIAG` | execute diagnostic |
+| `START` | start ON_DEMAND services in module |
+| `STOP` | stop ON_DEMAND services in module |
+| `LIST_ALL` | list all services in module |
+| `LIST_RUN` | list running services in module |
