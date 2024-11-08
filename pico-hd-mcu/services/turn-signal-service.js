@@ -20,28 +20,29 @@ let _diagCounter = 0;
 
 const _diagnostic = () => {
   logger.debug(ServiceCode.TurnSignalModule, 'diagnostic', { _state, _action });
+  logger.pulse.down();
   _disableFlasher("diag-start");
 
   _flasherPid = setInterval(() => {
-    if (_diagCounter > (Hardware.TURN_SIGNAL_DIAG_COUNT) * 2) {
+    if (_diagCounter > ((Hardware.TURN_SIGNAL_DIAG_COUNT) * 2)) {
       _disableFlasher("diag-complete [" + _diagCounter + "] cycles");
       _diagCounter = 0;
       return;
     }
     _state.left = !_state.left;
     _state.right = !_state.right;
-    digitalWrite(Gpio.SIGNAL_OUT_LEFT, _state.left ? HIGH : LOW);
-    digitalWrite(Gpio.SIGNAL_OUT_RIGHT, _state.right ? HIGH : LOW);
+    digitalToggle(Gpio.SIGNAL_OUT_LEFT);
+    digitalToggle(Gpio.SIGNAL_OUT_RIGHT);
+    _diagCounter++;
     logger.pulse.toggle();
     logger.debug(ServiceCode.TurnSignalModule, 'diagnostic', { _state, _diagCounter });
-    _diagCounter++;
   }, Hardware.TURN_SIGNAL_DIAG_RATE);
 }
 
-const _enableFlasher = (isLeft, isRight, blinkRate, cancelTimeout) => {
+const _enableFlasher = (isLeft, isRight, blinkRate, cancelTimeout, doNotCancel) => {
   logger.debug(ServiceCode.TurnSignalModule, 'enableFlasher', { isLeft, isRight });
 
-  if (isLeft && isRight) {
+  if (doNotCancel) {
     _cancelerPid = 0;
     logger.debug(ServiceCode.TurnSignalModule, 'will not cancel', { isLeft, isRight });
   }
@@ -89,7 +90,7 @@ const _setFlasher = (isLeft, isRight) => {
   logger.pulse.down();
   _disableFlasher("cancel-any");
   if (isLeft || isRight) {
-    _enableFlasher(isLeft, isRight, Hardware.TURN_SIGNAL_BLINK_RATE, Hardware.TURN_SIGNAL_BLINK_TIMEOUT);
+    _enableFlasher(isLeft, isRight, Hardware.TURN_SIGNAL_BLINK_RATE, Hardware.TURN_SIGNAL_BLINK_TIMEOUT, isLeft && isRight);
   }
 }
 
