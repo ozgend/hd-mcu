@@ -37,20 +37,20 @@ const dispatchModuleCommand = (command) => {
       publishToSerial(ServiceCode.Main, 'DIAG', 'diagnostic event');
       break;
     case 'START':
-      _services.filter(s => s.type === ServiceType.ON_DEMAND).forEach(service => service.start());
-      publishToSerial(ServiceCode.Main, 'START', _services.filter(s => s.isRunning).map(s => { return { code: s.code, type: s.type }; }));
+      _services.filter(s => s.options.serviceType === ServiceType.ON_DEMAND).forEach(service => service.start());
+      publishToSerial(ServiceCode.Main, 'START', _services.filter(s => s.isRunning).map(s => s.options));
       break;
     case 'STOP':
-      _services.filter(s => s.type === ServiceType.ON_DEMAND).forEach(service => service.stop());
-      publishToSerial(ServiceCode.Main, 'STOP', _services.filter(s => !s.isRunning).map(s => { return { code: s.code, type: s.type }; }));
+      _services.filter(s => s.options.serviceType === ServiceType.ON_DEMAND).forEach(service => service.stop());
+      publishToSerial(ServiceCode.Main, 'STOP', _services.filter(s => !s.isRunning).map(s => s.options));
       break;
     case 'LIST_ALL':
-      logger.info(ServiceCode.Main, 'list all services', _services.map(s => s.code));
-      publishToSerial(ServiceCode.Main, 'LIST_ALL', _services.map(s => { return { code: s.code, type: s.type }; }));
+      logger.info(ServiceCode.Main, 'list all services', _services.map(s => s.options));
+      publishToSerial(ServiceCode.Main, 'LIST_ALL', _services.map(s => s.options));
       break;
     case 'LIST_RUN':
-      logger.info(ServiceCode.Main, 'list running services', _services.filter(s => s.isRunning).map(s => s.code));
-      publishToSerial(ServiceCode.Main, 'LIST_RUN', _services.filter(s => s.isRunning).map(s => { return { code: s.code, type: s.type }; }));
+      logger.info(ServiceCode.Main, 'list running services', _services.filter(s => s.isRunning).map(s => s.options));
+      publishToSerial(ServiceCode.Main, 'LIST_RUN', _services.filter(s => s.isRunning).map(s => s.options));
       break;
     default:
       logger.error(ServiceCode.Main, 'unknown module command', command);
@@ -59,7 +59,7 @@ const dispatchModuleCommand = (command) => {
   }
 };
 
-eventBus.on(EventType.CommandForModule, (command) => {
-  logger.debug(ServiceCode.Main, EventType.CommandForModule, { command });
+eventBus.on(EventType.CommandForModule, (serviceCode, command, rawData) => {
+  logger.debug(ServiceCode.Main, EventType.CommandForModule, { serviceCode, command, rawData });
   dispatchModuleCommand(command);
 });

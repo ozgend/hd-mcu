@@ -30,7 +30,7 @@ export const ServiceCode = {
   VehicleInfo: "VHI",
   Thermometer: "THE",
   TurnSignalModule: "TSM",
-  Module: "MODULE",
+  Module: "M0",
   EventBus: "BUS",
   Main: "MAIN",
   Heartbeat: "BEAT",
@@ -60,6 +60,7 @@ export const EventType = {
 };
 
 export const Hardware = {
+  MCU_NAME: "HDMCU",
   // SERIAL_BAUD_COM: 9600,
   // SERIAL_BAUD_BT: 9600,
   MUX_SENSOR_CONNECTED_ITEMS: [0, 1, 2, 3, 4, 5, 6, 7],
