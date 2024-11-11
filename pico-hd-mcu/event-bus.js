@@ -12,8 +12,14 @@ const uartOptions = {
   bufferSize: 2048,
 };
 
-// const textDecoder = new TextDecoder();
 const Serial = new UART(0, uartOptions);
+
+setTimeout(() => {
+  Serial.write(`AT+NAME${Hardware.MCU_NAME}\n`);
+  logger.info(ServiceCode.EventBus, 'uart setup done', `AT+NAME${Hardware.MCU_NAME}`);
+  Serial
+}, 1000);
+
 logger.info(ServiceCode.EventBus, 'uart ready', uartOptions.baudrate);
 
 class EventBus extends EventEmitter { }
@@ -27,7 +33,12 @@ Serial.on('data', (data) => {
 
   data.forEach((byte) => {
     if (byte === 10) {
-      eventBus.emit(EventType.DataFromSerial, _serialPayload.trim());
+      if (_serialPayload.includes('OK')) {
+        logger.debug(ServiceCode.EventBus, 'SERIAL_PAYLOAD', _serialPayload);
+      }
+      else {
+        eventBus.emit(EventType.DataFromSerial, _serialPayload.trim());
+      }
       _serialPayload = '';
     } else if (byte !== 0) {
       _serialPayload += String.fromCharCode(byte).trim();

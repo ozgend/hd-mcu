@@ -35,16 +35,21 @@ const _log = (level, code, message, data) => {
 }
 
 const pulse = {
+  _state: HIGH,
   up: () => {
     // _ledPwm.setDuty(duty ?? 1.0);
+    pulse._state = HIGH;
     digitalWrite(Gpio.ONBOARD_LED, HIGH);
   },
   down: () => {
     // _ledPwm.setDuty(0.01);
+    pulse._state = LOW;
     digitalWrite(Gpio.ONBOARD_LED, LOW);
   },
   toggle: () => {
     // _ledPwm.setDuty(_ledPwm.getDuty() === 1.0 ? 0.01 : 1.0);
+    pulse._state = pulse._state === HIGH ? LOW : HIGH;
+    digitalWrite(Gpio.ONBOARD_LED, pulse._state);
   }
 };
 

@@ -28,7 +28,7 @@ exports.ServiceCode = {
     VehicleInfo: "VHI",
     Thermometer: "THE",
     TurnSignalModule: "TSM",
-    Module: "MODULE",
+    Module: "M0",
     EventBus: "BUS",
     Main: "MAIN",
     Heartbeat: "BEAT",
@@ -54,6 +54,7 @@ exports.EventType = {
     DataFromSerial: "SERIAL_DATA",
 };
 exports.Hardware = {
+    MCU_NAME: "HDMCU",
     // SERIAL_BAUD_COM: 9600,
     // SERIAL_BAUD_BT: 9600,
     MUX_SENSOR_CONNECTED_ITEMS: [0, 1, 2, 3, 4, 5, 6, 7],
@@ -62,13 +63,17 @@ exports.Hardware = {
     TURN_SIGNAL_BTN_DEBOUNCE: 200,
     TURN_SIGNAL_BLINK_RATE: 400,
     TURN_SIGNAL_BLINK_TIMEOUT: 30000,
-    TURN_SIGNAL_DIAG_RATE: 100,
+    TURN_SIGNAL_DIAG_RATE: 200,
+    TURN_SIGNAL_DIAG_TIMEOUT: 1000,
     TURN_SIGNAL_DIAG_COUNT: 3,
     // TURN_SIGNAL_INTERRUPT_WAIT: 100,
     ADC_BIT_MAX_VALUE: 4096, // 1 << 12
     ADC_REF_MAX_VOLTAGE: 3.3,
     ADC_SCALING_FACTOR: 6.95,
-    ADC_CONVERSION_FACTOR: 0.0008056640625, // 3.3 / 1 << 12
+    // ADC_CONVERSION_FACTOR: 0.0008056640625, // 3.3 / 1 << 12
+    ADC_OFFSET_VOLTAGE: 0.706,
+    TEMPERATURE_SCALING_FACTOR: 0.001721,
+    TEMPERATURE_OFFSET: 27,
     BATTERY_VOLTAGE_R1: 33000,
     BATTERY_VOLTAGE_R2: 7500,
     // BATTERY_VOLTAGE_LOSS: 0.01,
