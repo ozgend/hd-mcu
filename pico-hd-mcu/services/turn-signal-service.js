@@ -144,6 +144,8 @@ class TurnSignalService extends BaseService {
 
   setup() {
     super.setup();
+    pinMode(Gpio.SIGNAL_IN_LEFT, INPUT_PULLUP);
+    pinMode(Gpio.SIGNAL_IN_RIGHT, INPUT_PULLUP);
     pinMode(Gpio.SIGNAL_OUT_LEFT, OUTPUT);
     pinMode(Gpio.SIGNAL_OUT_RIGHT, OUTPUT);
 
