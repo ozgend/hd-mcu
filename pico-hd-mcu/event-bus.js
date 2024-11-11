@@ -1,7 +1,8 @@
 const { EventEmitter } = require('events');
 const { UART } = require('uart');
+const { writeFile } = require('./utils');
 const logger = require('./logger');
-const { ServiceCode, EventType, Seperator, ServiceCommand, Hardware } = require('../ts-schema/constants');
+const { ServiceCode, EventType, Seperator, ServiceCommand, Hardware, FILE_BUNDLE } = require('../ts-schema/constants');
 
 const uartOptions = {
   baudrate: 9600,
@@ -27,24 +28,66 @@ const eventBus = new EventBus();
 logger.info(ServiceCode.EventBus, 'emitter ready');
 
 let _serialPayload = '';
+let fileBuffer = '';
+let inFileTransferMode = false;
+
+// Serial.on('data', (data) => {
+//   //logger.debug(ServiceCode.EventBus, 'serial.on.data', { raw: data, length: data.length, text: textDecoder.decode(data) });
+
+//   data.forEach((byte) => {
+//     if (byte === 10) {
+//       if (_serialPayload.includes('OK')) {
+//         logger.debug(ServiceCode.EventBus, 'SERIAL_PAYLOAD', _serialPayload);
+//       }
+//       else {
+//         eventBus.emit(EventType.DataFromSerial, _serialPayload.trim());
+//       }
+//       _serialPayload = '';
+//     } else if (byte !== 0) {
+//       _serialPayload += String.fromCharCode(byte).trim();
+//     }
+//   });
+// });
 
 Serial.on('data', (data) => {
-  //logger.debug(ServiceCode.EventBus, 'serial.on.data', { raw: data, length: data.length, text: textDecoder.decode(data) });
-
   data.forEach((byte) => {
-    if (byte === 10) {
-      if (_serialPayload.includes('OK')) {
-        logger.debug(ServiceCode.EventBus, 'SERIAL_PAYLOAD', _serialPayload);
-      }
-      else {
-        eventBus.emit(EventType.DataFromSerial, _serialPayload.trim());
-      }
+    // Detect start and end markers for file transfer mode
+    if (!inFileTransferMode && _serialPayload.includes("<START>")) {
+      inFileTransferMode = true;
+      fileBuffer = ''; // Reset file buffer for new transfer
       _serialPayload = '';
+      return;
+    } else if (inFileTransferMode && _serialPayload.includes("<END>")) {
+      inFileTransferMode = false;
+      saveFileBuffer(fileBuffer);
+      fileBuffer = '';
+      _serialPayload = '';
+      return;
+    }
+
+    // Regular handling for commands and file data
+    if (byte === 10) { // Newline byte
+      if (!inFileTransferMode) {
+        // Command mode: handle command payload
+        if (_serialPayload.includes('OK')) {
+          logger.debug(ServiceCode.EventBus, 'SERIAL_PAYLOAD', _serialPayload);
+        } else {
+          eventBus.emit(EventType.DataFromSerial, _serialPayload.trim());
+        }
+      } else {
+        // File transfer mode: append payload to file buffer
+        fileBuffer += _serialPayload;
+      }
+      _serialPayload = ''; // Reset payload after processing
     } else if (byte !== 0) {
-      _serialPayload += String.fromCharCode(byte).trim();
+      _serialPayload += String.fromCharCode(byte).trim(); // Append byte to payload
     }
   });
 });
+
+const saveFileBuffer = (buffer) => {
+  writeFile(FILE_BUNDLE, buffer);
+};
 
 // events from services
 eventBus.on(EventType.DataFromService, (serviceCode, eventType, serviceData) => {

@@ -92,12 +92,22 @@ var TsmControlData = /** @class */ (function () {
 exports.TsmControlData = TsmControlData;
 var TsmSettings = /** @class */ (function () {
     function TsmSettings() {
-        this.btnDebounce = 0;
         this.blinkRate = 0;
         this.blinkTimeout = 0;
-        this.diagRate = 0;
+        this.btnDebounce = 0;
         this.diagCount = 0;
+        this.diagRate = 0;
     }
+    TsmSettings.default = function (defaults) {
+        var tsm = {
+            blinkRate: defaults.blinkRate,
+            blinkTimeout: defaults.blinkTimeout,
+            btnDebounce: defaults.btnDebounce,
+            diagCount: defaults.diagCount,
+            diagRate: defaults.diagRate,
+        };
+        return tsm;
+    };
     return TsmSettings;
 }());
 exports.TsmSettings = TsmSettings;

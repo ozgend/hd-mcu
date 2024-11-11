@@ -1,5 +1,9 @@
 export const MaxItemSize = 9999;
 
+export const FILE_TSM_CONFIG = "data.tsm-config.json";
+export const FILE_VHI_DATA = "data-vehicle-info.json";
+export const FILE_BUNDLE = "bundle.js";
+
 export const Seperator = {
   SerialCommand: "+",
   ServiceData: "=",
