@@ -97,3 +97,7 @@ export interface IMuxSettings {
   readInterval: number;
   readBatchTimeout: number;
 }
+
+export interface HdMcuSettings {
+  [key: string]: string | number | boolean;
+}
