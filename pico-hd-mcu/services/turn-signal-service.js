@@ -1,7 +1,18 @@
+const { readObject, writeObject } = require('../utils');
 const logger = require('../logger');
 const { Button } = require('button');
-const { Hardware, Gpio, ServiceCode, TurnSignalCommands, ServiceType, Broadcasting } = require('../../ts-schema/constants');
+const { Hardware, Gpio, ServiceCode, TurnSignalCommands, ServiceType, Broadcasting, FILE_TSM_CONFIG } = require('../../ts-schema/constants');
 const BaseService = require('../base-service');
+const { TsmSettings } = require('../../ts-schema/data.model');
+
+const defaultTsmConfig = {
+  blinkRate: Hardware.TURN_SIGNAL_BLINK_RATE,
+  blinkTimeout: Hardware.blinkTimeout,
+  btnDebounce: Hardware.TURN_SIGNAL_BTN_DEBOUNCE,
+  diagCount: Hardware.TURN_SIGNAL_DIAG_COUNT,
+  diagRate: Hardware.TURN_SIGNAL_DIAG_RATE,
+};
+const tsmConfig = readObject(FILE_TSM_CONFIG) || TsmSettings.default(defaultTsmConfig);
 
 const _action = {
   left: false,
@@ -15,7 +26,6 @@ const _state = {
 
 let _flasherPid = 0;
 let _cancelerPid = 0;
-let _checkerPid = 0;
 let _diagCounter = 0;
 
 const _diagnostic = () => {
@@ -24,7 +34,7 @@ const _diagnostic = () => {
   _disableFlasher("diag-start");
 
   _flasherPid = setInterval(() => {
-    if (_diagCounter > ((Hardware.TURN_SIGNAL_DIAG_COUNT) * 2)) {
+    if (_diagCounter > ((tsmConfig.diagCount) * 2)) {
       _disableFlasher("diag-complete [" + _diagCounter + "] cycles");
       _diagCounter = 0;
       return;
@@ -36,7 +46,7 @@ const _diagnostic = () => {
     _diagCounter++;
     logger.pulse.toggle();
     logger.debug(ServiceCode.TurnSignalModule, 'diagnostic', { _state, _diagCounter });
-  }, Hardware.TURN_SIGNAL_DIAG_RATE);
+  }, tsmConfig.diagRate);
 }
 
 const _enableFlasher = (isLeft, isRight, blinkRate, cancelTimeout, doNotCancel) => {
@@ -90,7 +100,7 @@ const _setFlasher = (isLeft, isRight) => {
   logger.pulse.down();
   _disableFlasher("cancel-any");
   if (isLeft || isRight) {
-    _enableFlasher(isLeft, isRight, Hardware.TURN_SIGNAL_BLINK_RATE, Hardware.TURN_SIGNAL_BLINK_TIMEOUT, isLeft && isRight);
+    _enableFlasher(isLeft, isRight, tsmConfig.blinkRate, tsmConfig.blinkTimeout, isLeft && isRight);
   }
 }
 
@@ -134,30 +144,22 @@ class TurnSignalService extends BaseService {
 
   setup() {
     super.setup();
+    pinMode(Gpio.SIGNAL_IN_LEFT, INPUT_PULLUP);
+    pinMode(Gpio.SIGNAL_IN_RIGHT, INPUT_PULLUP);
     pinMode(Gpio.SIGNAL_OUT_LEFT, OUTPUT);
     pinMode(Gpio.SIGNAL_OUT_RIGHT, OUTPUT);
 
     _diagnostic();
 
-    this.leftButton = new Button(Gpio.SIGNAL_IN_LEFT, { mode: INPUT, event: RISING, debounce: Hardware.TURN_SIGNAL_BTN_DEBOUNCE });
-    this.rightButton = new Button(Gpio.SIGNAL_IN_RIGHT, { mode: INPUT, event: RISING, debounce: Hardware.TURN_SIGNAL_BTN_DEBOUNCE });
+    this.leftButton = new Button(Gpio.SIGNAL_IN_LEFT, { mode: INPUT, event: RISING, debounce: tsmConfig.btnDebounce });
+    this.rightButton = new Button(Gpio.SIGNAL_IN_RIGHT, { mode: INPUT, event: RISING, debounce: tsmConfig.btnDebounce });
 
     this.leftButton.on('click', () => {
       _checkAction(this.leftButton, this.rightButton);
-
-      // clearTimeout(_checkerPid);
-      // _checkerPid = setTimeout(() => {
-      //   _checkAction(this.leftButton, this.rightButton);
-      // }, Hardware.TURN_SIGNAL_BTN_DEBOUNCE);
     });
 
     this.rightButton.on('click', () => {
       _checkAction(this.leftButton, this.rightButton);
-
-      // clearTimeout(_checkerPid);
-      // _checkerPid = setTimeout(() => {
-      //   _checkAction(this.leftButton, this.rightButton);
-      // }, Hardware.TURN_SIGNAL_BTN_DEBOUNCE);
     });
   }
 

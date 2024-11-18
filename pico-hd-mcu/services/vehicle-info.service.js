@@ -1,12 +1,8 @@
-const fs = require('fs');
+const { writeObject, readFile, isFileExist } = require('../utils');
 const logger = require('../logger');
 const BaseService = require('../base-service');
-const { ServiceCode, ServiceType, Broadcasting } = require('../../ts-schema/constants');
+const { ServiceCode, ServiceType, Broadcasting, FILE_VHI_DATA } = require('../../ts-schema/constants');
 const { VehicleInfoData } = require('../../ts-schema/data.model');
-
-const textDecoder = new TextDecoder();
-const textEncoder = new TextEncoder();
-const vehicleInfoFile = 'data.vehicle-info.json';
 
 class VehicleInfoService extends BaseService {
   constructor(eventBus) {
@@ -33,12 +29,12 @@ class VehicleInfoService extends BaseService {
     const currentVehicleInfo = this.getVehicleInfo();
     const newVehicleInfo = payload ? Object.assign(currentVehicleInfo, payload) : currentVehicleInfo;
     logger.debug(ServiceCode.VehicleInfo, 'setVehicleInfo newVehicleInfo:', newVehicleInfo);
-    fs.writeFile(vehicleInfoFile, textEncoder.encode(JSON.stringify(newVehicleInfo)));
+    writeObject(FILE_VHI_DATA, newVehicleInfo);
   }
 
   getVehicleInfo() {
-    if (fs.exists(vehicleInfoFile)) {
-      const vehicleInfo = textDecoder.decode(fs.readFile(vehicleInfoFile));
+    if (isFileExist(FILE_VHI_DATA)) {
+      const vehicleInfo = readFile(FILE_VHI_DATA);
       logger.debug(ServiceCode.VehicleInfo, 'getVehicleInfo vehicleInfo:', vehicleInfo);
       return JSON.parse(vehicleInfo);
     }
@@ -46,12 +42,12 @@ class VehicleInfoService extends BaseService {
   }
 
   setup() {
-    if (!fs.exists(vehicleInfoFile)) {
-      logger.debug(ServiceCode.VehicleInfo, 'setup vehicleInfoFile:', vehicleInfoFile);
+    if (!isFileExist(FILE_VHI_DATA)) {
+      logger.debug(ServiceCode.VehicleInfo, 'setup vehicleInfoFile:', FILE_VHI_DATA);
       this.setVehicleInfo(new VehicleInfoData());
     }
     else {
-      logger.debug(ServiceCode.VehicleInfo, 'setup vehicleInfoFile exists:', vehicleInfoFile);
+      logger.debug(ServiceCode.VehicleInfo, 'setup vehicleInfoFile exists:', FILE_VHI_DATA);
     }
     super.setup();
   }

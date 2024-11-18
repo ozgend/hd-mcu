@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Gpio = exports.Hardware = exports.EventType = exports.TurnSignalCommands = exports.ServiceCommand = exports.ServiceCode = exports.Broadcasting = exports.ServiceStatus = exports.ServiceType = exports.Seperator = exports.MaxItemSize = void 0;
+exports.Gpio = exports.Hardware = exports.EventType = exports.TurnSignalCommands = exports.ServiceCommand = exports.ServiceCode = exports.Broadcasting = exports.ServiceStatus = exports.ServiceType = exports.Seperator = exports.FILE_BUNDLE = exports.FILE_VHI_DATA = exports.FILE_TSM_CONFIG = exports.MaxItemSize = void 0;
 exports.MaxItemSize = 9999;
+exports.FILE_TSM_CONFIG = "data.tsm-config.json";
+exports.FILE_VHI_DATA = "data-vehicle-info.json";
+exports.FILE_BUNDLE = "bundle.js";
 exports.Seperator = {
     SerialCommand: "+",
     ServiceData: "=",
@@ -60,11 +63,11 @@ exports.Hardware = {
     MUX_SENSOR_CONNECTED_ITEMS: [0, 1, 2, 3, 4, 5, 6, 7],
     MUX_SENSOR_READ_INTERVAL: 1000,
     MUX_SENSOR_READ_BATCH_TIMEOUT: 3000,
-    TURN_SIGNAL_BTN_DEBOUNCE: 200,
+    TURN_SIGNAL_BTN_DEBOUNCE: 100,
     TURN_SIGNAL_BLINK_RATE: 400,
-    TURN_SIGNAL_BLINK_TIMEOUT: 30000,
-    TURN_SIGNAL_DIAG_RATE: 200,
-    TURN_SIGNAL_DIAG_TIMEOUT: 1000,
+    TURN_SIGNAL_BLINK_TIMEOUT: 20000,
+    TURN_SIGNAL_DIAG_RATE: 100,
+    TURN_SIGNAL_DIAG_TIMEOUT: 2000,
     TURN_SIGNAL_DIAG_COUNT: 3,
     // TURN_SIGNAL_INTERRUPT_WAIT: 100,
     ADC_BIT_MAX_VALUE: 4096, // 1 << 12

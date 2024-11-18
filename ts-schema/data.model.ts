@@ -145,11 +145,21 @@ export class TsmSettings implements ITsmSettings {
   diagRate: number;
   diagCount: number;
   constructor() {
-    this.btnDebounce = 0;
     this.blinkRate = 0;
     this.blinkTimeout = 0;
-    this.diagRate = 0;
+    this.btnDebounce = 0;
     this.diagCount = 0;
+    this.diagRate = 0;
+  }
+  static default(defaults: ITsmSettings): ITsmSettings {
+    const tsm: ITsmSettings = {
+      blinkRate: defaults.blinkRate,
+      blinkTimeout: defaults.blinkTimeout,
+      btnDebounce: defaults.btnDebounce,
+      diagCount: defaults.diagCount,
+      diagRate: defaults.diagRate,
+    };
+    return tsm;
   }
 }
 
