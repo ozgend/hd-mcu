@@ -1,8 +1,8 @@
 const { writeObject, readFile, isFileExist } = require('../utils');
 const logger = require('../logger');
 const BaseService = require('../base-service');
-const { ServiceCode, ServiceType, Broadcasting, FILE_VHI_DATA } = require('../../ts-schema/constants');
-const { VehicleInfoData } = require('../../ts-schema/data.model');
+const { ServiceCode, ServiceType, Broadcasting, FILE_VHI_DATA } = require('../../../ts-schema/constants');
+const { VehicleInfoData } = require('../../../ts-schema/data.model');
 
 class VehicleInfoService extends BaseService {
   constructor(eventBus) {

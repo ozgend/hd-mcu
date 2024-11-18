@@ -1,6 +1,6 @@
 const BaseService = require('../base-service');
-const { SystemStatsData } = require('../../ts-schema/data.model');
-const { ServiceCode, ServiceType, Broadcasting } = require('../../ts-schema/constants');
+const { SystemStatsData } = require('../../../ts-schema/data.model');
+const { ServiceCode, ServiceType, Broadcasting } = require('../../../ts-schema/constants');
 
 class SystemStatsService extends BaseService {
   constructor(eventBus) {

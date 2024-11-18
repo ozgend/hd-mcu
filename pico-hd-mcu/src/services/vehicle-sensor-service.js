@@ -1,7 +1,7 @@
 const logger = require('../logger');
 const BaseService = require('../base-service');
-const { VehicleSensorData } = require('../../ts-schema/data.model');
-const { ServiceCode, Gpio, ServiceType, Hardware, Broadcasting } = require('../../ts-schema/constants');
+const { VehicleSensorData } = require('../../../ts-schema/data.model');
+const { ServiceCode, Gpio, ServiceType, Hardware, Broadcasting } = require('../../../ts-schema/constants');
 
 const BATTERY_VOLTAGE_SCALING_FACTOR = (Hardware.BATTERY_VOLTAGE_R1 + Hardware.BATTERY_VOLTAGE_R2) / Hardware.BATTERY_VOLTAGE_R2;
 

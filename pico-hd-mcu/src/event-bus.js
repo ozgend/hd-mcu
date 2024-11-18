@@ -2,7 +2,7 @@ const { EventEmitter } = require('events');
 const { UART } = require('uart');
 const { writeFile } = require('./utils');
 const logger = require('./logger');
-const { ServiceCode, EventType, Seperator, ServiceCommand, Hardware, FILE_BUNDLE } = require('../ts-schema/constants');
+const { ServiceCode, EventType, Seperator, ServiceCommand, Hardware, FILE_BUNDLE } = require('../../ts-schema/constants');
 
 const uartOptions = {
   baudrate: 9600,

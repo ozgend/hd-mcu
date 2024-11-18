@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MuxSettings = exports.TsmSettings = exports.TsmControlData = exports.TsmData = exports.SystemStatsData = exports.ThermometerData = exports.VehicleSensorData = exports.VehicleInfoData = void 0;
-class VehicleInfoData {
-    constructor() {
+var VehicleInfoData = /** @class */ (function () {
+    function VehicleInfoData() {
         this.model = "";
         this.vin = "";
         this.year = 0;
@@ -28,10 +28,11 @@ class VehicleInfoData {
         this.serviceDate = 0;
         this.serviceInterval = 0;
     }
-}
+    return VehicleInfoData;
+}());
 exports.VehicleInfoData = VehicleInfoData;
-class VehicleSensorData {
-    constructor() {
+var VehicleSensorData = /** @class */ (function () {
+    function VehicleSensorData() {
         this.temp = 0;
         this.vref = 0;
         this.batt = 0;
@@ -42,10 +43,11 @@ class VehicleSensorData {
         this.tireRear = 0;
         this.tempRear = 0;
     }
-}
+    return VehicleSensorData;
+}());
 exports.VehicleSensorData = VehicleSensorData;
-class ThermometerData {
-    constructor() {
+var ThermometerData = /** @class */ (function () {
+    function ThermometerData() {
         this.ch_0 = 0;
         this.ch_1 = 0;
         this.ch_2 = 0;
@@ -55,10 +57,11 @@ class ThermometerData {
         this.ch_6 = 0;
         this.ch_7 = 0;
     }
-}
+    return ThermometerData;
+}());
 exports.ThermometerData = ThermometerData;
-class SystemStatsData {
-    constructor() {
+var SystemStatsData = /** @class */ (function () {
+    function SystemStatsData() {
         this.arch = "";
         this.platform = "";
         this.version = "";
@@ -68,32 +71,35 @@ class SystemStatsData {
         this.heapUsed = 0;
         this.heapPeak = 0;
     }
-}
+    return SystemStatsData;
+}());
 exports.SystemStatsData = SystemStatsData;
-class TsmData {
-    constructor() {
+var TsmData = /** @class */ (function () {
+    function TsmData() {
         this.state = new TsmControlData();
         this.action = new TsmControlData();
     }
-}
+    return TsmData;
+}());
 exports.TsmData = TsmData;
-class TsmControlData {
-    constructor() {
+var TsmControlData = /** @class */ (function () {
+    function TsmControlData() {
         this.left = false;
         this.right = false;
     }
-}
+    return TsmControlData;
+}());
 exports.TsmControlData = TsmControlData;
-class TsmSettings {
-    constructor() {
+var TsmSettings = /** @class */ (function () {
+    function TsmSettings() {
         this.blinkRate = 0;
         this.blinkTimeout = 0;
         this.btnDebounce = 0;
         this.diagCount = 0;
         this.diagRate = 0;
     }
-    static default(defaults) {
-        const tsm = {
+    TsmSettings.default = function (defaults) {
+        var tsm = {
             blinkRate: defaults.blinkRate,
             blinkTimeout: defaults.blinkTimeout,
             btnDebounce: defaults.btnDebounce,
@@ -101,14 +107,16 @@ class TsmSettings {
             diagRate: defaults.diagRate,
         };
         return tsm;
-    }
-}
+    };
+    return TsmSettings;
+}());
 exports.TsmSettings = TsmSettings;
-class MuxSettings {
-    constructor() {
+var MuxSettings = /** @class */ (function () {
+    function MuxSettings() {
         this.sensorItems = [];
         this.readInterval = 0;
         this.readBatchTimeout = 0;
     }
-}
+    return MuxSettings;
+}());
 exports.MuxSettings = MuxSettings;

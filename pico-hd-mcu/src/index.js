@@ -5,8 +5,8 @@ const logger = require('./logger');
 logger.pulse.up();
 
 const { eventBus, publishToSerial } = require('./event-bus');
-const { SchemaVersion } = require('../ts-schema/schema.version');
-const { ServiceType, ServiceCode, EventType } = require('../ts-schema/constants');
+const { SchemaVersion } = require('../../ts-schema/schema.version');
+const { ServiceType, ServiceCode, EventType } = require('../../ts-schema/constants');
 const TurnSignalService = require('./services/turn-signal-service');
 const SystemStatsService = require('./services/system-stats-service');
 const VehicleSensorService = require('./services/vehicle-sensor-service');

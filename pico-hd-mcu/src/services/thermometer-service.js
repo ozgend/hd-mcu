@@ -2,8 +2,8 @@ const MAX6675 = require('../lib/max6675-hw-spi');
 const HC4051 = require('../lib/hc4051');
 const logger = require('../logger');
 const BaseService = require('../base-service');
-const { ThermometerData } = require('../../ts-schema/data.model');
-const { ServiceCode, Gpio, ServiceType, Broadcasting, Hardware } = require('../../ts-schema/constants');
+const { ThermometerData } = require('../../../ts-schema/data.model');
+const { ServiceCode, Gpio, ServiceType, Broadcasting, Hardware } = require('../../../ts-schema/constants');
 
 const _muxChannels = Hardware.MUX_SENSOR_CONNECTED_ITEMS;
 let _readerPid = 0;

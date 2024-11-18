@@ -1,9 +1,9 @@
 const { readObject, writeObject } = require('../utils');
 const logger = require('../logger');
 const { Button } = require('button');
-const { Hardware, Gpio, ServiceCode, TurnSignalCommands, ServiceType, Broadcasting, FILE_TSM_CONFIG } = require('../../ts-schema/constants');
+const { Hardware, Gpio, ServiceCode, TurnSignalCommands, ServiceType, Broadcasting, FILE_TSM_CONFIG } = require('../../../ts-schema/constants');
 const BaseService = require('../base-service');
-const { TsmSettings } = require('../../ts-schema/data.model');
+const { TsmSettings } = require('../../../ts-schema/data.model');
 
 const defaultTsmConfig = {
   blinkRate: Hardware.TURN_SIGNAL_BLINK_RATE,
