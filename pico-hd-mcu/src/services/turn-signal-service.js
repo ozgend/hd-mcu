@@ -1,17 +1,18 @@
 const { readObject, writeObject } = require('../utils');
 const logger = require('../logger');
 const { Button } = require('button');
-const { Hardware, Gpio, ServiceCode, TurnSignalCommands, ServiceType, Broadcasting, FILE_TSM_CONFIG } = require('../../../ts-schema/constants');
+const { Hardware, Gpio, ServiceCode, TurnSignalCommands, ServiceType, BroadcastMode, FILE_TSM_CONFIG } = require('../../../ts-schema/constants');
 const BaseService = require('../base-service');
 const { TsmSettings } = require('../../../ts-schema/data.model');
 
 const defaultTsmConfig = {
   blinkRate: Hardware.TURN_SIGNAL_BLINK_RATE,
-  blinkTimeout: Hardware.blinkTimeout,
+  blinkTimeout: Hardware.TURN_SIGNAL_BLINK_TIMEOUT,
   btnDebounce: Hardware.TURN_SIGNAL_BTN_DEBOUNCE,
   diagCount: Hardware.TURN_SIGNAL_DIAG_COUNT,
   diagRate: Hardware.TURN_SIGNAL_DIAG_RATE,
 };
+
 const tsmConfig = readObject(FILE_TSM_CONFIG) || TsmSettings.default(defaultTsmConfig);
 
 const _action = {
@@ -142,7 +143,7 @@ class TurnSignalService extends BaseService {
     super(eventBus, {
       serviceCode: ServiceCode.TurnSignalModule,
       serviceType: ServiceType.ON_DEMAND,
-      broadcastMode: Broadcasting.OnDemandPolling,
+      broadcastMode: BroadcastMode.OnDemandPolling,
       commands: Object.values(TurnSignalCommands),
     });
   }

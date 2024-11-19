@@ -3,7 +3,7 @@ const HC4051 = require('../lib/hc4051');
 const logger = require('../logger');
 const BaseService = require('../base-service');
 const { ThermometerData } = require('../../../ts-schema/data.model');
-const { ServiceCode, Gpio, ServiceType, Broadcasting, Hardware } = require('../../../ts-schema/constants');
+const { ServiceCode, Gpio, ServiceType, BroadcastMode, Hardware } = require('../../../ts-schema/constants');
 
 const _muxChannels = Hardware.MUX_SENSOR_CONNECTED_ITEMS;
 let _readerPid = 0;
@@ -13,15 +13,14 @@ class ThermometerService extends BaseService {
   constructor(eventBus) {
     super(eventBus, {
       serviceCode: ServiceCode.Thermometer,
-      serviceType: ServiceType.ON_DEMAND,
-      broadcastMode: Broadcasting.OnDemandPolling,
+      serviceType: ServiceType.OnDemand,
+      broadcastMode: BroadcastMode.OnDemandPolling,
     });
     this.data = new ThermometerData();
   }
 
   start() {
     super.start();
-    super.publishData();
 
     _muxChannels.forEach((ch) => {
       this.data[`ch_${ch}`] = 0;

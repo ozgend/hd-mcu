@@ -16,19 +16,19 @@ enum LogLevel {
 export class Logging {
   private static LOG_LEVEL: LogLevel = LogLevel.DEBUG;
 
-  static debug(code: string, message: string, ...data: any[]): void {
+  static debug(code: string, message: string, data: any): void {
     this._log(LogLevel.DEBUG, code, message, data);
   }
 
-  static info(code: string, message: string, ...data: any[]): void {
+  static info(code: string, message: string, data: any): void {
     this._log(LogLevel.INFO, code, message, data);
   }
 
-  static error(code: string, message: string, ...data: any[]): void {
+  static error(code: string, message: string, data: any): void {
     this._log(LogLevel.ERROR, code, message, data);
   }
 
-  private static _log(level: LogLevel, code: string, message: string, ...data: any[]): void {
+  private static _log(level: LogLevel, code: string, message: string, data: any): void {
     if (level >= this.LOG_LEVEL) {
       message = data ? `${message} ${JSON.stringify(data)}` : message;
       console.log(`${LEVEL_NAMES[level]} | [${code}] ${message}`);

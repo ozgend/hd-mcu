@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 
 import { Logging } from "./logger";
 import { IEventBus } from "./event-bus";
@@ -90,13 +88,13 @@ export class BaseService<TData> {
     if (this.options.broadcastMode === BroadcastMode.ContinuousStream) {
       this.broadcastPid = setInterval(() => {
         this.publishData();
-      }, this.options.updateInterval);
+      }, this.options.updateInterval || 1000 * 5);
     }
     Logging.info(this.options.serviceCode, "started.");
     if (this.options.broadcastMode === BroadcastMode.ContinuousStream) {
       setTimeout(() => {
         this.stop();
-      }, this.options.idleTimeout);
+      }, this.options.idleTimeout || 1000 * 120);
     }
     this.status = ServiceStatus.Started;
     this.publishInformation();

@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 
-import { UART, UARTOptions } from "uart";
+import { UART, UARTOptionsC } from "uart";
 import { writeFile } from "./utils";
 import { Logging } from "./logger";
 import { ServiceCode, EventType, Seperator, ServiceCommand, Hardware, FILE_BUNDLE } from "../../ts-schema/constants";
 import { eventBus } from "./event-bus";
 
-const uartOptions: UARTOptions = {
+const uartOptions: UARTOptionsC = {
   baudrate: 9600,
   bits: 8,
   partity: UART.PARTIY_NONE,

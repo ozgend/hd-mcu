@@ -17,7 +17,7 @@ const Serial = new UART(0, uartOptions);
 
 setTimeout(() => {
   Serial.write(`AT+NAME${Hardware.MCU_NAME}\n`);
-  logger.info(ServiceCode.EventBus, 'uart setup done', `AT+NAME${Hardware.MCU_NAME}`);
+  logger.info(ServiceCode.EventBus, 'uart setup done', `AT+NAME${Hardware.MCU_NAME}2`);
   Serial
 }, 1000);
 

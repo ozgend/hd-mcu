@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 // refs
 // https://github.com/zhenek-kreker/MAX6675/blob/master/MAX6675.cpp
 // https://github.com/adafruit/MAX6675-library/blob/master/max6675.cpp
@@ -28,12 +24,14 @@ export class MAX6675 {
   private cs: number;
   private bus: number;
   private spiOptions: unknown;
-  private spiBus: any;
-  private spiCs: any;
+  private spiBus: ISPI | null;
+  private spiCs: IGPIO | null;
 
   constructor(options: MAX6675Options) {
     this.cs = options.cs || 13;
     this.bus = options.bus || 1;
+    this.spiBus = null;
+    this.spiCs = null;
     this.spiOptions = {
       mode: options.mode || SPI.MODE_1,
       baudrate: options.baudrate || MAX6675_BPS,
@@ -48,7 +46,7 @@ export class MAX6675 {
   init(): boolean {
     try {
       this.spiBus = new SPI(this.bus, this.spiOptions);
-      this.spiCs = new GPIO(this.cs, "out");
+      this.spiCs = new GPIO(this.cs, OUTPUT);
       this.spiCs.high();
       console.log("MAX6675: init");
       console.log(this.spiCs);

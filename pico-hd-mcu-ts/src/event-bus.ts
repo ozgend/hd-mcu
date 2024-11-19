@@ -1,17 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 
 import { EventEmitter } from "events";
 
 export interface IEventBus {
-  on: (event: string, listener: (...args: any[]) => void) => this;
-  emit: (event: string, ...args: any[]) => boolean;
+  on: (event: string, listener: (...args: any[]) => void) => void;
+  emit: (event: string, ...args: any[]) => void;
 }
 
 export class EventBus extends EventEmitter implements IEventBus {
-  on: (event: string, listener: (...args: any[]) => void) => this;
-  emit: (event: string, ...args: any[]) => boolean;
+  constructor() {
+    super();
+  }
+
+  public on(event: string, listener: (...args: any[]) => void) {
+    super.on(event, listener);
+  }
+
+  public emit(event: string, ...args: any[]) {
+    super.emit(event, ...args);
+  }
 }
 
 export const eventBus = new EventBus();

@@ -1,6 +1,3 @@
-const rtc = require('rtc');
-rtc.setTime(-2209078556000);
-
 const logger = require('./logger');
 logger.pulse.up();
 
@@ -25,7 +22,7 @@ const _services = [
 
 _services.forEach(service => {
   service.setup();
-  if (service.ServiceType === ServiceType.ALWAYS_RUN) {
+  if (service.ServiceType === ServiceType.AlwaysRun) {
     service.start();
   }
 });

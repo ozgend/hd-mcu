@@ -1,5 +1,5 @@
 const logger = require('./logger');
-const { ServiceCommand, EventType, ServiceStatus, Broadcasting } = require('../../ts-schema/constants');
+const { ServiceCommand, EventType, ServiceStatus, BroadcastMode } = require('../../ts-schema/constants');
 const { SchemaVersion } = require('../../ts-schema/schema.version');
 
 class BaseService {
@@ -9,7 +9,7 @@ class BaseService {
       serviceType,
       updateInterval: updateInterval ?? 1000 * 5,
       idleTimeout: idleTimeout ?? 1000 * 120,
-      broadcastMode: broadcastMode ?? Broadcasting.OnDemandPolling,
+      broadcastMode: broadcastMode ?? BroadcastMode.OnDemandPolling,
       commands: (commands && commands.length > 0) ? [...Object.values(ServiceCommand), ...commands] : Object.values(ServiceCommand),
     };
 
@@ -67,13 +67,13 @@ class BaseService {
     }
     logger.info(this.options.serviceCode, 'starting');
     this.isRunning = true;
-    if (this.options.broadcastMode === Broadcasting.ContinuousStream) {
+    if (this.options.broadcastMode === BroadcastMode.ContinuousStream) {
       this.broadcastPid = setInterval(() => {
         this.publishData();
       }, this.options.updateInterval);
     }
     logger.info(this.options.serviceCode, 'started.');
-    if (this.options.broadcastMode === Broadcasting.ContinuousStream) {
+    if (this.options.broadcastMode === BroadcastMode.ContinuousStream) {
       setTimeout(() => {
         this.stop();
       }, this.options.idleTimeout);

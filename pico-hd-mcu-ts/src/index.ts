@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 
-import rtc from "rtc";
 import { Logging, Pulsing } from "./logger";
 import { eventBus } from "./event-bus";
 import { publishToSerial } from "./event-handler";
@@ -13,8 +12,6 @@ import { SystemStatsService } from "./services/system-stats-service";
 import { VehicleSensorService } from "./services/vehicle-sensor-service";
 import { ThermometerService } from "./services/thermometer-service";
 import { VehicleInfoService } from "./services/vehicle-info.service";
-
-rtc.setTime(-2209078556000);
 
 Pulsing.up();
 Logging.info(ServiceCode.Main, "schema version", SchemaVersion);

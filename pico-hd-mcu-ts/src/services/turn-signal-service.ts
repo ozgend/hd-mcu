@@ -17,7 +17,8 @@ const defaultTsmConfig = {
   diagCount: Hardware.TURN_SIGNAL_DIAG_COUNT,
   diagRate: Hardware.TURN_SIGNAL_DIAG_RATE,
 };
-const tsmConfig = readObject(FILE_TSM_CONFIG) || TsmSettings.default(defaultTsmConfig);
+
+const tsmConfig = readObject(FILE_TSM_CONFIG) ?? TsmSettings.default(defaultTsmConfig);
 
 const _action = {
   left: false,

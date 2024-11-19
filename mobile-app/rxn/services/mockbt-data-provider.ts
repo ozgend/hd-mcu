@@ -1,7 +1,7 @@
 import { Alert } from 'react-native';
 import { IDataProvider, IDataProviderDevice } from './interfaces';
 import { IServiceStatusInfo, ISystemStatsData, IThermometerData, ITsmData, IVehicleInfoData, IVehicleSensorData } from '../../../ts-schema/data.interface';
-import { ServiceCommand, ServiceCode, Broadcasting, ServiceType, ServiceStatus, TurnSignalCommands } from '../../../ts-schema/constants';
+import { ServiceCommand, ServiceCode, BroadcastMode, ServiceType, ServiceStatus, TurnSignalCommands } from '../../../ts-schema/constants';
 import { Storage } from '../storage';
 import { SchemaVersion } from '../../../ts-schema/schema.version';
 import { AppConfigField, getAppConfigField } from '../config';
@@ -190,10 +190,10 @@ const mockBtDevices: IDataProviderDevice[] = [
 
 const mockStatusSource = (serviceCode: string): IServiceStatusInfo => {
   return {
-    broadcastMode: Broadcasting.OnDemandPolling,
+    broadcastMode: BroadcastMode.OnDemandPolling,
     isRunning: false,
     serviceCode: serviceCode,
-    serviceType: ServiceType.ON_DEMAND,
+    serviceType: ServiceType.OnDemand,
     status: ServiceStatus.Available,
     idleTimeout: 0,
     updateInterval: 0,

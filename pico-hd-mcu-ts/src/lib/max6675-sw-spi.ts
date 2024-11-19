@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 // port of https://github.com/adafruit/MAX6675-library/blob/master/max6675.cpp
 
 //  BITS       DESCRIPTION

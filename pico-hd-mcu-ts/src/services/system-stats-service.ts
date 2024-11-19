@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 
 import { BaseService } from "../base-service";
 import { SystemStatsData } from "../../../ts-schema/data.model";

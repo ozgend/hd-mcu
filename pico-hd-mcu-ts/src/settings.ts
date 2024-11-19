@@ -8,7 +8,7 @@ import { HdMcuSettings } from "../../ts-schema/data.interface";
 export const readSettings = (key: string): HdMcuSettings | null => {
   try {
     const data = readObject(`./settings.${key}.json`);
-    const storage: HdMcuSettings = JSON.parse(data);
+    const storage: HdMcuSettings = data ? JSON.parse(data) : null;
     return storage;
   } catch (error) {
     return null;
