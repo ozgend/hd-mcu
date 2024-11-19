@@ -7,6 +7,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
+    "clean": "rm -rf ./bundle",
     "build": "npm run bundle",
     "build:min": "npm run bundle:min",
     "bundle": "kaluma bundle ./src/index.js -o ./bundle/bundle.js",
