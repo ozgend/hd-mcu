@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 
-import { readFileSync, writeFileSync } from "fs";
+import { readObject, writeObject } from "./utils";
 import { HdMcuSettings } from "../../ts-schema/data.interface";
 
 export const readSettings = (key: string): HdMcuSettings | null => {
   try {
-    const data = readFileSync(`./settings.${key}.json`, "utf8");
+    const data = readObject(`./settings.${key}.json`);
     const storage: HdMcuSettings = JSON.parse(data);
     return storage;
   } catch (error) {
@@ -17,7 +17,7 @@ export const readSettings = (key: string): HdMcuSettings | null => {
 
 export const updateSettings = (key: string, data: HdMcuSettings): void => {
   try {
-    writeFileSync(`./settings.${key}.json`, JSON.stringify(data));
+    writeObject(`./settings.${key}.json`, JSON.stringify(data));
   } catch (error) {
     console.error(error);
   }

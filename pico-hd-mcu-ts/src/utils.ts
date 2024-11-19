@@ -8,24 +8,24 @@ const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
 
 export const isFileExist = (filepath: string): boolean => {
-  return fs.existsSync(filepath);
+  return fs.exists(filepath);
 };
 
-export const writeFile = async (filepath: string, unencodedString: string): Promise<void> => {
+export const writeFile = async (filepath: string, unencodedString: string) => {
   await fs.writeFile(filepath, textEncoder.encode(unencodedString));
 };
 
-export const readFile = async (filepath: string): Promise<string> => {
-  const raw = await fs.readFile(filepath);
+export const readFile = async (filepath: string): string => {
+  const raw = fs.readFile(filepath);
   return textDecoder.decode(raw);
 };
 
-export const writeObject = async (filepath: string, data: object): Promise<void> => {
-  await writeFile(filepath, JSON.stringify(data));
+export const writeObject = async (filepath: string, data: object) => {
+  writeFile(filepath, JSON.stringify(data));
 };
 
-export const readObject = async (filepath: string): Promise<any> => {
-  const raw = await readFile(filepath);
+export const readObject = async (filepath: string): any => {
+  const raw = readFile(filepath);
   return JSON.parse(raw);
 };
 
