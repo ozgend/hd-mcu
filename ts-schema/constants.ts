@@ -9,24 +9,25 @@ export const Seperator = {
   ServiceData: "=",
 };
 
-export const ServiceType = {
-  ALWAYS_RUN: "ALWAYS_RUN",
-  ON_DEMAND: "ON_DEMAND",
-  ONE_TIME: "ONE_TIME",
-};
+export enum ServiceType {
+  AlwaysRun = "ALWAYS_RUN",
+  OnDemand = "ON_DEMAND",
+  OneTime = "ONE_TIME",
+}
 
-export const ServiceStatus = {
-  Available: "AVAILABLE",
-  Ready: "READY",
-  Started: "STARTED",
-  Stopped: "STOPPED",
-  Error: "ERROR",
-};
+export enum ServiceStatus {
+  Initialized = "INITIALIZED",
+  Available = "AVAILABLE",
+  Ready = "READY",
+  Started = "STARTED",
+  Stopped = "STOPPED",
+  Error = "ERROR",
+}
 
-export const Broadcasting = {
-  ContinuousStream: "CONTINUOUS_STREAM",
-  OnDemandPolling: "ON_DEMAND_POLLING",
-};
+export enum BroadcastMode {
+  ContinuousStream = "CONTINUOUS_STREAM",
+  OnDemandPolling = "ON_DEMAND_POLLING",
+}
 
 export const ServiceCode = {
   SystemStats: "SYS",

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Gpio = exports.Hardware = exports.EventType = exports.TurnSignalCommands = exports.ServiceCommand = exports.ServiceCode = exports.Broadcasting = exports.ServiceStatus = exports.ServiceType = exports.Seperator = exports.FILE_BUNDLE = exports.FILE_VHI_DATA = exports.FILE_TSM_CONFIG = exports.MaxItemSize = void 0;
+exports.Gpio = exports.Hardware = exports.EventType = exports.TurnSignalCommands = exports.ServiceCommand = exports.ServiceCode = exports.BroadcastMode = exports.ServiceStatus = exports.ServiceType = exports.Seperator = exports.FILE_BUNDLE = exports.FILE_VHI_DATA = exports.FILE_TSM_CONFIG = exports.MaxItemSize = void 0;
 exports.MaxItemSize = 9999;
 exports.FILE_TSM_CONFIG = "data.tsm-config.json";
 exports.FILE_VHI_DATA = "data-vehicle-info.json";
@@ -9,22 +9,26 @@ exports.Seperator = {
     SerialCommand: "+",
     ServiceData: "=",
 };
-exports.ServiceType = {
-    ALWAYS_RUN: "ALWAYS_RUN",
-    ON_DEMAND: "ON_DEMAND",
-    ONE_TIME: "ONE_TIME",
-};
-exports.ServiceStatus = {
-    Available: "AVAILABLE",
-    Ready: "READY",
-    Started: "STARTED",
-    Stopped: "STOPPED",
-    Error: "ERROR",
-};
-exports.Broadcasting = {
-    ContinuousStream: "CONTINUOUS_STREAM",
-    OnDemandPolling: "ON_DEMAND_POLLING",
-};
+var ServiceType;
+(function (ServiceType) {
+    ServiceType["AlwaysRun"] = "ALWAYS_RUN";
+    ServiceType["OnDemand"] = "ON_DEMAND";
+    ServiceType["OneTime"] = "ONE_TIME";
+})(ServiceType || (exports.ServiceType = ServiceType = {}));
+var ServiceStatus;
+(function (ServiceStatus) {
+    ServiceStatus["Initialized"] = "INITIALIZED";
+    ServiceStatus["Available"] = "AVAILABLE";
+    ServiceStatus["Ready"] = "READY";
+    ServiceStatus["Started"] = "STARTED";
+    ServiceStatus["Stopped"] = "STOPPED";
+    ServiceStatus["Error"] = "ERROR";
+})(ServiceStatus || (exports.ServiceStatus = ServiceStatus = {}));
+var BroadcastMode;
+(function (BroadcastMode) {
+    BroadcastMode["ContinuousStream"] = "CONTINUOUS_STREAM";
+    BroadcastMode["OnDemandPolling"] = "ON_DEMAND_POLLING";
+})(BroadcastMode || (exports.BroadcastMode = BroadcastMode = {}));
 exports.ServiceCode = {
     SystemStats: "SYS",
     VehicleSensor: "VHC",
