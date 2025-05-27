@@ -11,6 +11,7 @@ archive/
 *.tar.gz
 pcb/*backups/
 pico-hd-mcu/bundle.js*
+pico-hd-mcu-ts/dist*
 
 *.iml
 .gradle

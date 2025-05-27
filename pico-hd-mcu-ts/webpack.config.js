@@ -34,7 +34,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist-webpack'),
   },
   optimization: {
-    minimize: false
+    minimize: true
   },
   devtool: "source-map",
   target: "node",

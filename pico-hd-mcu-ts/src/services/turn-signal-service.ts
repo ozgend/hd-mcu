@@ -117,23 +117,31 @@ const _checkAction = (btnLeft, btnRight) => {
   Logging.debug(ServiceCode.TurnSignalModule, `checkAction.right-current ${_action.right}, read: ${_readRight}`);
 
   // hazard lights check
-  // if (_readLeft === HIGH && _readRight === HIGH) {
-  // }
-
-  if (_readLeft === HIGH) {
-    _action.left = !_action.left;
-    Logging.debug(ServiceCode.TurnSignalModule, `checkAction.left-HIGH ${_action.left}`);
+  if (_readLeft === HIGH && _readRight === HIGH) {
+    if (_action.left && _action.right) {
+      _action.left = false;
+      _action.right = false;
+    } else {
+      _action.left = true;
+      _action.right = true;
+    }
+    Logging.debug(ServiceCode.TurnSignalModule, `checkAction.hazard ${_action.left && _action.right}`);
   } else {
-    _action.left = false;
-    // logger.debug(ServiceCode.TurnSignalModule, `checkAction.left-LOW ${_action.left}`);
-  }
-
-  if (_readRight === HIGH) {
-    _action.right = !_action.right;
-    Logging.debug(ServiceCode.TurnSignalModule, `checkAction.right-HIGH ${_action.right}`);
-  } else {
-    _action.right = false;
-    // logger.debug(ServiceCode.TurnSignalModule, `checkAction.right-LOW ${_action.right}`);
+    // turn signal check
+    if (_readLeft === HIGH) {
+      _action.left = !_action.left;
+      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.left-HIGH ${_action.left}`);
+    } else {
+      _action.left = false;
+      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.left-LOW ${_action.left}`);
+    }
+    if (_readRight === HIGH) {
+      _action.right = !_action.right;
+      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.right-HIGH ${_action.right}`);
+    } else {
+      _action.right = false;
+      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.right-LOW ${_action.right}`);
+    }
   }
 
   _setFlasher(_action.left, _action.right);
@@ -154,8 +162,8 @@ export class TurnSignalService extends BaseService<any> {
 
   setup() {
     super.setup();
-    pinMode(Gpio.SIGNAL_IN_LEFT, INPUT_PULLUP);
-    pinMode(Gpio.SIGNAL_IN_RIGHT, INPUT_PULLUP);
+    pinMode(Gpio.SIGNAL_IN_LEFT, INPUT);
+    pinMode(Gpio.SIGNAL_IN_RIGHT, INPUT);
     pinMode(Gpio.SIGNAL_OUT_LEFT, OUTPUT);
     pinMode(Gpio.SIGNAL_OUT_RIGHT, OUTPUT);
 
