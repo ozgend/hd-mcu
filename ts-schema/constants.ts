@@ -123,4 +123,6 @@ export const Gpio = {
   MUX_OUT_C: 7, // GP7  - D_MUX_C
   BT_SERIAL_RX: 1, // GP1  - D_BT_RX
   BT_SERIAL_TX: 0, // GP0  - D_BT_TX
+  IGN_HALL_SENSOR: 22, // GP22 - crank position sensor - TBD
+  IGN_RPM_PULSE: 27, // GP27 - RPM pulse if works with VEHICLE_SENSOR_RPM V divider - TBD
 };
