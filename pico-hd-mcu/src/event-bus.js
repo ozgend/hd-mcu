@@ -2,7 +2,7 @@ const { EventEmitter } = require('events');
 const { UART } = require('uart');
 const { writeFile } = require('./utils');
 const logger = require('./logger');
-const { ServiceCode, EventType, Seperator, ServiceCommand, Hardware, FILE_BUNDLE } = require('../ts-schema/constants');
+const { ServiceCode, EventType, Seperator, ServiceCommand, Hardware, FILE_BUNDLE } = require('../../ts-schema/constants');
 
 const uartOptions = {
   baudrate: 9600,
@@ -17,7 +17,7 @@ const Serial = new UART(0, uartOptions);
 
 setTimeout(() => {
   Serial.write(`AT+NAME${Hardware.MCU_NAME}\n`);
-  logger.info(ServiceCode.EventBus, 'uart setup done', `AT+NAME${Hardware.MCU_NAME}`);
+  logger.info(ServiceCode.EventBus, 'uart setup done', `AT+NAME${Hardware.MCU_NAME}2`);
   Serial
 }, 1000);
 

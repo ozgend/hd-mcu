@@ -9,24 +9,25 @@ export const Seperator = {
   ServiceData: "=",
 };
 
-export const ServiceType = {
-  ALWAYS_RUN: "ALWAYS_RUN",
-  ON_DEMAND: "ON_DEMAND",
-  ONE_TIME: "ONE_TIME",
-};
+export enum ServiceType {
+  AlwaysRun = "ALWAYS_RUN",
+  OnDemand = "ON_DEMAND",
+  OneTime = "ONE_TIME",
+}
 
-export const ServiceStatus = {
-  Available: "AVAILABLE",
-  Ready: "READY",
-  Started: "STARTED",
-  Stopped: "STOPPED",
-  Error: "ERROR",
-};
+export enum ServiceStatus {
+  Initialized = "INITIALIZED",
+  Available = "AVAILABLE",
+  Ready = "READY",
+  Started = "STARTED",
+  Stopped = "STOPPED",
+  Error = "ERROR",
+}
 
-export const Broadcasting = {
-  ContinuousStream: "CONTINUOUS_STREAM",
-  OnDemandPolling: "ON_DEMAND_POLLING",
-};
+export enum BroadcastMode {
+  ContinuousStream = "CONTINUOUS_STREAM",
+  OnDemandPolling = "ON_DEMAND_POLLING",
+}
 
 export const ServiceCode = {
   SystemStats: "SYS",
@@ -34,6 +35,7 @@ export const ServiceCode = {
   VehicleInfo: "VHI",
   Thermometer: "THE",
   TurnSignalModule: "TSM",
+  IgnitionModule: "IGN",
   Module: "M0",
   EventBus: "BUS",
   Main: "MAIN",
@@ -121,4 +123,6 @@ export const Gpio = {
   MUX_OUT_C: 7, // GP7  - D_MUX_C
   BT_SERIAL_RX: 1, // GP1  - D_BT_RX
   BT_SERIAL_TX: 0, // GP0  - D_BT_TX
+  IGN_HALL_SENSOR: 22, // GP22 - crank position sensor - TBD
+  IGN_RPM_PULSE: 27, // GP27 - RPM pulse if works with VEHICLE_SENSOR_RPM V divider - TBD
 };
