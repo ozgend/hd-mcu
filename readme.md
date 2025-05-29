@@ -46,6 +46,12 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
   - [ ] tpms
     - [ ] 433mhz receiver implementation
     - [ ] tpms decoder / man-i or man-ii (tbd)
+  - [ ] ignition module
+    - [ ] dyna 2000i / ultima 2000i timer & pickup
+    - [ ] programmable ignition advance
+      - [ ] advance curve
+      - [ ] temp compensation
+      - [ ] rpm compensation
 
 ### software
 
@@ -181,6 +187,7 @@ _it would be good to monitor oil temperature as well as both cylinder combustion
 | `TSM` | turn signal module |
 | `VHC` | vehicle healthcheck module |
 | `VHI` | vehicle information system |
+| `IGN` | ignition module \*\* |
 
 **command list**
 | command | description |
