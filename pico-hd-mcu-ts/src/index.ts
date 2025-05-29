@@ -82,3 +82,13 @@ eventBus.on(EventType.CommandForModule, (serviceCode: string, command: string, r
   Logging.debug(ServiceCode.Main, EventType.CommandForModule, { serviceCode, command, rawData });
   dispatchModuleCommand(command);
 });
+
+// diag led
+let pulsingPid = setInterval(() => {
+  Pulsing.toggle();
+}, 150);
+
+setTimeout(() => {
+  clearInterval(pulsingPid);
+  Pulsing.down();
+}, 3000);
