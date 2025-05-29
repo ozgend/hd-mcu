@@ -10,8 +10,8 @@ archive/
 *.zip
 *.tar.gz
 pcb/*backups/
-pico-hd-mcu/bundle.js*
-pico-hd-mcu-ts/dist*
+pico-hd-mcu/bundle*
+pico-hd-mcu-ts/bundle*
 
 *.iml
 .gradle

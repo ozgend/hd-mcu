@@ -1,24 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import fs from "fs";
+const fs = global.require("fs");
+import { Logging } from "./logger";
+
+if (!fs) {
+  Logging.error("FileSystem", "File system module is not available. Ensure you are running in a compatible environment");
+}
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
 
 export const isFileExist = (filepath: string): boolean => {
+  Logging.debug("FileSystem.isFileExist", `Checking if file exists: ${filepath}`);
   return fs?.exists(filepath);
 };
 
-export const writeFile = async (filepath: string, unencodedString: string) => {
-  await fs.writeFile(filepath, textEncoder.encode(unencodedString));
+export const writeFile = (filepath: string, unencodedString: string) => {
+  Logging.debug("FileSystem.writeFile", `Writing file ${filepath}`);
+  try {
+    fs.writeFile(filepath, textEncoder.encode(unencodedString));
+  } catch (error) {
+    Logging.error("FileSystem.writeFile", `Failed to write file ${filepath}`);
+    Logging.error("FileSystem.writeFile", (error as any).toString());
+  }
 };
 
 export const readFile = (filepath: string): string | null => {
+  Logging.debug("FileSystem.readFile", `Reading file ${filepath}`);
   if (!isFileExist(filepath)) {
     return null;
   }
-  const raw = fs.readFile(filepath);
-  return textDecoder.decode(raw);
+  try {
+    const raw = fs.readFile(filepath);
+    return textDecoder.decode(raw);
+  } catch (error) {
+    Logging.error("FileSystem.readFile", `Failed to read file ${filepath}`);
+    Logging.error("FileSystem.readFile", (error as any).toString());
+    return null;
+  }
 };
 
 export const writeObject = (filepath: string, data: object) => {

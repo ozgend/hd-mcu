@@ -5,7 +5,7 @@ const { node } = require('webpack');
 
 module.exports = {
   entry: './src/index.ts',
-  mode: 'production',
+  mode: 'development',
   module: {
     rules: [
       {
@@ -29,7 +29,7 @@ module.exports = {
   },
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'bundle'),
+    path: path.resolve(__dirname, 'bundle-dev'),
   },
   optimization: {
     minimize: true

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
+    "outDir": "./bundle-tsc/",
     "module": "CommonJS",
     "target": "es5",
     "strict": true,

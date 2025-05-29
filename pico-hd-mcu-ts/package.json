@@ -7,11 +7,10 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "build:webpack": "webpack",
-    "clean": "rm -rf ./bundle && rm -rf ./dist*",
-    "build": "npm run clean && tsc",
-    "bundle": "npm run build && cd ./dist/pico-hd-mcu-ts/src && kaluma bundle ./index.js -o ../../../bundle/bundle.js",
-    "bundle:min": "npm run build && cd ./dist/pico-hd-mcu-ts/src && kaluma bundle ./index.js -o ../../../bundle/bundle.js -m",
+    "clean": "rm -rf ./bundle && rm -rf ./bundle-dev",
+    "build:dev": "rm -rf ./bundle-dev && webpack --config webpack.config.dev.js",
+    "build": "rm -rf ./bundle && webpack",
+    "flash:dev": "kaluma flash ./bundle-dev/bundle.js",
     "flash": "kaluma flash ./bundle/bundle.js",
     "shell": "kaluma shell"
   },
@@ -19,7 +18,8 @@
     "@typescript/lib-dom": "npm:@types/kaluma"
   },
   "devDependencies": {
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.15.24",
+    "@typescript/lib-dom": "npm:@types/kaluma",
     "ts-loader": "^9.5.1",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "typescript": "^5",
