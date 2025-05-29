@@ -35,6 +35,7 @@ export const ServiceCode = {
   VehicleInfo: "VHI",
   Thermometer: "THE",
   TurnSignalModule: "TSM",
+  IgnitionModule: "IGN",
   Module: "M0",
   EventBus: "BUS",
   Main: "MAIN",
