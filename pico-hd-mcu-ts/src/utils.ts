@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const fs = global.require("fs");
+const fs = require("fs");
 import { Logging } from "./logger";
 
 if (!fs) {

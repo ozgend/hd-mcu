@@ -1,7 +1,7 @@
 export const MaxItemSize = 9999;
 
 export const FILE_TSM_CONFIG = "data.tsm-config.json";
-export const FILE_VHI_DATA = "data-vehicle-info.json";
+export const FILE_VHI_DATA = "data.vehicle-info.json";
 export const FILE_BUNDLE = "bundle.js";
 
 export const Seperator = {
@@ -75,7 +75,7 @@ export const Hardware = {
   TURN_SIGNAL_BTN_DEBOUNCE: 100,
   TURN_SIGNAL_BLINK_RATE: 400,
   TURN_SIGNAL_BLINK_TIMEOUT: 20000,
-  TURN_SIGNAL_DIAG_RATE: 100,
+  TURN_SIGNAL_DIAG_RATE: 250,
   TURN_SIGNAL_DIAG_TIMEOUT: 2000,
   TURN_SIGNAL_DIAG_COUNT: 3,
   // TURN_SIGNAL_INTERRUPT_WAIT: 100,
