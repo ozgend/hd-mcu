@@ -80,7 +80,7 @@ eventBus.on(EventType.DataFromService, (serviceCode: string, eventType: string, 
 // events from serial
 eventBus.on(EventType.DataFromSerial, (serialPayload: string) => {
   Logging.debug(ServiceCode.EventBus, EventType.DataFromSerial, { serialPayload });
-  
+
   if (!serialPayload || serialPayload.trim() === "") {
     Logging.error(ServiceCode.EventBus, "Received empty serial payload");
     return;

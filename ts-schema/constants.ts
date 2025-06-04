@@ -93,6 +93,7 @@ export const Hardware = {
   // BATTERY_VOLTAGE_MAX: 15.0,
   SERVICE_POLL_INTERVAL: 5000,
   HEARTBEAT_PUSH_INTERVAL: 5000,
+  VBUS_DETECT_INTERVAL: 1500,
 };
 
 // hardware voltage simulation
@@ -103,6 +104,7 @@ export const Hardware = {
 // https://electrocredible.com/raspberry-pi-pico-w-pinout-guide-diagrams/
 export const Gpio = {
   // functionality: GP pin,   // name - notes/wiring
+  VBUS: 24, // GP24 - VBUS - USB power detection
   ONBOARD_LED: 25, // GP25 - LED
   VEHICLE_SENSOR_TEMP: 30, // GP30 - ADC4 - virtual
   VEHICLE_SENSOR_VREF: 29, // GP29 - ADC3
