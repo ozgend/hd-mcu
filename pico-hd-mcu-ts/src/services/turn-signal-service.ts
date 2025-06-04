@@ -3,7 +3,7 @@
 // @ts-nocheck
 
 import { IEventBus } from "../event-bus";
-import { readObject } from "../utils";
+import { readObject, writeObject } from "../utils";
 import { Logging, Pulsing } from "../logger";
 import { Button } from "button";
 import { Hardware, Gpio, ServiceCode, TurnSignalCommands, ServiceType, BroadcastMode, FILE_TSM_CONFIG } from "../../../ts-schema/constants";
@@ -18,7 +18,13 @@ const defaultTsmConfig = {
   diagRate: Hardware.TURN_SIGNAL_DIAG_RATE,
 };
 
-const tsmConfig = readObject(FILE_TSM_CONFIG) ?? TsmSettings.default(defaultTsmConfig);
+let tsmConfig = readObject(FILE_TSM_CONFIG);
+
+if (!tsmConfig) {
+  Logging.debug(ServiceCode.TurnSignalModule, "TSM config not found, creating default config");
+  tsmConfig = TsmSettings.default(defaultTsmConfig);
+  writeObject(FILE_TSM_CONFIG, tsmConfig);
+}
 
 const _action = {
   left: false,
@@ -109,38 +115,51 @@ const _setFlasher = (isLeft, isRight) => {
   }
 };
 
+let lastHazardInputTime = 0;
+
 const _checkAction = (btnLeft, btnRight) => {
+  const traceId = Logging.generateTraceId();
+
   const _readLeft = btnLeft.read();
   const _readRight = btnRight.read();
 
-  Logging.debug(ServiceCode.TurnSignalModule, `checkAction.left-current ${_action.left}, read: ${_readLeft}`);
-  Logging.debug(ServiceCode.TurnSignalModule, `checkAction.right-current ${_action.right}, read: ${_readRight}`);
+  Logging.debug(ServiceCode.TurnSignalModule, `checkAction.left-current ${_action.left}, read: ${_readLeft} @ ${traceId}`);
+  Logging.debug(ServiceCode.TurnSignalModule, `checkAction.right-current ${_action.right}, read: ${_readRight} @ ${traceId}`);
 
   // hazard lights check
-  if (_readLeft === HIGH && _readRight === HIGH) {
+  if (_readLeft === 1 && _readRight === 1) {
+    const currentTime = Date.now();
+    if (currentTime - lastHazardInputTime < tsmConfig.btnDebounce) {
+      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.hazard debounce active @ ${traceId}`);
+      return; // debounce active, ignore
+    }
+    lastHazardInputTime = currentTime;
+    Logging.debug(ServiceCode.TurnSignalModule, `checkAction.hazard input detected @ ${traceId}`);
+
     if (_action.left && _action.right) {
       _action.left = false;
       _action.right = false;
+      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.hazard will disable : lr: ${_action.left && _action.right} @ ${traceId}`);
     } else {
       _action.left = true;
       _action.right = true;
+      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.hazard will enable: lr: ${_action.left && _action.right} @ ${traceId}`);
     }
-    Logging.debug(ServiceCode.TurnSignalModule, `checkAction.hazard ${_action.left && _action.right}`);
   } else {
     // turn signal check
     if (_readLeft === HIGH) {
       _action.left = !_action.left;
-      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.left-HIGH ${_action.left}`);
+      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.left-HIGH ${_action.left} @ ${traceId}`);
     } else {
       _action.left = false;
-      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.left-LOW ${_action.left}`);
+      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.left-LOW ${_action.left} @ ${traceId}`);
     }
     if (_readRight === HIGH) {
       _action.right = !_action.right;
-      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.right-HIGH ${_action.right}`);
+      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.right-HIGH ${_action.right} @ ${traceId}`);
     } else {
       _action.right = false;
-      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.right-LOW ${_action.right}`);
+      Logging.debug(ServiceCode.TurnSignalModule, `checkAction.right-LOW ${_action.right} @ ${traceId}`);
     }
   }
 
