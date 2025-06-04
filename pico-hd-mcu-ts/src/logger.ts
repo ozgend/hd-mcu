@@ -16,6 +16,10 @@ enum LogLevel {
 export class Logging {
   private static LOG_LEVEL: LogLevel = LogLevel.DEBUG;
 
+  static generateTraceId(): string {
+    return `(${Math.random().toString(36).substring(2, 15)})`;
+  }
+
   static debug(code: string, message: string, data?: any): void {
     this._log(LogLevel.DEBUG, code, message, data);
   }
