@@ -3,20 +3,28 @@
 // @ts-nocheck
 
 import { Logging, Pulsing } from "./logger";
-import { eventBus } from "./event-bus";
-import { publishToSerial } from "./event-handler";
 import { SchemaVersion } from "../../ts-schema/schema.version";
 import { ServiceType, ServiceCode, EventType } from "../../ts-schema/constants";
+
+Pulsing.up();
+Logging.info(ServiceCode.Main, 'HD MCU starting up...');
+Logging.info(ServiceCode.Main, "schema version", SchemaVersion);
+
+import { eventBus } from "./event-bus";
+import { publishToSerial } from "./event-handler";
 import { TurnSignalService } from "./services/turn-signal-service";
 import { SystemStatsService } from "./services/system-stats-service";
 import { VehicleSensorService } from "./services/vehicle-sensor-service";
 import { ThermometerService } from "./services/thermometer-service";
 import { VehicleInfoService } from "./services/vehicle-info.service";
 
-Pulsing.up();
-Logging.info(ServiceCode.Main, "schema version", SchemaVersion);
-
-const services = [new VehicleInfoService(eventBus), new VehicleSensorService(eventBus), new SystemStatsService(eventBus), new ThermometerService(eventBus), new TurnSignalService(eventBus)];
+const services = [
+  new VehicleInfoService(eventBus),
+  new VehicleSensorService(eventBus),
+  new SystemStatsService(eventBus),
+  new ThermometerService(eventBus),
+  new TurnSignalService(eventBus)
+];
 
 services.forEach((service) => {
   service.setup();
@@ -24,6 +32,9 @@ services.forEach((service) => {
     service.start();
   }
 });
+
+Logging.info(ServiceCode.Main, 'services initialized');
+Pulsing.down();
 
 const dispatchModuleCommand = (command: string): void => {
   switch (command) {
@@ -33,43 +44,19 @@ const dispatchModuleCommand = (command: string): void => {
       break;
     case "START":
       services.filter((s) => s.options.serviceType === ServiceType.OnDemand).forEach((service) => service.start());
-      publishToSerial(
-        ServiceCode.Main,
-        "START",
-        services.filter((s) => s.isRunning).map((s) => s.options)
-      );
+      publishToSerial(ServiceCode.Main, "START", services.filter((s) => s.isRunning).map((s) => s.options));
       break;
     case "STOP":
       services.filter((s) => s.options.serviceType === ServiceType.OnDemand).forEach((service) => service.stop());
-      publishToSerial(
-        ServiceCode.Main,
-        "STOP",
-        services.filter((s) => !s.isRunning).map((s) => s.options)
-      );
+      publishToSerial(ServiceCode.Main, "STOP", services.filter((s) => !s.isRunning).map((s) => s.options));
       break;
     case "LIST_ALL":
-      Logging.info(
-        ServiceCode.Main,
-        "list all services",
-        services.map((s) => s.options)
-      );
-      publishToSerial(
-        ServiceCode.Main,
-        "LIST_ALL",
-        services.map((s) => s.options)
-      );
+      Logging.info(ServiceCode.Main, "list all services", services.map((s) => s.options));
+      publishToSerial(ServiceCode.Main, "LIST_ALL", services.map((s) => s.options));
       break;
     case "LIST_RUN":
-      Logging.info(
-        ServiceCode.Main,
-        "list running services",
-        services.filter((s) => s.isRunning).map((s) => s.options)
-      );
-      publishToSerial(
-        ServiceCode.Main,
-        "LIST_RUN",
-        services.filter((s) => s.isRunning).map((s) => s.options)
-      );
+      Logging.info(ServiceCode.Main, "list running services", services.filter((s) => s.isRunning).map((s) => s.options));
+      publishToSerial(ServiceCode.Main, "LIST_RUN", services.filter((s) => s.isRunning).map((s) => s.options));
       break;
     default:
       Logging.error(ServiceCode.Main, "unknown module command", command);
@@ -84,11 +71,13 @@ eventBus.on(EventType.CommandForModule, (serviceCode: string, command: string, r
 });
 
 // diag led
-let pulsingPid = setInterval(() => {
-  Pulsing.toggle();
-}, 150);
+Logging.info(ServiceCode.Main, 'pulse.diag start');
+let pulsingPid = setInterval(() => { Pulsing.toggle(); }, 100);
 
 setTimeout(() => {
   clearInterval(pulsingPid);
   Pulsing.down();
-}, 3000);
+  Logging.info(ServiceCode.Main, 'pulse.diag end');
+}, 2000);
+
+Logging.info(ServiceCode.Main, 'HD MCU ready');
