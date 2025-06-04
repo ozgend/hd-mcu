@@ -18,7 +18,7 @@
     "@typescript/lib-dom": "npm:@types/kaluma"
   },
   "devDependencies": {
-    "@types/node": "^22.15.24",
+    "@types/node": "^22.15.29",
     "@typescript/lib-dom": "npm:@types/kaluma",
     "ts-loader": "^9.5.1",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
