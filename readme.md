@@ -16,15 +16,13 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
 
 ![icon](./doc/icon_round.png)
 
-### supported features
+### features
 
 - [x] hardware serial
   - [x] raw ft232 usb serial
 - [x] bluetooth serial
   - [x] raw bluetooth serial (hc-06 @ 9600 bps)
   - [x] mobile app
-- [ ] obd2/canbus - _for 2004+ models_
-  - [ ] available pids
 - [x] polling/broadcasting
   - [x] reduced power consumption
   - [x] reduced cpu clock usage
@@ -52,6 +50,8 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
       - [ ] advance curve
       - [ ] temp compensation
       - [ ] rpm compensation
+      - [ ] wideband o2 sensor for afr
+      - [ ] idle servo controller
 
 ### software
 
@@ -74,12 +74,12 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
 
 - platform
 
-  - `nodejs: 18`
-  - `kaluma-cli: 1.4.0`
-  - [`kalumajs: 1.1.0-beta.4`](https://kalumajs.org/docs/getting-started)
+  - `nodejs: 20`
+  - [`kaluma-cli: 1.4.0`](https://kalumajs.org/docs/getting-started)
+  - [`kalumajs runtime: 1.2.1`](https://kalumajs.org/download/)
 
 - FLASH: 2044/24 kb
-- SRAM: 264 total, 184/57 kb
+- SRAM: 264 total, 184/62 kb
 
 ### hardware
 
