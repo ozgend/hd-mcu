@@ -1,7 +1,7 @@
 export const MaxItemSize = 9999;
 
 export const FILE_TSM_CONFIG = "data.tsm-config.json";
-export const FILE_VHI_DATA = "data-vehicle-info.json";
+export const FILE_VHI_DATA = "data.vehicle-info.json";
 export const FILE_BUNDLE = "bundle.js";
 
 export const Seperator = {
@@ -9,24 +9,25 @@ export const Seperator = {
   ServiceData: "=",
 };
 
-export const ServiceType = {
-  ALWAYS_RUN: "ALWAYS_RUN",
-  ON_DEMAND: "ON_DEMAND",
-  ONE_TIME: "ONE_TIME",
-};
+export enum ServiceType {
+  AlwaysRun = "ALWAYS_RUN",
+  OnDemand = "ON_DEMAND",
+  OneTime = "ONE_TIME",
+}
 
-export const ServiceStatus = {
-  Available: "AVAILABLE",
-  Ready: "READY",
-  Started: "STARTED",
-  Stopped: "STOPPED",
-  Error: "ERROR",
-};
+export enum ServiceStatus {
+  Initialized = "INITIALIZED",
+  Available = "AVAILABLE",
+  Ready = "READY",
+  Started = "STARTED",
+  Stopped = "STOPPED",
+  Error = "ERROR",
+}
 
-export const Broadcasting = {
-  ContinuousStream: "CONTINUOUS_STREAM",
-  OnDemandPolling: "ON_DEMAND_POLLING",
-};
+export enum BroadcastMode {
+  ContinuousStream = "CONTINUOUS_STREAM",
+  OnDemandPolling = "ON_DEMAND_POLLING",
+}
 
 export const ServiceCode = {
   SystemStats: "SYS",
@@ -34,6 +35,7 @@ export const ServiceCode = {
   VehicleInfo: "VHI",
   Thermometer: "THE",
   TurnSignalModule: "TSM",
+  IgnitionModule: "IGN",
   Module: "M0",
   EventBus: "BUS",
   Main: "MAIN",
@@ -73,7 +75,7 @@ export const Hardware = {
   TURN_SIGNAL_BTN_DEBOUNCE: 100,
   TURN_SIGNAL_BLINK_RATE: 400,
   TURN_SIGNAL_BLINK_TIMEOUT: 20000,
-  TURN_SIGNAL_DIAG_RATE: 100,
+  TURN_SIGNAL_DIAG_RATE: 250,
   TURN_SIGNAL_DIAG_TIMEOUT: 2000,
   TURN_SIGNAL_DIAG_COUNT: 3,
   // TURN_SIGNAL_INTERRUPT_WAIT: 100,
@@ -91,6 +93,7 @@ export const Hardware = {
   // BATTERY_VOLTAGE_MAX: 15.0,
   SERVICE_POLL_INTERVAL: 5000,
   HEARTBEAT_PUSH_INTERVAL: 5000,
+  VBUS_DETECT_INTERVAL: 1500,
 };
 
 // hardware voltage simulation
@@ -101,6 +104,7 @@ export const Hardware = {
 // https://electrocredible.com/raspberry-pi-pico-w-pinout-guide-diagrams/
 export const Gpio = {
   // functionality: GP pin,   // name - notes/wiring
+  VBUS: 24, // GP24 - VBUS - USB power detection
   ONBOARD_LED: 25, // GP25 - LED
   VEHICLE_SENSOR_TEMP: 30, // GP30 - ADC4 - virtual
   VEHICLE_SENSOR_VREF: 29, // GP29 - ADC3
@@ -121,4 +125,6 @@ export const Gpio = {
   MUX_OUT_C: 7, // GP7  - D_MUX_C
   BT_SERIAL_RX: 1, // GP1  - D_BT_RX
   BT_SERIAL_TX: 0, // GP0  - D_BT_TX
+  IGN_HALL_SENSOR: 22, // GP22 - crank position sensor - TBD
+  IGN_RPM_PULSE: 27, // GP27 - RPM pulse if works with VEHICLE_SENSOR_RPM V divider - TBD
 };

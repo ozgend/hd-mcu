@@ -1,0 +1,29 @@
+{
+  "name": "pico-hd-mcu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "clean": "rm -rf ./bundle && rm -rf ./bundle-dev",
+    "build:dev": "rm -rf ./bundle-dev && webpack --config webpack.config.dev.js",
+    "build": "rm -rf ./bundle && webpack",
+    "flash:dev": "kaluma flash ./bundle-dev/bundle.js",
+    "flash": "kaluma flash ./bundle/bundle.js",
+    "shell": "kaluma shell"
+  },
+  "dependencies": {
+    "@typescript/lib-dom": "npm:@types/kaluma"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "@typescript/lib-dom": "npm:@types/kaluma",
+    "ts-loader": "^9.5.1",
+    "tsconfig-paths-webpack-plugin": "^4.1.0",
+    "typescript": "^5",
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4"
+  }
+}

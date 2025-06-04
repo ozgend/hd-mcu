@@ -1,5 +1,5 @@
 // const { PWM } = require('pwm');
-const { Gpio } = require('../ts-schema/constants');
+const { Gpio } = require('../../ts-schema/constants');
 pinMode(Gpio.ONBOARD_LED, OUTPUT);
 
 // const _ledPwm = new PWM(Gpio.ONBOARD_LED, 1000, 0.01);

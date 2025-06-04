@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "outDir": "./bundle-tsc/",
+    "module": "CommonJS",
+    "target": "es2017",
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "allowJs": false,
+    "moduleResolution": "node",
+    "lib": [
+      "ES2017"
+    ],
+    "baseUrl": "types",
+    "typeRoots": [
+      "./types"
+    ],
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "noEmitOnError": false, // Emit files even if there are type errors
+    "noUnusedLocals": false, // Don't error on unused locals
+    "noUnusedParameters": false, // Don't error on unused parameters
+    "exactOptionalPropertyTypes": false, // Less strict optional property checking
+    "noUncheckedIndexedAccess": false // Don't require checking for undefined on index access
+  }
+}
