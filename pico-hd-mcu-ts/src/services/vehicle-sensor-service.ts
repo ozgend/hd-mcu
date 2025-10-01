@@ -9,6 +9,7 @@ import { IVehicleSensorData } from "../../../ts-schema/data.interface";
 import { VehicleSensorData } from "../../../ts-schema/data.model";
 
 const BATTERY_VOLTAGE_SCALING_FACTOR = (Hardware.BATTERY_VOLTAGE_R1 + Hardware.BATTERY_VOLTAGE_R2) / Hardware.BATTERY_VOLTAGE_R2;
+const ADC_TO_VOLTAGE = Hardware.ADC_REF_MAX_VOLTAGE / Hardware.ADC_BIT_MAX_VALUE;
 
 export class VehicleSensorService extends BaseService<IVehicleSensorData> {
   private rpmSignalCounter: number = 0;
@@ -65,18 +66,18 @@ export class VehicleSensorService extends BaseService<IVehicleSensorData> {
 
   private calculateTemperature() {
     const raw_temp = analogRead(Gpio.VEHICLE_SENSOR_TEMP);
-    const raw_temp_volts = raw_temp * Hardware.ADC_REF_MAX_VOLTAGE;
+    const raw_temp_volts = raw_temp * ADC_TO_VOLTAGE;
     this.data.temp = Hardware.TEMPERATURE_OFFSET - (raw_temp_volts - Hardware.ADC_OFFSET_VOLTAGE) / Hardware.TEMPERATURE_SCALING_FACTOR;
   }
 
   private calculateVref() {
     const raw_vref = analogRead(Gpio.VEHICLE_SENSOR_VREF);
-    this.data.vref = raw_vref * Hardware.ADC_SCALING_FACTOR;
+    this.data.vref = (raw_vref * Hardware.ADC_REF_MAX_VOLTAGE) / Hardware.ADC_BIT_MAX_VALUE;
   }
 
   private calculateBattery() {
     const raw_batt = analogRead(Gpio.VEHICLE_SENSOR_BATT);
-    this.data.batt = raw_batt * Hardware.ADC_REF_MAX_VOLTAGE * BATTERY_VOLTAGE_SCALING_FACTOR;
+    this.data.batt = ((raw_batt * Hardware.ADC_REF_MAX_VOLTAGE) / Hardware.ADC_BIT_MAX_VALUE) * BATTERY_VOLTAGE_SCALING_FACTOR;
   }
 
   setup() {
