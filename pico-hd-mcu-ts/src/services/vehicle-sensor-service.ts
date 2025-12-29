@@ -7,6 +7,7 @@ import { BaseService } from "../base-service";
 import { ServiceCode, Gpio, ServiceType, Hardware, BroadcastMode } from "../../../ts-schema/constants";
 import { IVehicleSensorData } from "../../../ts-schema/data.interface";
 import { VehicleSensorData } from "../../../ts-schema/data.model";
+import { Logging } from "../logger";
 
 const BATTERY_VOLTAGE_SCALING_FACTOR = (Hardware.BATTERY_VOLTAGE_R1 + Hardware.BATTERY_VOLTAGE_R2) / Hardware.BATTERY_VOLTAGE_R2;
 const ADC_TO_VOLTAGE = Hardware.ADC_REF_MAX_VOLTAGE / Hardware.ADC_BIT_MAX_VALUE;
@@ -26,12 +27,12 @@ export class VehicleSensorService extends BaseService<IVehicleSensorData> {
 
   start() {
     super.start();
-    attachInterrupt(Gpio.VEHICLE_SENSOR_RPM, this.interruptRpmHandler.bind(this), RISING);
+    // attachInterrupt(Gpio.VEHICLE_SENSOR_RPM, this.interruptRpmHandler.bind(this), RISING);
   }
 
   stop() {
     super.stop();
-    detachInterrupt(Gpio.VEHICLE_SENSOR_RPM);
+    // detachInterrupt(Gpio.VEHICLE_SENSOR_RPM);
   }
 
   private interruptRpmHandler() {
@@ -66,8 +67,8 @@ export class VehicleSensorService extends BaseService<IVehicleSensorData> {
 
   private calculateTemperature() {
     const raw_temp = analogRead(Gpio.VEHICLE_SENSOR_TEMP);
-    const raw_temp_volts = raw_temp * ADC_TO_VOLTAGE;
-    this.data.temp = Hardware.TEMPERATURE_OFFSET - (raw_temp_volts - Hardware.ADC_OFFSET_VOLTAGE) / Hardware.TEMPERATURE_SCALING_FACTOR;
+    const raw_temp_volts = raw_temp * Hardware.ADC_REF_MAX_VOLTAGE;
+    this.data.temp = 27 - (raw_temp_volts - 0.706) / 0.001721;
   }
 
   private calculateVref() {
@@ -83,10 +84,12 @@ export class VehicleSensorService extends BaseService<IVehicleSensorData> {
   setup() {
     super.setup();
     pinMode(Gpio.VEHICLE_SENSOR_BATT, INPUT);
-    pinMode(Gpio.VEHICLE_SENSOR_AUX, INPUT);
     pinMode(Gpio.VEHICLE_SENSOR_RPM, INPUT);
     pinMode(Gpio.VEHICLE_SENSOR_SPEED, INPUT);
     pinMode(Gpio.VEHICLE_SENSOR_IGN, INPUT);
+
+    this.calculateTemperature();
+    Logging.debug(ServiceCode.VehicleSensor, `temp: ${this.data.temp?.toFixed(1)} °C`);
   }
 
   publishData() {
@@ -94,9 +97,9 @@ export class VehicleSensorService extends BaseService<IVehicleSensorData> {
     this.calculateTemperature();
     this.calculateVref();
     this.calculateBattery();
-    this.calculateRpm();
-    this.calculateSpeed();
-    this.calculateTpmsData();
+    // this.calculateRpm();
+    // this.calculateSpeed();
+    // this.calculateTpmsData();
     super.publishData();
   }
 }
