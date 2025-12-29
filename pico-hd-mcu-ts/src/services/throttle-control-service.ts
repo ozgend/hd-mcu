@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { ServoPWM } from "../lib/servo-pwm";
+import { Servo } from "servo";
 import { BroadcastMode, FILE_TCM_CONFIG, Gpio, Hardware, ServiceCode, ServiceType } from "../../../ts-schema/constants";
 import { TcmSettings, ThrottleData } from "../../../ts-schema/data.model";
 import { BaseService } from "../base-service";
@@ -20,7 +20,7 @@ const defaultTcmConfig: ITcmSettings = {
   throttleServoMaxAngle: Hardware.THROTTLE_SERVO_ANGLE_MAX,
 };
 
-const throttleServo = new ServoPWM();
+const throttleServo = new Servo();
 
 let tcmConfig: ITcmSettings = null; //readObject(FILE_TCM_CONFIG);
 let adcWatcherPid: number | null = null;
