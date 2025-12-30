@@ -19,13 +19,14 @@ Logging.info(ServiceCode.Main, "schema version", SchemaVersion);
 
 import { eventBus } from "./event-bus";
 import { publishToSerial } from "./event-handler";
-import { TurnSignalService } from "./services/turn-signal-service";
-import { SystemStatsService } from "./services/system-stats-service";
-import { VehicleSensorService } from "./services/vehicle-sensor-service";
-import { ThermometerService } from "./services/thermometer-service";
 import { VehicleInfoService } from "./services/vehicle-info.service";
+import { VehicleSensorService } from "./services/vehicle-sensor-service";
+import { SystemStatsService } from "./services/system-stats-service";
+import { ThermometerService } from "./services/thermometer-service";
+import { TurnSignalService } from "./services/turn-signal-service";
+import { ThrottleControlService } from "./services/throttle-control-service";
 
-const services = [new VehicleInfoService(eventBus), new VehicleSensorService(eventBus), new SystemStatsService(eventBus), new ThermometerService(eventBus), new TurnSignalService(eventBus)];
+const services = [new VehicleInfoService(eventBus), new VehicleSensorService(eventBus), new SystemStatsService(eventBus), new ThermometerService(eventBus), new TurnSignalService(eventBus), new ThrottleControlService(eventBus)];
 
 services.forEach((service) => {
   service.setup();

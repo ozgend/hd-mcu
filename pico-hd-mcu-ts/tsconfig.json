@@ -9,7 +9,7 @@
     "allowJs": false,
     "moduleResolution": "node",
     "lib": [
-      "ES2017"
+      "ES2017",
     ],
     "baseUrl": "types",
     "typeRoots": [

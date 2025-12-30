@@ -1,4 +1,4 @@
-import { IMuxSettings, ISystemStatsData, IThermometerData, ITsmControlData, ITsmData, ITsmSettings, IVehicleInfoData, IVehicleSensorData } from "./data.interface";
+import { IMuxSettings, ISystemStatsData, ITcmSettings, IThermometerData, IThrottleData, ITsmControlData, ITsmData, ITsmSettings, IVehicleInfoData, IVehicleSensorData } from "./data.interface";
 
 export class VehicleInfoData implements IVehicleInfoData {
   model: string;
@@ -139,6 +139,23 @@ export class TsmControlData implements ITsmControlData {
   }
 }
 
+export class ThrottleData implements IThrottleData {
+  inputThrottleAdcValues: Uint16Array;
+  inputThrottleAdcRunningSum: number;
+  inputThrottleAdcSampleIndex: number;
+  filteredThrottleAdcValue: number;
+  filteredThrottleAdcValuePrevious: number;
+  throttleServoAngleFinal: number;
+  constructor() {
+    this.inputThrottleAdcValues = new Uint16Array(10);
+    this.inputThrottleAdcRunningSum = 0;
+    this.inputThrottleAdcSampleIndex = 0;
+    this.filteredThrottleAdcValue = 0;
+    this.filteredThrottleAdcValuePrevious = 0;
+    this.throttleServoAngleFinal = 0;
+  }
+}
+
 export class TsmSettings implements ITsmSettings {
   btnDebounce: number;
   blinkRate: number;
@@ -161,6 +178,40 @@ export class TsmSettings implements ITsmSettings {
       diagRate: defaults.diagRate,
     };
     return tsm;
+  }
+}
+
+export class TcmSettings implements ITcmSettings {
+  throttleAdcMin: number;
+  throttleAdcMax: number;
+  throttleChangeThreshold: number;
+  throttleSamplingCount: number;
+  throttleSamplingIntervalMs: number;
+  throttleServoSpeed: number;
+  throttleServoMinAngle: number;
+  throttleServoMaxAngle: number;
+  constructor() {
+    this.throttleAdcMin = 0;
+    this.throttleAdcMax = 0;
+    this.throttleChangeThreshold = 0;
+    this.throttleSamplingCount = 0;
+    this.throttleSamplingIntervalMs = 0;
+    this.throttleServoSpeed = 0;
+    this.throttleServoMinAngle = 0;
+    this.throttleServoMaxAngle = 0;
+  }
+  static default(defaults: ITcmSettings): ITcmSettings {
+    const tcm: ITcmSettings = {
+      throttleAdcMin: defaults.throttleAdcMin,
+      throttleAdcMax: defaults.throttleAdcMax,
+      throttleChangeThreshold: defaults.throttleChangeThreshold,
+      throttleSamplingCount: defaults.throttleSamplingCount,
+      throttleSamplingIntervalMs: defaults.throttleSamplingIntervalMs,
+      throttleServoSpeed: defaults.throttleServoSpeed,
+      throttleServoMinAngle: defaults.throttleServoMinAngle,
+      throttleServoMaxAngle: defaults.throttleServoMaxAngle,
+    };
+    return tcm;
   }
 }
 

@@ -84,12 +84,32 @@ export interface ITsmControlData {
   right: boolean;
 }
 
+export interface IThrottleData {
+  inputThrottleAdcValues: Uint16Array;
+  inputThrottleAdcRunningSum: number;
+  inputThrottleAdcSampleIndex: number;
+  filteredThrottleAdcValue: number;
+  filteredThrottleAdcValuePrevious: number;
+  throttleServoAngleFinal: number;
+}
+
 export interface ITsmSettings {
   btnDebounce: number;
   blinkRate: number;
   blinkTimeout: number;
   diagRate: number;
   diagCount: number;
+}
+
+export interface ITcmSettings {
+  throttleAdcMin: number;
+  throttleAdcMax: number;
+  throttleChangeThreshold: number;
+  throttleSamplingCount: number;
+  throttleSamplingIntervalMs: number;
+  throttleServoSpeed: number;
+  throttleServoMinAngle: number;
+  throttleServoMaxAngle: number;
 }
 
 export interface IMuxSettings {

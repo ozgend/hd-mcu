@@ -115,12 +115,12 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
 export const ServiceInfoFields: { [key: string]: IField } = {
   serviceCode: { title: 'SERVICE', type: 'string', order: 10 },
   serviceType: { title: 'TYPE', type: 'string', order: 11 },
-  status: { title: 'STATUS', type: 'string', order: 12 },
-  schemaVersion: { title: 'SCHEMA', type: 'string', order: 13 },
+  commands: { title: 'COMMANDS', type: 'array', order: 30 },
   updateInterval: { title: 'UPDATE INT', unit: 'ms', type: 'number', order: 21 },
   idleTimeout: { title: 'IDLE TIME', unit: 'ms', type: 'number', order: 22, available: false },
+  status: { title: 'STATUS', type: 'string', order: 12 },
   broadcastMode: { title: 'BROADCAST', type: 'string', order: 23 },
-  commands: { title: 'COMMANDS', type: 'array', order: 30 },
+  schemaVersion: { title: 'SCHEMA', type: 'string', order: 13 },
 };
 
 export const getFormattedValue = (fieldName: string, value: any, serviceCode?: string) => {

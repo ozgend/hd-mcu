@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const fs = require("fs");
+import { Hardware } from "../../ts-schema/constants";
 import { Logging } from "./logger";
 
 if (!fs) {
@@ -52,4 +53,20 @@ export const readObject = (filepath: string): any => {
 export const scaler = (rangeFrom: [number, number], rangeTo: [number, number]) => {
   const d = (rangeTo[1] - rangeTo[0]) / (rangeFrom[1] - rangeFrom[0]);
   return (value: number): number => (value - rangeFrom[0]) * d + rangeTo[0];
+};
+
+export const mapRange = (value: number, inMin: number, inMax: number, outMin: number, outMax: number): number => {
+  return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+};
+
+export const watchADC = (adcPinNumber, intervalMs, callback) => {
+  const pid = setInterval(() => {
+    const rawAdcValue = analogRead(adcPinNumber);
+    const bit12Value = Math.round(rawAdcValue * Hardware.ADC_BIT_MAX_VALUE);
+    const voltageValue = rawAdcValue * Hardware.ADC_REF_MAX_VOLTAGE;
+    //Logging.debug("watchADC", `ADC Read ${adcPinNumber}: ${rawAdcValue.toFixed(8)}, bit12: ${bit12Value.toFixed(0).padStart(4, " ")}, voltage: ${voltageValue.toFixed(2)} V`);
+    callback(bit12Value);
+  }, intervalMs);
+  Logging.debug("watchADC", `Started ADC watcher on pin ${adcPinNumber} with interval ${intervalMs} ms @ PID ${pid}`);
+  return pid;
 };
