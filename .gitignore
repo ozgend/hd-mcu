@@ -10,7 +10,8 @@ archive/
 *.zip
 *.tar.gz
 pcb/*backups/
-pico-hd-mcu/bundle/*
+pico-hd-mcu/bundle*
+pico-hd-mcu-ts/bundle*
 
 *.iml
 .gradle
@@ -92,3 +93,6 @@ yarn-error.log
 
 # testing
 /coverage
+
+bundle/
+dist/

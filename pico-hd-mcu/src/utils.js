@@ -3,7 +3,7 @@ const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
 
 const isFileExist = (filepath) => {
-  return fs.existsSync(filepath);
+  return fs.exists(filepath);
 };
 
 const writeFile = (filepath, unencodedString) => {
@@ -20,6 +20,9 @@ const writeObject = (filepath, data) => {
 };
 
 const readObject = (filepath) => {
+  if (!isFileExist(filepath)) {
+    return null;
+  }
   const raw = readFile(filepath);
   const data = JSON.parse(raw);
   return data;

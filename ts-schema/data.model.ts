@@ -51,6 +51,7 @@ export class VehicleInfoData implements IVehicleInfoData {
     this.insuranceDate = 0;
     this.serviceDate = 0;
     this.serviceInterval = 0;
+    this.serviceKm = 0;
   }
 }
 
