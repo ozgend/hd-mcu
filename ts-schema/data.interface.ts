@@ -90,7 +90,8 @@ export interface IThrottleData {
   inputThrottleAdcSampleIndex: number;
   filteredThrottleAdcValue: number;
   filteredThrottleAdcValuePrevious: number;
-  throttleServoAngleFinal: number;
+  throttleServoAngle: number;
+  throttleGripAngle: number;
 }
 
 export interface ITsmSettings {
@@ -105,11 +106,13 @@ export interface ITcmSettings {
   throttleAdcMin: number;
   throttleAdcMax: number;
   throttleChangeThreshold: number;
-  throttleSamplingCount: number;
   throttleSamplingIntervalMs: number;
-  throttleServoSpeed: number;
+  throttleSamplingCount: number;
+  // throttleServoSpeed: number;
   throttleServoMinAngle: number;
   throttleServoMaxAngle: number;
+  throttleGripMinAngle: number;
+  throttleGripMaxAngle: number;
 }
 
 export interface IMuxSettings {
@@ -120,4 +123,10 @@ export interface IMuxSettings {
 
 export interface HdMcuSettings {
   [key: string]: string | number | boolean;
+}
+
+export interface IAdcValue {
+  raw: number;
+  voltage: number;
+  bit: number;
 }

@@ -145,14 +145,17 @@ export class ThrottleData implements IThrottleData {
   inputThrottleAdcSampleIndex: number;
   filteredThrottleAdcValue: number;
   filteredThrottleAdcValuePrevious: number;
-  throttleServoAngleFinal: number;
+  throttleServoAngle: number;
+  throttleGripAngle: number;
+
   constructor() {
     this.inputThrottleAdcValues = new Uint16Array(10);
     this.inputThrottleAdcRunningSum = 0;
     this.inputThrottleAdcSampleIndex = 0;
     this.filteredThrottleAdcValue = 0;
     this.filteredThrottleAdcValuePrevious = 0;
-    this.throttleServoAngleFinal = 0;
+    this.throttleServoAngle = 0;
+    this.throttleGripAngle = 0;
   }
 }
 
@@ -185,31 +188,39 @@ export class TcmSettings implements ITcmSettings {
   throttleAdcMin: number;
   throttleAdcMax: number;
   throttleChangeThreshold: number;
-  throttleSamplingCount: number;
   throttleSamplingIntervalMs: number;
-  throttleServoSpeed: number;
+  throttleSamplingCount: number;
+  // throttleServoSpeed: number;
   throttleServoMinAngle: number;
   throttleServoMaxAngle: number;
+  throttleGripMinAngle: number;
+  throttleGripMaxAngle: number;
+
   constructor() {
     this.throttleAdcMin = 0;
     this.throttleAdcMax = 0;
     this.throttleChangeThreshold = 0;
-    this.throttleSamplingCount = 0;
     this.throttleSamplingIntervalMs = 0;
-    this.throttleServoSpeed = 0;
+    this.throttleSamplingCount = 0;
+    // this.throttleServoSpeed = 0;
     this.throttleServoMinAngle = 0;
     this.throttleServoMaxAngle = 0;
+    this.throttleGripMinAngle = 0;
+    this.throttleGripMaxAngle = 0;
   }
+
   static default(defaults: ITcmSettings): ITcmSettings {
     const tcm: ITcmSettings = {
       throttleAdcMin: defaults.throttleAdcMin,
       throttleAdcMax: defaults.throttleAdcMax,
       throttleChangeThreshold: defaults.throttleChangeThreshold,
-      throttleSamplingCount: defaults.throttleSamplingCount,
       throttleSamplingIntervalMs: defaults.throttleSamplingIntervalMs,
-      throttleServoSpeed: defaults.throttleServoSpeed,
+      throttleSamplingCount: defaults.throttleSamplingCount,
+      // throttleServoSpeed: defaults.throttleServoSpeed,
       throttleServoMinAngle: defaults.throttleServoMinAngle,
       throttleServoMaxAngle: defaults.throttleServoMaxAngle,
+      throttleGripMinAngle: defaults.throttleGripMinAngle,
+      throttleGripMaxAngle: defaults.throttleGripMaxAngle,
     };
     return tcm;
   }

@@ -60,6 +60,17 @@ export const TurnSignalCommands = {
   NONE: "NONE",
 };
 
+export const ThrottleCommands = {
+  SET_MIN_SERVO_ANGLE: "SET_MIN_SERVO_ANGLE",
+  SET_MAX_SERVO_ANGLE: "SET_MAX_SERVO_ANGLE",
+  SET_MIN_GRIP_ANGLE: "SET_MIN_GRIP_ANGLE",
+  SET_MAX_GRIP_ANGLE: "SET_MAX_GRIP_ANGLE",
+  SET_SERVO_SPEED: "SET_SERVO_SPEED",
+  SET_SAMPLING_INTERVAL: "SET_SAMPLING_INTERVAL",
+  SET_ADC_MIN: "SET_ADC_MIN",
+  SET_ADC_MAX: "SET_ADC_MAX",
+};
+
 export const EventType = {
   CommandForModule: "MODULE_COMMAND",
   CommandForService: "SERVICE_COMMAND",
@@ -108,6 +119,8 @@ export const Hardware = {
   THROTTLE_SERVO_SPEED: 10,
   THROTTLE_SERVO_ANGLE_MIN: 0,
   THROTTLE_SERVO_ANGLE_MAX: 100,
+  THROTTLE_GRIP_ANGLE_MIN: 0,
+  THROTTLE_GRIP_ANGLE_MAX: 45,
 };
 
 // hardware voltage simulation

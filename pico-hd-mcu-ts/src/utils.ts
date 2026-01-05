@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 import { Hardware } from "../../ts-schema/constants";
+import { IAdcValue } from "../../ts-schema/data.interface";
 import { Logging } from "./logger";
 
 if (!fs) {
@@ -59,13 +60,22 @@ export const mapRange = (value: number, inMin: number, inMax: number, outMin: nu
   return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 };
 
-export const watchADC = (adcPinNumber, intervalMs, callback) => {
+export const readADC = (adcPinNumber: number): IAdcValue => {
+  const rawValue = analogRead(adcPinNumber);
+  const bitValue = Math.round(rawValue * Hardware.ADC_BIT_MAX_VALUE);
+  const voltageValue = rawValue * Hardware.ADC_REF_MAX_VOLTAGE;
+  return {
+    raw: rawValue,
+    voltage: voltageValue,
+    bit: bitValue,
+  };
+};
+
+export const watchADC = (adcPinNumber, intervalMs, adcReadCallback) => {
   const pid = setInterval(() => {
-    const rawAdcValue = analogRead(adcPinNumber);
-    const bit12Value = Math.round(rawAdcValue * Hardware.ADC_BIT_MAX_VALUE);
-    const voltageValue = rawAdcValue * Hardware.ADC_REF_MAX_VOLTAGE;
-    //Logging.debug("watchADC", `ADC Read ${adcPinNumber}: ${rawAdcValue.toFixed(8)}, bit12: ${bit12Value.toFixed(0).padStart(4, " ")}, voltage: ${voltageValue.toFixed(2)} V`);
-    callback(bit12Value);
+    const adcValue = readADC(adcPinNumber);
+    //Logging.debug("watchADC", `ADC Read ${adcPinNumber}: ${adcValue.raw.toFixed(8)}, bit12: ${adcValue.bit.toFixed(0).padStart(4, " ")}, voltage: ${adcValue.voltage.toFixed(2)} V`);
+    adcReadCallback(adcValue);
   }, intervalMs);
   Logging.debug("watchADC", `Started ADC watcher on pin ${adcPinNumber} with interval ${intervalMs} ms @ PID ${pid}`);
   return pid;
