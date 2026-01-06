@@ -37,9 +37,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 1.0,
-          "height": 1.7,
-          "width": 1.7
+          "drill": 2.0,
+          "height": 3.0,
+          "width": 3.0
         },
         "silk_line_width": 0.15,
         "silk_text_italic": false,
@@ -58,7 +58,40 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "track_dangling|107060000|63847500|1115747f-8dec-4306-a469-4bc06dd6b772|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "unconnected_items|56150000|55000000|F.Cu|4|8f8bd844-f97e-4212-ae4c-314abbeaf1dd|67988a3e-37e6-49d4-9f9d-d52068803462",
+          ""
+        ],
+        [
+          "unconnected_items|60960000|22785000|F.Cu|4|f5d95a8e-28e6-40e5-ac3f-8afb462c034d|e4d9dd60-722a-426c-8e4a-2831fcd948c8",
+          ""
+        ],
+        [
+          "unconnected_items|63350000|37280000|F.Cu|4|ed6dfd64-d531-4351-8601-0d1eced5126c|f6d9056c-1cb8-4188-8b8c-980d3bef00fd",
+          ""
+        ],
+        [
+          "unconnected_items|65920000|39297500|F.Cu|4|63aec892-63de-4327-ac83-a12612d9aef2|f2d4c6c6-72bd-4565-b237-f78d3103d315",
+          ""
+        ],
+        [
+          "unconnected_items|66035000|27062500|F.Cu|4|f63078a9-54ed-47ad-b701-09d909716354|4db47baa-e0f7-4aaa-94da-0e99b24dea37",
+          ""
+        ],
+        [
+          "unconnected_items|81300000|29310000|F.Cu|4|ea8f35b0-124f-40dc-82b3-0d55b7bd315e|7f6e4b15-f1d8-43f4-9459-de1e60c509a8",
+          ""
+        ],
+        [
+          "unconnected_items|81300000|38980000|F.Cu|4|5dae7fc7-682f-43de-b324-14553cfae83d|89b5a574-9396-4b74-bd14-ab1df893845e",
+          ""
+        ]
+      ],
       "meta": {
         "version": 2
       },
@@ -544,7 +577,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "",
+      "plot": "plots/",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",

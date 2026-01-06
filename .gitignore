@@ -97,5 +97,4 @@ yarn-error.log
 bundle/
 dist/
 
-pcb/pico-hd-mcu-v3/
 ts-schema/*.js
