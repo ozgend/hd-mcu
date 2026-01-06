@@ -140,22 +140,14 @@ export class TsmControlData implements ITsmControlData {
 }
 
 export class ThrottleData implements IThrottleData {
-  inputThrottleAdcValues: Uint16Array;
-  inputThrottleAdcRunningSum: number;
-  inputThrottleAdcSampleIndex: number;
-  filteredThrottleAdcValue: number;
-  filteredThrottleAdcValuePrevious: number;
-  throttleServoAngle: number;
-  throttleGripAngle: number;
+  adcBit: number;
+  servoAngle: number;
+  gripAngle: number;
 
   constructor() {
-    this.inputThrottleAdcValues = new Uint16Array(10);
-    this.inputThrottleAdcRunningSum = 0;
-    this.inputThrottleAdcSampleIndex = 0;
-    this.filteredThrottleAdcValue = 0;
-    this.filteredThrottleAdcValuePrevious = 0;
-    this.throttleServoAngle = 0;
-    this.throttleGripAngle = 0;
+    this.adcBit = 0;
+    this.servoAngle = 0;
+    this.gripAngle = 0;
   }
 }
 

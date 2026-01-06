@@ -1,17 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 import { ADC } from "adc";
 import { Gpio, Hardware } from "../../ts-schema/constants";
 import { Servo } from "servo";
 
 const throttleAdcInput = new ADC(Gpio.THROTTLE_SENSOR_MAIN);
-const temperatureAdcInput = new ADC(Gpio.VEHICLE_SENSOR_TEMP);
+const temperatureAdcInput = new ADC(Gpio.ONCHIP_TEMP);
 const throttleServo = new Servo();
 
 console.log(`Gpio.THROTTLE_SENSOR_MAIN: ${Gpio.THROTTLE_SENSOR_MAIN}`);
-console.log(`Gpio.VEHICLE_SENSOR_TEMP: ${Gpio.VEHICLE_SENSOR_TEMP}`);
+console.log(`Gpio.VEHICLE_SENSOR_TEMP: ${Gpio.ONCHIP_TEMP}`);
 console.log(`Gpio.THROTTLE_SERVO_PWM: ${Gpio.THROTTLE_SERVO_PWM}`);
 
 let servoAngle = 0;

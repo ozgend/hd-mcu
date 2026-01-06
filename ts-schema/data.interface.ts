@@ -85,13 +85,9 @@ export interface ITsmControlData {
 }
 
 export interface IThrottleData {
-  inputThrottleAdcValues: Uint16Array;
-  inputThrottleAdcRunningSum: number;
-  inputThrottleAdcSampleIndex: number;
-  filteredThrottleAdcValue: number;
-  filteredThrottleAdcValuePrevious: number;
-  throttleServoAngle: number;
-  throttleGripAngle: number;
+  adcBit: number;
+  gripAngle: number;
+  servoAngle: number;
 }
 
 export interface ITsmSettings {

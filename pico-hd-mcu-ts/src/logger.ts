@@ -4,7 +4,7 @@
 
 import { Gpio } from "../../ts-schema/constants";
 
-pinMode(Gpio.ONBOARD_LED, OUTPUT);
+pinMode(Gpio.ONCHIP_LED, OUTPUT);
 
 const LEVEL_NAMES = ["DEBUG", "INFO", "ERROR"];
 enum LogLevel {
@@ -45,16 +45,16 @@ export class Pulsing {
 
   static up(): void {
     this._state = HIGH;
-    digitalWrite(Gpio.ONBOARD_LED, HIGH);
+    digitalWrite(Gpio.ONCHIP_LED, HIGH);
   }
 
   static down(): void {
     this._state = LOW;
-    digitalWrite(Gpio.ONBOARD_LED, LOW);
+    digitalWrite(Gpio.ONCHIP_LED, LOW);
   }
 
   static toggle(): void {
     this._state = this._state === HIGH ? LOW : HIGH;
-    digitalWrite(Gpio.ONBOARD_LED, this._state);
+    digitalWrite(Gpio.ONCHIP_LED, this._state);
   }
 }
