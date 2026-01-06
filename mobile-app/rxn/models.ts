@@ -32,10 +32,11 @@ export interface IServiceAttributes {
 
 export const ServiceProperty: { [key: string]: IServiceAttributes } = {
   VHI: { title: 'Vehicle Info', icon: 'information', pollOnce: true, isEditable: true },
-  VHC: { title: 'Vehicle Sensor', icon: 'engine', pollInterval: parseInt(getAppConfigField(AppConfigField.PollMsVHC) ?? 2000) },
-  THE: { title: 'Thermometer', icon: 'thermometer', pollInterval: parseInt(getAppConfigField(AppConfigField.PollMsTHE) ?? 5000) },
-  SYS: { title: 'System', icon: 'chip', pollInterval: parseInt(getAppConfigField(AppConfigField.PollMsSYS) ?? 5000) },
+  VHC: { title: 'Vehicle Sensor', icon: 'engine', pollInterval: parseInt(getAppConfigField(AppConfigField.PollMsVHC)) },
+  THE: { title: 'Thermometer', icon: 'thermometer', pollInterval: parseInt(getAppConfigField(AppConfigField.PollMsTHE)) },
+  SYS: { title: 'System', icon: 'chip', pollInterval: parseInt(getAppConfigField(AppConfigField.PollMsSYS)) },
   TSM: { title: 'Turn Signal', icon: 'arrow-left-right' },
+  TCM: { title: 'Throttle', icon: 'speedometer', pollInterval: parseInt(getAppConfigField(AppConfigField.PollMsTCM)) },
   CFG: { title: 'App Config', icon: 'cog', pollOnce: true, isEditable: true },
 };
 
@@ -101,6 +102,11 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
     ch_6: { title: 'CARB INTAKE', unit: '°C', type: 'number', order: 7 },
     ch_7: { title: 'AUX GENERIC', unit: '°C', type: 'number', order: 8 },
   },
+  TCM: {
+    adcBit: { title: 'THROTTLE ADC BIT', type: 'number', order: 10 },
+    gripAngle: { title: 'GRIP ANGLE', unit: '°', type: 'number', precision: 1, order: 20 },
+    servoAngle: { title: 'SERVO ANGLE', unit: '°', type: 'number', precision: 1, order: 30 },
+  },
   CFG: {
     themeName: { title: 'THEME', type: 'array', order: 10, availableValues: Object.values(AppThemeNames) },
     dataProvider: { title: 'DATA', type: 'array', order: 11, availableValues: Object.values(DataProviderType) },
@@ -109,6 +115,7 @@ export const ServiceDataFields: { [key: string]: { [key: string]: IField } } = {
     pollMsVHC: { title: 'POLL MS VHC', unit: 'ms', type: 'number', order: 30 },
     pollMsTHE: { title: 'POLL MS THE', unit: 'ms', type: 'number', order: 31 },
     pollMsSYS: { title: 'POLL MS SYS', unit: 'ms', type: 'number', order: 32 },
+    pollMsTCM: { title: 'POLL MS TCM', unit: 'ms', type: 'number', order: 33 },
   },
 };
 
