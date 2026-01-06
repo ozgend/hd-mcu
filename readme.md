@@ -23,7 +23,7 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
 - [x] bluetooth serial
   - [x] raw bluetooth serial (hc-06 @ 9600 bps)
   - [x] mobile app
-- [x] polling/broadcasting
+- [x] data polling/broadcasting
   - [x] reduced power consumption
   - [x] reduced cpu clock usage
 - [x] turn signal flasher module
@@ -31,16 +31,24 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
   - [x] hazard flasher
   - [x] flash on startup
   - [x] adjustable flash rate
+- [x] throttle control module
+  - [x] linear hall sensor input
+  - [x] servo pwm output
+  - [x] adjustable base parameters
+  - [x] adjustable idle speed
+  - [ ]
+  - [ ] adjustable throttle curves
 - [x] supported sensor inputs
   - [x] multiplexed thermocouples
     - [x] up to 8 thermocouples
   - [x] direct sensor inputs
     - [x] uptime counter (onboard)
-    - [x] voltage sensor (onboard)
-    - [x] temperature sensor (onboard)
-    - [x] rpm sensor (optional)
-    - [x] speed sensor (optional)
-    - [x] aux \*2 (optional, ignition, voes ...etc)
+    - [x] mcu voltage (onboard)
+    - [x] temperature (onboard)
+    - [x] vbus input (onboard)
+    - [x] battery voltage input
+    - [x] rpm input
+    - [x] speed input
   - [ ] tpms
     - [ ] 433mhz receiver implementation
     - [ ] tpms decoder / man-i or man-ii (tbd)
@@ -51,7 +59,6 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
       - [ ] temp compensation
       - [ ] rpm compensation
       - [ ] wideband o2 sensor for afr
-      - [ ] idle servo controller
 
 ### software
 
@@ -83,7 +90,7 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
 
 ### hardware
 
-**main tsm assembly**
+**assembly**
 
 - 12v-5v buck converter / switching regulator
   - [lm2596 datasheet](./doc/lm2596.pdf)
@@ -92,11 +99,21 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
   - [datasheet](./doc/pico-datasheet.pdf)
 - hc-06 bluetooth module
   - [datasheet](./doc/hc06.pdf)
-- tsm - _(option-1)_ - with mosfet extension board
-  - _pick this if your rectifier is 3 pin and charge flux is 12v-15v_
-  - [IRF4905 datasheet](./doc/IRF4905.pdf)
-- tsm - _(option-2)_ - l298n h-bridge driver module
-  - [datasheet](./doc/l298.pdf)
+- `TSM` / turn signal module
+  - _(option-1)_ - with mosfet extension board
+    - _pick this if your rectifier is 3 pin and charge flux is 12v-15v_
+    - [IRF4905 datasheet](./doc/IRF4905.pdf)
+  - _(option-2)_ - l298n h-bridge driver module
+    - [datasheet](./doc/l298.pdf)
+- `THE` / thermocouple module
+  - cd4051 multiplexer
+    - [datasheet](./doc/cd4051b.pdf)
+  - max6675 thermocouple digitizer
+    - [datasheet](./doc/MAX6675.pdf)
+    - k-type thermocouple (maximum of 8)
+- `TCM` / throttle control module
+  - [linear hall sensor / 49e](./doc/49e.pdf)
+  - [DS3230MG digital servo](./doc/ds3230.pdf)
 - 5v super capacitor
 - 5805 voltage regulator
 - 33k resistor
@@ -105,17 +122,6 @@ this is not a ecu but a diy -and for fun- project for a monitoring hardware via 
 - 4.7k resistor
 - 1k resistor
 - 1n4001 diode
-
-**thermocouple sensors _(optional)_**
-
-_it would be good to monitor oil temperature as well as both cylinder combustion and exhausts output temperature. (x5)_
-
-- cd4051 multiplexer
-  - [datasheet](./doc/cd4051b.pdf)
-- max6675 thermocouple digitizer
-  - [datasheet](./doc/MAX6675.pdf)
-  - k-type thermocouple (maximum of 8)
-- use raiser module for up to 6x thermocouples
 
 ### pcb
 
@@ -185,9 +191,9 @@ _it would be good to monitor oil temperature as well as both cylinder combustion
 | `SYS` | mcu information system |
 | `THE` | thermocouple sensor module |
 | `TSM` | turn signal module |
+| `TCM` | throttle control module |
 | `VHC` | vehicle healthcheck module |
 | `VHI` | vehicle information system |
-| `IGN` | ignition module \*\* |
 
 **command list**
 | command | description |
@@ -219,7 +225,7 @@ _it would be good to monitor oil temperature as well as both cylinder combustion
 | command | description |
 | ------- | ----------- |
 | `DIAG` | execute diagnostic |
-| `START` | start ON_DEMAND services in module |
-| `STOP` | stop ON_DEMAND services in module |
-| `LIST_ALL` | list all services in module |
-| `LIST_RUN` | list running services in module |
+| `START` | start ON_DEMAND services in module and publish data |
+| `STOP` | stop ON_DEMAND services in module and stop publishing data |
+| `LIST_ALL` | list all registered services in module |
+| `LIST_RUN` | list running/active services in module |

@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 import { Logging, Pulsing } from "./logger";
 import { SchemaVersion } from "../../ts-schema/schema.version";
 import { ServiceType, ServiceCode, EventType } from "../../ts-schema/constants";

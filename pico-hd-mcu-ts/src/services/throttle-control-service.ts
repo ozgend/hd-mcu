@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Servo } from "servo";
 import { BroadcastMode, FILE_TCM_CONFIG, Gpio, Hardware, ServiceCode, ServiceType } from "../../../ts-schema/constants";
 import { TcmSettings, ThrottleData } from "../../../ts-schema/data.model";
@@ -7,23 +5,23 @@ import { BaseService } from "../base-service";
 import { IEventBus } from "../event-bus";
 import { Logging } from "../logger";
 import { mapRange, readObject, writeObject, watchADC } from "../utils";
-import { ITcmSettings, IThrottleData } from "../../../ts-schema/data.interface";
+import { IAdcValue, ITcmSettings, IThrottleData } from "../../../ts-schema/data.interface";
+import { AdcHallSensor } from "../lib/adc-hall-sensor";
 
 const defaultTcmConfig: ITcmSettings = {
   throttleAdcMin: Hardware.THROTTLE_ADC_MIN,
   throttleAdcMax: Hardware.THROTTLE_ADC_MAX,
   throttleChangeThreshold: Hardware.THROTTLE_CHANGE_THRESHOLD,
-  throttleSamplingCount: Hardware.THROTTLE_SAMPLING_COUNT,
   throttleSamplingIntervalMs: Hardware.THROTTLE_SAMPLING_INTERVAL_MS,
-  throttleServoSpeed: Hardware.THROTTLE_SERVO_SPEED,
+  throttleSamplingCount: Hardware.THROTTLE_SAMPLING_COUNT,
+  // throttleServoSpeed: Hardware.THROTTLE_SERVO_SPEED,
   throttleServoMinAngle: Hardware.THROTTLE_SERVO_ANGLE_MIN,
   throttleServoMaxAngle: Hardware.THROTTLE_SERVO_ANGLE_MAX,
+  throttleGripMinAngle: Hardware.THROTTLE_GRIP_ANGLE_MIN,
+  throttleGripMaxAngle: Hardware.THROTTLE_GRIP_ANGLE_MAX,
 };
 
-const throttleServo = new Servo();
-
 let tcmConfig: ITcmSettings = null; //readObject(FILE_TCM_CONFIG);
-let adcWatcherPid: number | null = null;
 
 if (!tcmConfig) {
   Logging.debug(ServiceCode.ThrottleControl, "TCM config not found, creating default config");
@@ -32,93 +30,78 @@ if (!tcmConfig) {
 }
 
 export class ThrottleControlService extends BaseService<ThrottleData> {
+  private throttleServo: Servo;
+  private throttleSensor: AdcHallSensor;
+
+  private inputThrottleAdcBits: Uint16Array;
+  private inputThrottleAdcRunningSum: number;
+  private inputThrottleAdcSampleIndex: number;
+  private previousThrottleAdcBit: number;
+
   constructor(eventBus: IEventBus) {
     super(eventBus, {
       serviceCode: ServiceCode.ThrottleControl,
-      serviceType: ServiceType.AlwaysRun,
+      serviceType: ServiceType.OnDemand,
       broadcastMode: BroadcastMode.OnDemandPolling,
     });
+    this.inputThrottleAdcBits = new Uint16Array(tcmConfig.throttleSamplingCount);
+    // this.inputThrottleAdcBits.fill(tcmConfig.throttleAdcMin);
+
+    this.inputThrottleAdcRunningSum = 0;
+    this.inputThrottleAdcSampleIndex = 0;
+    this.previousThrottleAdcBit = 0;
     this.data = new ThrottleData();
   }
 
   setup() {
     super.setup();
-    pinMode(Gpio.THROTTLE_SENSOR_MAIN, INPUT);
+    this.throttleServo = new Servo();
+    this.throttleSensor = new AdcHallSensor(Gpio.VEHICLE_SENSOR_THROTTLE, tcmConfig.throttleSamplingIntervalMs, this.processThrottleServo.bind(this));
+    this.throttleSensor.init();
+    this.throttleServo.attach(Gpio.THROTTLE_SERVO_PWM);
+    this.throttleServo.write(tcmConfig.throttleServoMinAngle);
   }
 
   public start(): void {
     super.start();
-    adcWatcherPid = watchADC(Gpio.THROTTLE_SENSOR_MAIN, tcmConfig.throttleSamplingIntervalMs, this.processThrottleServo.bind(this));
-    throttleServo.attach(Gpio.THROTTLE_SERVO_PWM);
-    throttleServo.write(tcmConfig.throttleServoMinAngle);
-    Logging.info(ServiceCode.ThrottleControl, `Throttle Control Service started with ADC on pin ${Gpio.THROTTLE_SENSOR_MAIN} and Servo on pin ${Gpio.THROTTLE_SERVO_PWM} @ PID ${adcWatcherPid}`);
   }
 
-  public stop(): void {
-    super.stop();
-    if (adcWatcherPid) {
-      clearInterval(adcWatcherPid);
-      adcWatcherPid = null;
-    }
-    throttleServo.detach();
-    Logging.info(ServiceCode.ThrottleControl, "Throttle Control Service stopped");
-  }
+  public processThrottleServo(adcValue: IAdcValue): void {
+    this.inputThrottleAdcRunningSum -= this.inputThrottleAdcBits[this.inputThrottleAdcSampleIndex];
+    this.inputThrottleAdcBits[this.inputThrottleAdcSampleIndex] = adcValue.bit;
+    this.inputThrottleAdcRunningSum += adcValue.bit;
+    this.inputThrottleAdcSampleIndex = (this.inputThrottleAdcSampleIndex + 1) % tcmConfig.throttleSamplingCount;
+    this.data.adcBit = Math.round(this.inputThrottleAdcRunningSum / tcmConfig.throttleSamplingCount);
 
-  public processThrottleServo(adcValue: number): void {
-    this.data.inputThrottleAdcRunningSum -= this.data.inputThrottleAdcValues[this.data.inputThrottleAdcSampleIndex];
-    this.data.inputThrottleAdcValues[this.data.inputThrottleAdcSampleIndex] = adcValue;
-    this.data.inputThrottleAdcRunningSum += adcValue;
-    this.data.inputThrottleAdcSampleIndex = (this.data.inputThrottleAdcSampleIndex + 1) % tcmConfig.throttleSamplingCount;
+    // Logging.debug(ServiceCode.ThrottleControl, `PREXEC --- adc.in: ${adcValue.bit}, adc.pre: ${this.previousThrottleAdcBit}, adc.now: ${this.data.adcBit} ####### config: adc.min: ${tcmConfig.throttleAdcMin}, adc.max: ${tcmConfig.throttleAdcMax} servo.min: ${tcmConfig.throttleServoMinAngle}, servo.max: ${tcmConfig.throttleServoMaxAngle}, grip.min: ${tcmConfig.throttleGripMinAngle}, grip.max: ${tcmConfig.throttleGripMaxAngle}`);
 
-    this.data.filteredThrottleAdcValue = Math.round(this.data.inputThrottleAdcRunningSum / tcmConfig.throttleSamplingCount);
-
-    // Logging.debug(ServiceCode.ThrottleControl, `adcValue: ${adcValue}, filteredThrottleAdcValue: ${this.data.filteredThrottleAdcValue}, inputThrottleAdcRunningSum: ${this.data.inputThrottleAdcRunningSum}, data: ${JSON.stringify(this.data)}`);
-
-    if (this.data.filteredThrottleAdcValue < tcmConfig.throttleAdcMin) {
-      this.data.filteredThrottleAdcValue = tcmConfig.throttleAdcMin;
+    if (this.data.adcBit > tcmConfig.throttleAdcMax) {
+      this.data.adcBit = tcmConfig.throttleAdcMax;
     }
 
-    if (this.data.filteredThrottleAdcValue === this.data.filteredThrottleAdcValuePrevious) {
+    if (this.data.adcBit < tcmConfig.throttleAdcMin) {
+      // Logging.debug(ServiceCode.ThrottleControl, `PREXEC --- adc.value set to min ${this.data.adcBit},${adcValue.bit} < ${tcmConfig.throttleAdcMin}`);
+      this.data.adcBit = tcmConfig.throttleAdcMin;
+    }
+
+    const deltaAdc = Math.abs(this.data.adcBit - this.previousThrottleAdcBit);
+
+    if (deltaAdc < tcmConfig.throttleChangeThreshold) {
+      // Logging.debug(ServiceCode.ThrottleControl, `PREXEC --- no change ${deltaAdc} < ${tcmConfig.throttleChangeThreshold}`);
       return;
     }
 
-    if (Math.abs(this.data.filteredThrottleAdcValue - this.data.filteredThrottleAdcValuePrevious) < tcmConfig.throttleChangeThreshold) {
-      return;
-    }
+    this.previousThrottleAdcBit = this.data.adcBit;
+    this.data.servoAngle = mapRange(this.data.adcBit, tcmConfig.throttleAdcMin, tcmConfig.throttleAdcMax, tcmConfig.throttleServoMinAngle, tcmConfig.throttleServoMaxAngle);
+    this.data.gripAngle = mapRange(this.data.adcBit, tcmConfig.throttleAdcMin, tcmConfig.throttleAdcMax, tcmConfig.throttleGripMinAngle, tcmConfig.throttleGripMaxAngle);
+    this.throttleServo.write(this.data.servoAngle);
 
-    this.data.filteredThrottleAdcValuePrevious = this.data.filteredThrottleAdcValue;
-    this.data.throttleServoAngleFinal = mapRange(this.data.filteredThrottleAdcValue, tcmConfig.throttleAdcMin, tcmConfig.throttleAdcMax, tcmConfig.throttleServoMinAngle, tcmConfig.throttleServoMaxAngle);
+    Logging.debug(ServiceCode.ThrottleControl, `adc.in: ${adcValue.bit}, adc.pre: ${this.previousThrottleAdcBit}, adc.now: ${this.data.adcBit}, grip: ${this.data.gripAngle.toFixed(0).padStart(3, " ")}*, servo: ${this.data.servoAngle.toFixed(0).padStart(3, " ")}*}`);
+  }
 
-    // this.data.throttleServoAngleFinal = Math.max(tcmConfig.throttleServoMinAngle, Math.min(tcmConfig.throttleServoMaxAngle, this.data.throttleServoAngleFinal));
-
-    throttleServo.write(this.data.throttleServoAngleFinal);
-    Logging.debug(ServiceCode.ThrottleControl, `filteredThrottleAdcValue: ${this.data.filteredThrottleAdcValue}, throttleAngle: ${this.data.throttleServoAngleFinal.toFixed(0).padStart(3, " ")}`);
-
-    // if (inputThrottleAdcValues.length >= tcmConfig.throttleSamplingCount) {
-    //   inputThrottleAdcValues.shift();
-    // }
-    // inputThrottleAdcValues.push(adcValue);
-    // const sum = inputThrottleAdcValues.reduce((a, b) => a + b, 0);
-    // const avg = sum / inputThrottleAdcValues.length;
-    // const filteredValue = Math.round(avg);
-    // filteredThrottleAdcValue = filteredValue;
-    // filteredThrottleAdcValue = adcValue;
-    // Logging.debug(ServiceCode.ThrottleControl, `Raw Throttle ADC Value: ${adcValue}, Filtered Throttle ADC Value: ${filteredThrottleAdcValue}`);
-    // if (filteredThrottleAdcValue < tcmConfig.throttleAdcMin) {
-    //   filteredThrottleAdcValue = tcmConfig.throttleAdcMin;
-    //   return;
-    // }
-    // if (
-    //   filteredThrottleAdcValue != filteredThrottleAdcValuePrevious &&
-    //   Math.abs(filteredThrottleAdcValue - filteredThrottleAdcValuePrevious) >= tcmConfig.throttleChangeThreshold &&
-    //   filteredThrottleAdcValue >= tcmConfig.throttleAdcMin &&
-    //   filteredThrottleAdcValue <= tcmConfig.throttleAdcMax
-    // ) {
-    //   filteredThrottleAdcValuePrevious = filteredThrottleAdcValue;
-    //   throttleServoAngleFinal = mapRange(filteredThrottleAdcValue, tcmConfig.throttleAdcMin, tcmConfig.throttleAdcMax, tcmConfig.throttleServoMinAngle, tcmConfig.throttleServoMaxAngle);
-    //   throttleServo.write(throttleServoAngleFinal);
-    //   Logging.debug(ServiceCode.ThrottleControl, `throttleADC: ${filteredThrottleAdcValue}, throttleAngle: ${throttleServoAngleFinal}`);
-    // }
+  public handleCommand(command: string, raw?: any): void {
+    super.handleCommand(command);
+    // set config values from command
   }
 
   publishData() {

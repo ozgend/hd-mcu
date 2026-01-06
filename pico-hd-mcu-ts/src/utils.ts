@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const fs = require("fs");
 import { Hardware } from "../../ts-schema/constants";
+import { IAdcValue } from "../../ts-schema/data.interface";
 import { Logging } from "./logger";
 
 if (!fs) {
@@ -12,7 +11,7 @@ const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
 
 export const isFileExist = (filepath: string): boolean => {
-  Logging.debug("FileSystem.isFileExist", `Checking if file exists: ${filepath}`);
+  // Logging.debug("FileSystem.isFileExist", `Checking if file exists: ${filepath}`);
   return fs?.exists(filepath);
 };
 
@@ -29,6 +28,7 @@ export const writeFile = (filepath: string, unencodedString: string) => {
 export const readFile = (filepath: string): string | null => {
   Logging.debug("FileSystem.readFile", `Reading file ${filepath}`);
   if (!isFileExist(filepath)) {
+    Logging.debug("FileSystem.readFile", `File ${filepath} does not exist`);
     return null;
   }
   try {
@@ -50,22 +50,26 @@ export const readObject = (filepath: string): any => {
   return raw ? JSON.parse(raw) : null;
 };
 
-export const scaler = (rangeFrom: [number, number], rangeTo: [number, number]) => {
-  const d = (rangeTo[1] - rangeTo[0]) / (rangeFrom[1] - rangeFrom[0]);
-  return (value: number): number => (value - rangeFrom[0]) * d + rangeTo[0];
-};
-
 export const mapRange = (value: number, inMin: number, inMax: number, outMin: number, outMax: number): number => {
   return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 };
 
-export const watchADC = (adcPinNumber, intervalMs, callback) => {
+export const readADC = (adcPinNumber: number): IAdcValue => {
+  const rawValue = analogRead(adcPinNumber);
+  const bitValue = Math.round(rawValue * Hardware.ADC_BIT_MAX_VALUE);
+  const voltageValue = rawValue * Hardware.ADC_REF_MAX_VOLTAGE;
+  //Logging.debug("readADC", `ADC#${adcPinNumber}: raw=${rawValue.toFixed(14)}, voltage=${voltageValue.toFixed(6)}V, bit=${bitValue}`);
+  return {
+    raw: rawValue,
+    voltage: voltageValue,
+    bit: bitValue,
+  };
+};
+
+export const watchADC = (adcPinNumber, intervalMs, adcReadCallback) => {
   const pid = setInterval(() => {
-    const rawAdcValue = analogRead(adcPinNumber);
-    const bit12Value = Math.round(rawAdcValue * Hardware.ADC_BIT_MAX_VALUE);
-    const voltageValue = rawAdcValue * Hardware.ADC_REF_MAX_VOLTAGE;
-    //Logging.debug("watchADC", `ADC Read ${adcPinNumber}: ${rawAdcValue.toFixed(8)}, bit12: ${bit12Value.toFixed(0).padStart(4, " ")}, voltage: ${voltageValue.toFixed(2)} V`);
-    callback(bit12Value);
+    const adcValue = readADC(adcPinNumber);
+    adcReadCallback(adcValue);
   }, intervalMs);
   Logging.debug("watchADC", `Started ADC watcher on pin ${adcPinNumber} with interval ${intervalMs} ms @ PID ${pid}`);
   return pid;

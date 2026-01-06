@@ -1,7 +1,7 @@
 import { Alert } from 'react-native';
 import { IDataProvider, IDataProviderDevice } from './interfaces';
 import { IServiceStatusInfo, ISystemStatsData, IThermometerData, ITsmData, IVehicleInfoData, IVehicleSensorData } from '../../../ts-schema/data.interface';
-import { ServiceCommand, ServiceCode, BroadcastMode, ServiceType, ServiceStatus, TurnSignalCommands } from '../../../ts-schema/constants';
+import { ServiceCommand, ServiceCode, BroadcastMode, ServiceType, ServiceStatus, TurnSignalCommands, Hardware } from '../../../ts-schema/constants';
 import { Storage } from '../storage';
 import { SchemaVersion } from '../../../ts-schema/schema.version';
 import { AppConfigField, getAppConfigField } from '../config';
@@ -261,4 +261,18 @@ const mockDataSource: { [key: string]: () => any } = {
       version: '0.0.1',
     } as ISystemStatsData;
   },
+
+  TCM: () => {
+    // get value between min and max
+    const adcBit = Math.floor(Math.random() * (Hardware.THROTTLE_ADC_MAX - Hardware.THROTTLE_ADC_MIN + 1)) + Hardware.THROTTLE_ADC_MIN;
+    return {
+      adcBit: adcBit,
+      gripAngle: mapRange(adcBit, Hardware.THROTTLE_ADC_MIN, Hardware.THROTTLE_ADC_MAX, Hardware.THROTTLE_GRIP_ANGLE_MIN, Hardware.THROTTLE_GRIP_ANGLE_MAX),
+      servoAngle: mapRange(adcBit, Hardware.THROTTLE_ADC_MIN, Hardware.THROTTLE_ADC_MAX, Hardware.THROTTLE_SERVO_ANGLE_MIN, Hardware.THROTTLE_SERVO_ANGLE_MAX),
+    };
+  },
+};
+
+const mapRange = (value: number, inMin: number, inMax: number, outMin: number, outMax: number): number => {
+  return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 };

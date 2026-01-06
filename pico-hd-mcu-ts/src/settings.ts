@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 import { readObject, writeObject } from "./utils";
 import { HdMcuSettings } from "../../ts-schema/data.interface";
 
@@ -11,14 +7,17 @@ export const readSettings = (key: string): HdMcuSettings | null => {
     const storage: HdMcuSettings = data ? JSON.parse(data) : null;
     return storage;
   } catch (error) {
+    console.error("Error reading settings:");
+    console.error(error);
     return null;
   }
 };
 
 export const updateSettings = (key: string, data: HdMcuSettings): void => {
   try {
-    writeObject(`./settings.${key}.json`, JSON.stringify(data));
+    writeObject(`./settings.${key}.json`, data);
   } catch (error) {
+    console.error("Error updating settings:");
     console.error(error);
   }
 };

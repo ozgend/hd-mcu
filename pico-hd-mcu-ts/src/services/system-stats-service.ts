@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { BaseService } from "../base-service";
 import { SystemStatsData } from "../../../ts-schema/data.model";
 import { ServiceCode, ServiceType, BroadcastMode } from "../../../ts-schema/constants";

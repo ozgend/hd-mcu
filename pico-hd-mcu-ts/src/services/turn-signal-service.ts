@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 import { IEventBus } from "../event-bus";
 import { readObject, writeObject } from "../utils";
 import { Logging, Pulsing } from "../logger";

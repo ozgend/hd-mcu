@@ -187,6 +187,12 @@ class HomeView extends Component<IProps, IState> implements IDataProviderEvents 
             />
 
             <Tab.Screen
+              name={ServiceCode.ThrottleControl}
+              options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon(ServiceCode.ThrottleControl, this.tabStyle) }}
+              children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.ThrottleControl} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} ref={this.refServiceView} />}
+            />
+
+            <Tab.Screen
               name={ServiceCode.Thermometer}
               options={{ unmountOnBlur: true, header: () => undefined, tabBarIcon: () => this.getTabIcon(ServiceCode.Thermometer, this.tabStyle) }}
               children={() => <ServiceView provider={this.props.provider} serviceCode={ServiceCode.Thermometer} toggleBusy={(isBusy: boolean, svc: string, src: string) => this.toggleBusy(isBusy, svc, src)} ref={this.refServiceView} />}

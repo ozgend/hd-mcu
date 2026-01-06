@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 import { IEventBus } from "../event-bus";
 import { BaseService } from "../base-service";
 import { ServiceCode, Gpio, ServiceType, Hardware, BroadcastMode } from "../../../ts-schema/constants";
@@ -10,7 +6,6 @@ import { VehicleSensorData } from "../../../ts-schema/data.model";
 import { Logging } from "../logger";
 
 const BATTERY_VOLTAGE_SCALING_FACTOR = (Hardware.BATTERY_VOLTAGE_R1 + Hardware.BATTERY_VOLTAGE_R2) / Hardware.BATTERY_VOLTAGE_R2;
-const ADC_TO_VOLTAGE = Hardware.ADC_REF_MAX_VOLTAGE / Hardware.ADC_BIT_MAX_VALUE;
 
 export class VehicleSensorService extends BaseService<IVehicleSensorData> {
   private rpmSignalCounter: number = 0;
@@ -66,13 +61,13 @@ export class VehicleSensorService extends BaseService<IVehicleSensorData> {
   }
 
   private calculateTemperature() {
-    const raw_temp = analogRead(Gpio.VEHICLE_SENSOR_TEMP);
+    const raw_temp = analogRead(Gpio.ONCHIP_TEMP);
     const raw_temp_volts = raw_temp * Hardware.ADC_REF_MAX_VOLTAGE;
     this.data.temp = 27 - (raw_temp_volts - 0.706) / 0.001721;
   }
 
   private calculateVref() {
-    const raw_vref = analogRead(Gpio.VEHICLE_SENSOR_VREF);
+    const raw_vref = analogRead(Gpio.ONCHIP_VREF);
     this.data.vref = (raw_vref * Hardware.ADC_REF_MAX_VOLTAGE) / Hardware.ADC_BIT_MAX_VALUE;
   }
 

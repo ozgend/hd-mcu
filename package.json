@@ -9,6 +9,7 @@
     "install": "npm run install:mcu && nom run install:app",
     "install:mcu": "npm --prefix pico-hd-mcu-ts i",
     "install:app": "npm --prefix mobile-app i",
+    "run:adb": "npm --prefix mobile-app run adb:install",
     "build": "npm run typegen && npm run build:mcu && npm run build:app",
     "build:min": "npm run typegen && npm run build:mcu:min && npm run build:app",
     "build:app": "npm --prefix mobile-app run build",
@@ -17,7 +18,8 @@
     "build:mcu": "npm --prefix pico-hd-mcu-ts run build",
     "shell:mcu": "npm --prefix pico-hd-mcu-ts run shell",
     "flash:mcu": "npm --prefix pico-hd-mcu-ts run flash",
+    "run:mcu": "npm --prefix pico-hd-mcu-ts run build && npm --prefix pico-hd-mcu-ts run flash && npm --prefix pico-hd-mcu-ts run shell",
     "set-schema-version": "sh -c \"echo 'export const SchemaVersion = \\\"$(date +%Y-%m-%dT%H:%M:%S)\\\";' > ./ts-schema/schema.version.ts\"",
-    "typegen": "npm run set-schema-version && tsc ./ts-schema/*.ts"
+    "typegen": "npm run set-schema-version && rm ./ts-schema/*.js && tsc ./ts-schema/*.ts"
   }
 }

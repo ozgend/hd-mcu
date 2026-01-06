@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 import { GPIO } from "gpio";
 import { Gpio, Hardware } from "../../ts-schema/constants";
 
@@ -10,7 +6,7 @@ export class UsbDetection {
   private pid: any;
   private lastState: boolean = false;
 
-  constructor(private readonly pinNumber: number = Gpio.VBUS) {
+  constructor(private readonly pinNumber: number = Gpio.ONCHIP_VBUS) {
     this.pin = new GPIO(this.pinNumber, INPUT);
   }
 

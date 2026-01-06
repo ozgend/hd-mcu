@@ -1,6 +1,6 @@
 import { Storage } from './storage';
 
-const DefaultAppConfig: IAppConfig = { ownerName: 'do', appTitle: 'XL MCU', themeName: 'default', dataProvider: 'mock', pollMsVHC: 2000, pollMsTHE: 5000, pollMsSYS: 5000 };
+export const DefaultAppConfig: IAppConfig = { ownerName: 'do', appTitle: 'XL MCU', themeName: 'default', dataProvider: 'mock', pollMsVHC: 1000, pollMsTHE: 1000, pollMsSYS: 5000, pollMsTCM: 500 };
 
 export interface IAppConfig {
   themeName: string;
@@ -10,6 +10,7 @@ export interface IAppConfig {
   pollMsVHC: number;
   pollMsTHE: number;
   pollMsSYS: number;
+  pollMsTCM: number;
 }
 
 export enum AppConfigField {
@@ -20,6 +21,7 @@ export enum AppConfigField {
   PollMsVHC = 'pollMsVHC',
   PollMsTHE = 'pollMsTHE',
   PollMsSYS = 'pollMsSYS',
+  PollMsTCM = 'pollMsTCM',
 }
 
 export const getAppConfig = (): IAppConfig => {
