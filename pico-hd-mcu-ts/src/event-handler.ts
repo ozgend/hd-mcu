@@ -30,7 +30,7 @@ let pidPayloadFlush = null;
 
 // --- Execution ---
 Logging.info(ServiceCode.EventBus, "BT UART init...");
-const Serial = new UART(1, uartOptions);
+const Serial = new UART(0, uartOptions);
 
 // --- Data Handler ---
 Serial.on("data", (data: number[]) => {
