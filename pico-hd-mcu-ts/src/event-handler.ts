@@ -1,115 +1,139 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { UART, UARTOptionsC } from "uart";
-import { writeFile } from "./utils";
+import { readObject, writeFile, writeObject } from "./utils";
 import { Logging } from "./logger";
-import { ServiceCode, EventType, Seperator, ServiceCommand, Hardware, FILE_BUNDLE } from "../../ts-schema/constants";
+import { ServiceCode, EventType, Seperator, ServiceCommand, Hardware, FILE_BUNDLE, FILE_BT_UART } from "../../ts-schema/constants";
 import { eventBus } from "./event-bus";
 
-const uartOptions: UARTOptionsC = {
-  baudrate: 9600,
-  bits: 8,
-  partity: UART.PARTIY_NONE,
-  stop: 1,
-  flow: UART.FLOW_NONE,
-  bufferSize: 2048,
-};
+let uartOptions: UARTOptionsC = readObject(FILE_BT_UART);
 
-const Serial = new UART(0, uartOptions);
-Logging.info(ServiceCode.EventBus, "emitter ready");
+if (!uartOptions) {
+  Logging.debug(ServiceCode.EventBus, "BT UART config not found, creating default config");
+  uartOptions = {
+    baudrate: 9600, // Initial starting point
+    bits: 8,
+    partity: UART.PARTIY_NONE,
+    stop: 1,
+    flow: UART.FLOW_NONE,
+    bufferSize: 2048,
+  };
+  writeObject(FILE_BT_UART, uartOptions);
+}
 
-setTimeout(() => {
-  Serial.write(`AT+NAME${Hardware.MCU_NAME}\n`);
-  Logging.info(ServiceCode.EventBus, "uart setup done", `AT+NAME${Hardware.MCU_NAME}`);
-  Serial;
-}, 1000);
+Logging.debug(ServiceCode.EventBus, "BT UART config loaded", uartOptions);
 
-Logging.info(ServiceCode.EventBus, "uart ready", uartOptions.baudrate);
-
+let isConfigured = false;
+let heartbeatMuted = false;
 let _serialPayload = "";
 let fileBuffer = "";
 let inFileTransferMode = false;
+let pidPayloadFlush = null;
 
+// --- Execution ---
+Logging.info(ServiceCode.EventBus, "BT UART init...");
+const Serial = new UART(0, uartOptions);
+
+// --- Data Handler ---
 Serial.on("data", (data: number[]) => {
+  var s = String.fromCharCode.apply(null, data);
+  print(s);
+
+  // if (pidPayloadFlush !== null) {
+  //   clearTimeout(pidPayloadFlush);
+  //   pidPayloadFlush = null;
+  // }
+
   data.forEach((byte: number) => {
-    // Detect start and end markers for file transfer mode
-    if (!inFileTransferMode && _serialPayload.includes("<START>")) {
+    if (byte === 0) return;
+
+    if (byte === 10) {
+      flushPayload();
+    } else {
+      _serialPayload += String.fromCharCode(byte);
+    }
+
+    // Start Marker Logic
+    if (!inFileTransferMode && _serialPayload.endsWith("<START>")) {
+      heartbeatMuted = true; // Stop heartbeats during file transfer
       inFileTransferMode = true;
-      fileBuffer = ""; // Reset file buffer for new transfer
-      _serialPayload = "";
-      return;
-    } else if (inFileTransferMode && _serialPayload.includes("<END>")) {
-      inFileTransferMode = false;
-      saveFileBuffer(fileBuffer);
       fileBuffer = "";
       _serialPayload = "";
-      return;
+      Logging.info(ServiceCode.EventBus, "Transfer Started: Heartbeat Muted");
     }
-
-    // Regular handling for commands and file data
-    if (byte === 10) {
-      // Newline byte
-      if (!inFileTransferMode) {
-        // Command mode: handle command payload
-        if (_serialPayload.includes("OK")) {
-          Logging.debug(ServiceCode.EventBus, "SERIAL_PAYLOAD", _serialPayload);
-        } else {
-          eventBus.emit(EventType.DataFromSerial, _serialPayload.trim());
-        }
-      } else {
-        // File transfer mode: append payload to file buffer
-        fileBuffer += _serialPayload;
-      }
-      _serialPayload = ""; // Reset payload after processing
-    } else if (byte !== 0) {
-      _serialPayload += String.fromCharCode(byte).trim(); // Append byte to payload
+    // End Marker Logic
+    else if (inFileTransferMode && _serialPayload.endsWith("<END>")) {
+      inFileTransferMode = false;
+      saveFileBuffer(fileBuffer.replace("<END>", ""));
+      fileBuffer = "";
+      _serialPayload = "";
+      Logging.info(ServiceCode.EventBus, "Transfer Complete: Heartbeat Resumed");
+      heartbeatMuted = false; // Resume heartbeats
     }
   });
+
+  // pidPayloadFlush = setTimeout(flushPayload, 100);
 });
+
+Serial.write("AT");
+Logging.debug(ServiceCode.EventBus, "BT UART ** waiting for OK");
+
+Serial.write(`AT+NAME${Hardware.MCU_NAME}`);
+Logging.info(ServiceCode.EventBus, `Name set to ${Hardware.MCU_NAME}`);
+
+Serial.write("AT+BAUD6"); // HC-06 Index 6 = 38400
+Logging.info(ServiceCode.EventBus, "Baud set to 38400");
+
+isConfigured = true;
+
+const flushPayload = () => {
+  if (_serialPayload.length > 0) {
+    if (inFileTransferMode) {
+      fileBuffer += _serialPayload;
+    } else {
+      if (_serialPayload.includes("OK")) {
+        Logging.debug(ServiceCode.EventBus, "AT_RESPONSE", _serialPayload);
+      } else {
+        eventBus.emit(EventType.DataFromSerial, _serialPayload.trim());
+      }
+    }
+    _serialPayload = "";
+  }
+  if (pidPayloadFlush) {
+    clearTimeout(pidPayloadFlush);
+    pidPayloadFlush = null;
+  }
+};
 
 const saveFileBuffer = (buffer: string) => {
   writeFile(FILE_BUNDLE, buffer);
 };
 
-// events from services
+// --- Event Bus Handlers ---
+
+// Sending to BT
 eventBus.on(EventType.DataFromService, (serviceCode: string, eventType: string, serviceData: any) => {
-  Logging.debug(ServiceCode.EventBus, EventType.DataFromService, { serviceCode, eventType, serviceData });
+  if (!isConfigured) return;
+  Logging.debug(ServiceCode.EventBus, EventType.DataFromService, { serviceCode, eventType });
   Serial.write(`${serviceCode}${Seperator.SerialCommand}${eventType}${Seperator.ServiceData}${JSON.stringify(serviceData)}\n`);
 });
 
-// events from serial
+// Receiving from BT
 eventBus.on(EventType.DataFromSerial, (serialPayload: string) => {
-  Logging.debug(ServiceCode.EventBus, EventType.DataFromSerial, { serialPayload });
-
-  if (!serialPayload || serialPayload.trim() === "") {
-    Logging.error(ServiceCode.EventBus, "Received empty serial payload");
-    return;
-  }
-
-  if (serialPayload === "0_heartbeat") {
-    return;
-  }
+  if (!serialPayload || serialPayload.trim() === "" || serialPayload === "0_heartbeat") return;
 
   let parts = serialPayload.split(Seperator.SerialCommand);
-
-  if (parts.length < 2) {
-    Logging.error(ServiceCode.EventBus, "Invalid serial payload format", serialPayload);
-    return;
-  }
+  if (parts.length < 2) return;
 
   const serviceCode = parts[0];
   let command: string,
     rawData: string | null = null;
 
   if (parts[1].startsWith(ServiceCommand.SET)) {
-    parts = parts[1].split(Seperator.ServiceData);
-    command = parts[0];
-    rawData = parts[1];
+    let subParts = parts[1].split(Seperator.ServiceData);
+    command = subParts[0];
+    rawData = subParts[1];
   } else {
     command = parts[1];
   }
-
-  Logging.debug(ServiceCode.EventBus, EventType.DataFromSerial, { serviceCode, command, data: rawData });
 
   if (serialPayload.startsWith(ServiceCode.Module)) {
     eventBus.emit(EventType.CommandForModule, serviceCode, command, rawData);
@@ -118,11 +142,11 @@ eventBus.on(EventType.DataFromSerial, (serialPayload: string) => {
   }
 });
 
-Logging.info(ServiceCode.EventBus, "eventBus ready");
-
+// Heartbeat Interval
 setInterval(() => {
-  Serial.write("0_heartbeat\n");
-  //logger.info(ServiceCode.EventBus, '0_heartbeat');
+  if (isConfigured && !heartbeatMuted) {
+    Serial.write("0_heartbeat\n");
+  }
 }, Hardware.HEARTBEAT_PUSH_INTERVAL);
 
 const publishToSerial = (serviceCode: string, eventType: string, serviceData: any) => {

@@ -47,7 +47,7 @@ export class VehicleInfoService extends BaseService<VehicleInfoData> {
 
   setup(): void {
     if (!isFileExist(FILE_VHI_DATA)) {
-      Logging.debug(ServiceCode.VehicleInfo, "setup vehicleInfoFile:", FILE_VHI_DATA);
+      Logging.debug(ServiceCode.VehicleInfo, "setup vehicleInfoFile create:", FILE_VHI_DATA);
       this.setVehicleInfo(new VehicleInfoData());
     } else {
       Logging.debug(ServiceCode.VehicleInfo, "setup vehicleInfoFile exists:", FILE_VHI_DATA);

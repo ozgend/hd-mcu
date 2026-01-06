@@ -10,7 +10,7 @@ export class UsbDetection {
   private pid: any;
   private lastState: boolean = false;
 
-  constructor(private readonly pinNumber: number = Gpio.VBUS) {
+  constructor(private readonly pinNumber: number = Gpio.ONCHIP_VBUS) {
     this.pin = new GPIO(this.pinNumber, INPUT);
   }
 
