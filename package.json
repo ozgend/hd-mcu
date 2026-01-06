@@ -20,6 +20,6 @@
     "flash:mcu": "npm --prefix pico-hd-mcu-ts run flash",
     "run:mcu": "npm --prefix pico-hd-mcu-ts run build && npm --prefix pico-hd-mcu-ts run flash && npm --prefix pico-hd-mcu-ts run shell",
     "set-schema-version": "sh -c \"echo 'export const SchemaVersion = \\\"$(date +%Y-%m-%dT%H:%M:%S)\\\";' > ./ts-schema/schema.version.ts\"",
-    "typegen": "npm run set-schema-version && rm ./ts-schema/*.js && tsc ./ts-schema/*.ts"
+    "typegen": "npm run set-schema-version && rm ./ts-schema/*.js || true && tsc ./ts-schema/*.ts"
   }
 }

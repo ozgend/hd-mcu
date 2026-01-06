@@ -132,12 +132,12 @@ export const Hardware = {
 // https://electrocredible.com/raspberry-pi-pico-w-pinout-guide-diagrams/
 export const Gpio = {
   // functionality: GP pin,   // name - notes/wiring
-  RESERVED_0: 0, // GP0  - RESERVED 0 TX
-  RESERVED_1: 1, // GP1  - RESERVED 1 RX
+  BT_SERIAL_TX: 0, // GP0 - D_BT_TX
+  BT_SERIAL_RX: 1, // GP1 - D_BT_RX
   VEHICLE_SENSOR_IGN: 2, // GP2 - D_IGN - pulse input from ignition module
   VEHICLE_SENSOR_RPM: 3, // GP3 - D_RPM - pulse input from rpm sensor
-  BT_SERIAL_TX: 4, // GP4  - D_BT_TX
-  BT_SERIAL_RX: 5, // GP5  - D_BT_RX
+  RESERVED_4: 4, // GP4 - RESERVED
+  RESERVED_5: 5, // GP5 - RESERVED
   RESERVED_6: 6, // GP6 - RESERVED
   MUX_OUT_C: 7, // GP7 - D_MUX_C
   MUX_OUT_B: 8, // GP8 - D_MUX_B
