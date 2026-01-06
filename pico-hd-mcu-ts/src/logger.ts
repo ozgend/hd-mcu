@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 import { Gpio } from "../../ts-schema/constants";
 
 pinMode(Gpio.ONCHIP_LED, OUTPUT);

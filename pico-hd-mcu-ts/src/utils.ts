@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const fs = require("fs");
 import { Hardware } from "../../ts-schema/constants";
 import { IAdcValue } from "../../ts-schema/data.interface";

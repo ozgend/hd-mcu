@@ -2,11 +2,11 @@ import { ADC } from "adc";
 import { Gpio, Hardware } from "../../ts-schema/constants";
 import { Servo } from "servo";
 
-const throttleAdcInput = new ADC(Gpio.THROTTLE_SENSOR_MAIN);
+const throttleAdcInput = new ADC(Gpio.VEHICLE_SENSOR_THROTTLE);
 const temperatureAdcInput = new ADC(Gpio.ONCHIP_TEMP);
 const throttleServo = new Servo();
 
-console.log(`Gpio.THROTTLE_SENSOR_MAIN: ${Gpio.THROTTLE_SENSOR_MAIN}`);
+console.log(`Gpio.VEHICLE_SENSOR_THROTTLE: ${Gpio.VEHICLE_SENSOR_THROTTLE}`);
 console.log(`Gpio.VEHICLE_SENSOR_TEMP: ${Gpio.ONCHIP_TEMP}`);
 console.log(`Gpio.THROTTLE_SERVO_PWM: ${Gpio.THROTTLE_SERVO_PWM}`);
 

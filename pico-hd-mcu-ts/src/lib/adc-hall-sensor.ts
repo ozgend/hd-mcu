@@ -1,4 +1,3 @@
-import { Hardware } from "../../../ts-schema/constants";
 import { IAdcValue } from "../../../ts-schema/data.interface";
 import { readADC, watchADC } from "../utils";
 

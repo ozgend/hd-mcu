@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { EventEmitter } from "events";
 
 export interface IEventBus {

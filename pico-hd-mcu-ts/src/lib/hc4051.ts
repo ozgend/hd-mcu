@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const MUX_CHANNEL_SIZE = 8;
 
 // C B A - channel

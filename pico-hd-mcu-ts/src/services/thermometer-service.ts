@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 import { MAX6675 } from "../lib/max6675-hw-spi";
 import { HC4051 } from "../lib/hc4051";
 import { Logging } from "../logger";

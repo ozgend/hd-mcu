@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 import { writeObject, readFile, isFileExist } from "../utils";
 import { ServiceCode, ServiceType, BroadcastMode, FILE_VHI_DATA } from "../../../ts-schema/constants";
 import { VehicleInfoData } from "../../../ts-schema/data.model";

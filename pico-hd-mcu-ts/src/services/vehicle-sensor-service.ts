@@ -6,7 +6,6 @@ import { VehicleSensorData } from "../../../ts-schema/data.model";
 import { Logging } from "../logger";
 
 const BATTERY_VOLTAGE_SCALING_FACTOR = (Hardware.BATTERY_VOLTAGE_R1 + Hardware.BATTERY_VOLTAGE_R2) / Hardware.BATTERY_VOLTAGE_R2;
-const ADC_TO_VOLTAGE = Hardware.ADC_REF_MAX_VOLTAGE / Hardware.ADC_BIT_MAX_VALUE;
 
 export class VehicleSensorService extends BaseService<IVehicleSensorData> {
   private rpmSignalCounter: number = 0;

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Logging } from "./logger";
 import { IEventBus } from "./event-bus";
 import { ServiceCommand, EventType, ServiceStatus, BroadcastMode } from "../../ts-schema/constants";
@@ -47,7 +45,7 @@ export class BaseService<TData> {
   }
 
   public handleCommand(command: string, raw?: any) {
-    Logging.debug(this.options.serviceCode, EventType.CommandForService, command, raw);
+    Logging.debug(this.options.serviceCode, EventType.CommandForService, command);
     switch (command) {
       case ServiceCommand.START:
         this.start();
