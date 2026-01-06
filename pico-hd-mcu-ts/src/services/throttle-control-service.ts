@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Servo } from "servo";
 import { BroadcastMode, FILE_TCM_CONFIG, Gpio, Hardware, ServiceCode, ServiceType } from "../../../ts-schema/constants";
 import { TcmSettings, ThrottleData } from "../../../ts-schema/data.model";
@@ -57,9 +55,8 @@ export class ThrottleControlService extends BaseService<ThrottleData> {
 
   setup() {
     super.setup();
-    pinMode(Gpio.THROTTLE_SENSOR_MAIN, INPUT);
     this.throttleServo = new Servo();
-    this.throttleSensor = new AdcHallSensor(Gpio.THROTTLE_SENSOR_MAIN, tcmConfig.throttleSamplingIntervalMs, this.processThrottleServo.bind(this));
+    this.throttleSensor = new AdcHallSensor(Gpio.VEHICLE_SENSOR_THROTTLE, tcmConfig.throttleSamplingIntervalMs, this.processThrottleServo.bind(this));
     this.throttleSensor.init();
     this.throttleServo.attach(Gpio.THROTTLE_SERVO_PWM);
     this.throttleServo.write(tcmConfig.throttleServoMinAngle);
