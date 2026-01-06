@@ -1532,7 +1532,6 @@
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(net 58515136)
 			(uuid "b4df8d7a-3e0f-45b0-b720-7f78c3c85820")
 		)
 		(fp_circle
@@ -1544,7 +1543,6 @@
 			)
 			(fill no)
 			(layer "F.SilkS")
-			(net 58515136)
 			(uuid "fb0c6749-73e8-42da-b278-938f4240c78a")
 		)
 		(fp_line
@@ -1555,7 +1553,6 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(net 58515136)
 			(uuid "fa9062b0-da33-4c8f-b4fd-ca855b47ac15")
 		)
 		(fp_line
@@ -1566,7 +1563,6 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(net 58515136)
 			(uuid "cafafd38-82b2-403c-ad44-55c796a77944")
 		)
 		(fp_line
@@ -1577,7 +1573,6 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(net 58515136)
 			(uuid "f2a2658e-4b9c-4edd-9fcd-53105f89a7ea")
 		)
 		(fp_line
@@ -1588,7 +1583,6 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(net 58515136)
 			(uuid "dbe4c66b-91c2-494b-b53c-4c6756eda5dc")
 		)
 		(fp_line
@@ -1599,7 +1593,6 @@
 				(type solid)
 			)
 			(layer "F.Fab")
-			(net 58515136)
 			(uuid "214f9b55-1b67-4ceb-a446-fdd5021568d8")
 		)
 		(fp_circle
@@ -1611,7 +1604,6 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(net 58515136)
 			(uuid "f57ff5c6-3248-4576-8232-1f7fa33f8eea")
 		)
 		(pad "1" thru_hole rect
@@ -2915,7 +2907,6 @@
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(net 72805126)
 			(uuid "ec37ca7a-8f76-4001-b13d-158636136977")
 		)
 		(fp_circle
@@ -2927,7 +2918,6 @@
 			)
 			(fill no)
 			(layer "F.SilkS")
-			(net 72805126)
 			(uuid "b0b4dcee-8e9a-429c-bb6c-2e020cb32c36")
 		)
 		(fp_line
@@ -2938,7 +2928,6 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(net 72805126)
 			(uuid "779ca5c4-56a8-4f6d-8ed5-93484436dfbe")
 		)
 		(fp_line
@@ -2949,7 +2938,6 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(net 72805126)
 			(uuid "7e5573b5-6b43-42ab-87f9-66858e258eb1")
 		)
 		(fp_line
@@ -2960,7 +2948,6 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(net 72805126)
 			(uuid "809c508d-1938-41fa-9dcd-d2fd52da92f1")
 		)
 		(fp_line
@@ -2971,7 +2958,6 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(net 72805126)
 			(uuid "dea16f15-7953-4701-bb72-cdb26a3ace63")
 		)
 		(fp_line
@@ -2982,7 +2968,6 @@
 				(type solid)
 			)
 			(layer "F.Fab")
-			(net 72805126)
 			(uuid "f96796e3-8f0c-46a9-b2db-2991aa01905c")
 		)
 		(fp_circle
@@ -2994,7 +2979,6 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(net 72805126)
 			(uuid "05be2cee-4bf7-492c-b7dc-b2ecf35ed9a7")
 		)
 		(pad "1" thru_hole rect
@@ -9324,8 +9308,8 @@
 		(uuid "bf0489f6-7f77-466c-9a4d-b679dbd00876")
 	)
 	(gr_rect
-		(start 64.46 21.745)
-		(end 59.94 25.555)
+		(start 59.94 21.745)
+		(end 64.46 25.555)
 		(stroke
 			(width 0.1)
 			(type default)
